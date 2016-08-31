@@ -3,22 +3,7 @@ require(gtools);  # for invalid function
 
 # plot the predicted values of the model
 
-
-
-ylin <-  a0 + b3*T         # linear model
-
-ypred <- exp(y)/(1+exp(y))   # from log odds to probabilities
-
-
-plot(T,y)
-
-plot(T,ypred)
-
-
-###
-
 require(ggplot2)
-
 
 
 x <- seq(0, 10,by=0.1)
