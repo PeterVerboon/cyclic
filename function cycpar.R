@@ -6,7 +6,8 @@
 # P is the periodicity of the cycle
 # T indicates time points
 
-# Start function
+
+
 
 cycpar <- function(a1,a2) {  
   
