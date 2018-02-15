@@ -10,10 +10,12 @@ a0 <- b[1]
 b1 <- b[2]
 b2 <- b[3]
 
+dat <- pdat
+dat <- pdat2
+
 # x <- seq(0, 12,by=0.1)                       # construct time axis
 
-x <- dat$t
-
+x <- dat$xvar
 ypred <-  a0 + b1*cos(2*pi/P*(x - b2))           # cyclic only, without linear trend
 
 ypred <-  a0 + b1*cos(2*pi/P*(x - b2)) + b3*x    # cyclic model with linear trend
@@ -23,12 +25,13 @@ ylin <- a0 + b3*x                                # linear trend
 # Construct plot 
 
 g <- ggplot(dat)                   
-g <- g + geom_point(aes(x=x,y=y))
+g <- g + geom_point(aes(x=x,y=yvar))
 g <- g +geom_hline(yintercept=a0, colour="blue")  
 g <- g +geom_vline(xintercept=(b2), colour="red") 
 g <- g + geom_line(aes(x=x, y=ypred)) 
 # g <- g + geom_line(aes(x=x, y=ylin), lty = "dashed")   # show linear trend line
-g <- g + labs(x = "Time points", y = " DV")
+g <- g + labs(x = "Time points", y = "Intention to stop smoking")
+g <- g + scale_x_discrete(name ="Time points",  limits=c(1:P))
 g <- g + theme(axis.text = element_text(size = 12, colour="black"))
 g
 
