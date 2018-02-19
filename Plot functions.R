@@ -76,6 +76,20 @@ g <- g + geom_line(aes(x=xvar, y=y, width = 6))
 g 
 
 
+### plot raw data
+
+pdat <- dat2
+pdat <- subset(dat1, dat1$subjnr==2)
+npoints <- dim(pdat)[1]
+x <- c(1:npoints)
+pdat$day <- as.factor(pdat$dagnr)
+
+g <- ggplot(pdat)
+g <- g + geom_point(aes(x=x, y=Zintentie, colour=day))
+g <- g + scale_x_discrete(name ="Time points",  labels=pdat$beepnr, limits=c(1:npoints))
+g <- g + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
+
+g
 
 
 

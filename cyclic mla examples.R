@@ -27,8 +27,22 @@ attach(data)
 ## DATASET 2  CATHERINE  ##
 
 dat1 <- data[,c("subjnr","beepnr", "dagnr", "NAc", "PAc","Stressc","Zintentie","rookgedrag")]
-dat2 <- aggregate(dat1[,c("NAc", "PAc","Stressc","Zintentie")],by=list(subjnr,beepnr), FUN=mean, na.rm=F);    # aggregate across days
-dat4 <- aggregate(dat1[,c("NAc", "PAc","Stressc","Zintentie")],by=list(subjnr,dagnr), FUN=mean, na.rm=T);
+dat2 <- aggregate(dat1[,c("NAc", "PAc","Stressc","Zintentie")],by=list(dat1$beepnr,dat1$dagnr), FUN=mean, na.rm=F);    # aggregate across subjects
+dat2$day <- dat2$Group.2
+dat2$beepnr <- dat2$Group.1
+
+dat1$count <- 1
+  
+dat4 <- aggregate(dat1[,c("count")],by=list(dat1$subjnr), FUN=sum, na.rm=T);
+dat4$subjnr <- dat4$Group.1
+
+dat1$count <- NULL
+dat4$count <- dat4$x
+dat4$x <- NULL
+dat4$Group.1 <- NULL
+
+a <- merge(dat1,dat4, by.x = "subjnr")
+a <- subset(a, a$count >= 50)
 
 dat <- dat1
 
@@ -136,4 +150,21 @@ b
 
 pdat2 <- aggregate(pdat[,c("NAc", "PAc","Stressc","Zintentie","yvar")],by=list(pdat$beepnr), FUN=mean, na.rm=F);   
 pdat2$xvar <- pdat2$Group.1
+
+
+
+### plot raw data
+
+
+pdat <- subset(dat1, dat1$subjnr==2)
+x <- c(1:dim(pdat)[1])
+pdat$day <- as.factor(pdat$dagnr)
+
+g <- ggplot(pdat)
+g <- g + geom_point(aes(x=x, y=Zintentie, colour=day))
+g <- g + scale_x_discrete(name ="Time points",  labels=pdat$beepnr, limits=c(1:53))
+g <- g + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
+
+g
+  
 
