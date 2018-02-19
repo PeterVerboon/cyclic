@@ -1,6 +1,6 @@
 
 
-fitCyclic <- function(dat, yvar, xvar ) {  
+fitCyclic <- function(dat, yvar, xvar, ymin = -1.0, ymax = 1.0 ) {  
   
     result <- list() 
   
@@ -34,6 +34,7 @@ fitCyclic <- function(dat, yvar, xvar ) {
     g <- g + geom_line(aes(x=dat$x, y=ypred)) 
     g <- g + labs(x = "Time points", y = yvar)
     g <- g + scale_x_discrete(name ="Time points",  limits=c(1:P))
+    g <- g + ylim(ymin, ymax)
     g <- g + theme(axis.text = element_text(size = 12, colour="black"))
   
   
@@ -50,6 +51,7 @@ fitCyclic <- function(dat, yvar, xvar ) {
     g1 <- g1 + geom_line(aes(x=pdat2$x, y=ypred2))
     g1 <- g1 + labs(x = "Time points", y = yvar)
     g1 <- g1 + scale_x_discrete(name ="Time points",  limits=c(1:P))
+    g1 <- g1 + ylim(ymin, ymax)
     g1 <- g1 + theme(axis.text = element_text(size = 12, colour="black"))
 
     result$meansPlot <- g1
@@ -66,9 +68,9 @@ fitCyclic <- function(dat, yvar, xvar ) {
 ## test
 
 
-pdat <- subset(dat1, dat1$subjnr==2)
+pdat <- subset(dat1, dat1$subjnr==50)
 
-a <- fitCyclic(pdat, yvar = "Zintentie", xvar="beepnr")
+a <- fitCyclic(pdat, yvar = "Zintentie", xvar="beepnr",ymin=-0.5, ymax=0.5)
 
 a$rawDataPlot
 a$meansPlot

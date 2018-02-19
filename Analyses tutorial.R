@@ -1,3 +1,6 @@
+require(dplyr)
+
+options(digids=3)
 
 ## DATASET 2  CATHERINE  ##
 
@@ -21,9 +24,19 @@ dat4$Group.1 <- NULL
 
 a <- merge(dat1,dat4, by.x = "subjnr")
 
-## select subject with 50 or more records 
+## remove subjects with less than 50 records 
 
 dat3 <- subset(a, a$count >= 50)
+length(unique(dat3$subjnr))
+
+## compute variability of DV per subject
+
+a <- summarise(group_by(dat3, subjnr),mean=mean(intention), sd=sd(intention))
+a <- merge(dat3, a, by.x = "subjnr")
+
+# remove subjects with very small variation in DV
+
+dat3 <- subset(dat3, a$sd > .10)   
 length(unique(dat3$subjnr))
 
 
@@ -41,7 +54,7 @@ dat2$Group.2 <- NULL
 
 pdat <- dat2   # averaged over all subjects
 
-pdat <- subset(dat3, dat1$subjnr == 18)
+pdat <- subset(dat3, dat3$subjnr == 18)               # ppn 2, 15, 18
 
 npoints <- dim(pdat)[1]
 x <- c(1:npoints)
@@ -57,7 +70,7 @@ g
 
 ## Analyze cyclic model and plot
 
-a <- fitCyclic(pdat, yvar = "Zintentie", xvar="beepnr")
+a <- fitCyclic(pdat, yvar = "intention", xvar="beepnr", ymin = -0.5, ymax = 0.5)
 
 a$rawDataPlot
 a$meansPlot
@@ -68,10 +81,6 @@ a$fit
 
 ## Analyze cyclic model with MLA and plot
 
-require(dplyr)
 
-a <- summarise(group_by(dat3, subjnr),mean=mean(intention), sd=sd(intention))
-a <- merge(dat3, a, by.x = "subjnr")
 
-dat3 <- subset(dat3, a$sd > .10)   # remove subject with very small variation in DV
-length(unique(dat3$subjnr))
+
