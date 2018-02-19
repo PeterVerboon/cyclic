@@ -1,4 +1,6 @@
 require(dplyr)
+require(ggplot2)
+require(lme4);   # for lmer
 
 options(digids=3)
 
@@ -54,14 +56,14 @@ dat2$Group.2 <- NULL
 
 pdat <- dat2   # averaged over all subjects
 
-pdat <- subset(dat3, dat3$subjnr == 18)               # ppn 2, 15, 18
+pdat <- subset(dat3, dat3$subjnr == 15)               # ppn 2, 15, 18
 
 npoints <- dim(pdat)[1]
 x <- c(1:npoints)
 pdat$day <- as.factor(pdat$dagnr)
 
 g <- ggplot(pdat)
-g <- g + geom_point(aes(x=x, y=Zintentie, colour=day))
+g <- g + geom_point(aes(x=x, y=intention, colour=day))
 g <- g + scale_x_discrete(name ="Time points (beeps within days)",  labels=pdat$beepnr, limits=c(1:npoints))
 g <- g + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
 g
@@ -70,17 +72,50 @@ g
 
 ## Analyze cyclic model and plot
 
-a <- fitCyclic(pdat, yvar = "intention", xvar="beepnr", ymin = -0.5, ymax = 0.5)
+a <- fitCyclic(pdat, yvar = "intention", xvar="beepnr", ymin = -0.8, ymax = 0.5)
 
 a$rawDataPlot
 a$meansPlot
 a$parameters
-a$fit
+summary(a$fit)
 
+## fit extra model 
+
+a <- fitCyclic(dat2, form = "y ~ cvar + svar + dagnr", yvar = "intention", xvar="beepnr",ymin=-0.5, ymax=0.5)
+
+a$rawDataPlot
+a$meansPlot
+a$parameters
+summary(a$fit)
 
 
 ## Analyze cyclic model with MLA and plot
 
+dat <- dat3
+P <- max(dat$xvar)
+dat$yvar <- dat$intention
+dat$xvar <- dat$beepnr 
+dat$cvar <- cos((2*pi/P)*dat$xvar)
+dat$svar <- sin((2*pi/P)*dat$xvar)
 
 
+fit <- lmer(yvar ~ cvar + svar + (1 + cvar + svar |subjnr),data = dat)                  # cyclic effect of beeps
 
+summary(fit)
+
+a0 <- fixef(fit)[1]
+a1 <- fixef(fit)[2]
+a2 <- fixef(fit)[3]
+b3 <- fixef(fit)[4]
+
+par <- cycpar(a1,a2)
+b <- c(a0,par,b3)
+b
+
+dat$ypred = predict(fit)
+pdat <- subset(dat, dat$subjnr %in% c(2,15,18))
+
+p <- ggplot(pdat, aes(x = beepnr, y = intention, color = subjnr)) +
+  geom_point(size=3) +
+  geom_line(aes(y = ypred),size=1) 
+print(p)

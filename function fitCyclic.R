@@ -1,6 +1,6 @@
 
 
-fitCyclic <- function(dat, yvar, xvar, ymin = -1.0, ymax = 1.0 ) {  
+fitCyclic <- function(dat, form = y ~ cvar + svar, yvar, xvar, ymin = -1.0, ymax = 1.0, step=0.25 ) {  
   
     result <- list() 
   
@@ -10,7 +10,10 @@ fitCyclic <- function(dat, yvar, xvar, ymin = -1.0, ymax = 1.0 ) {
     dat$x <- dat[,xvar]
     P <- max(dat[,xvar])
     
-    fitp <- lm(y ~ cvar + svar , data = dat)
+    # if (is.null(predx)) {fitp <- lm(y ~ cvar + svar, data = dat)}
+    #              else   {fitp <- lm(y ~ cvar + svar + predx , data = dat)}
+ 
+       fitp <- lm(form, data=dat)
 
     a0 <- fitp$coefficients[1]
     a1 <- fitp$coefficients[2]
@@ -51,7 +54,8 @@ fitCyclic <- function(dat, yvar, xvar, ymin = -1.0, ymax = 1.0 ) {
     g1 <- g1 + geom_line(aes(x=pdat2$x, y=ypred2))
     g1 <- g1 + labs(x = "Time points", y = yvar)
     g1 <- g1 + scale_x_discrete(name ="Time points",  limits=c(1:P))
-    g1 <- g1 + ylim(ymin, ymax)
+    #g1 <- g1 + ylim(ymin, ymax)
+    g1 <- g1 + scale_y_continuous(breaks=seq(ymin, ymax, step)) 
     g1 <- g1 + theme(axis.text = element_text(size = 12, colour="black"))
 
     result$meansPlot <- g1
@@ -68,14 +72,14 @@ fitCyclic <- function(dat, yvar, xvar, ymin = -1.0, ymax = 1.0 ) {
 ## test
 
 
-pdat <- subset(dat1, dat1$subjnr==50)
+pdat <- subset(dat3, dat1$subjnr==2)
 
-a <- fitCyclic(pdat, yvar = "Zintentie", xvar="beepnr",ymin=-0.5, ymax=0.5)
+a <- fitCyclic(pdat,form= "y ~ cvar + svar + dagnr",yvar = "intention", xvar="beepnr" , ymin=-1.5, ymax=1.5)
 
 a$rawDataPlot
 a$meansPlot
 a$parameters
-a$fit
-
+#a$fit
+summary(a$fit)
 
 

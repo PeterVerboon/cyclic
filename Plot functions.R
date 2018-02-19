@@ -68,8 +68,6 @@ g <- g + stat_smooth(span=1.0)
 
 g <- ggplot(dat, aes(xvar,yvar))   # plot data
 g <- g + stat_smooth(span=1.0)
-
-
 g <- g + geom_line(aes(x=xvar, y=y, width = 6)) 
 
 
