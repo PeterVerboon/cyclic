@@ -14,26 +14,25 @@ options(digids=3)
 data <- getData()
 # getData(filename="/Users/peterverboon/Documents/Open Universiteit/Onderzoek/Project Cyclic models/SmokingLapse.sav");
 
+# Select relevant variables and standardize them
+
 dat1 <- data[,c("subjnr","beepnr", "dagnr", "NAc", "PAc","Stressc","Zintentie","rookgedrag")]
 dat1$intention <- dat1$Zintentie
 dat1$positiveAffect <- scale(dat1$PAc)
 dat1$stress <- scale(dat1$Stressc)
 
-
-## Count number of record per subject
+## Count number of records per subject and remove subjects with less than 50 records 
 
 dat1$count <- 1
-dat4 <- aggregate(dat1[,c("count")],by=list(dat1$subjnr), FUN=sum, na.rm=T);
-dat4$subjnr <- dat4$Group.1
+dat2 <- aggregate(dat1[,c("count")],by=list(dat1$subjnr), FUN=sum, na.rm=T);
+dat2$subjnr <- dat2$Group.1
 
 dat1$count <- NULL
-dat4$count <- dat4$x
-dat4$x <- NULL
-dat4$Group.1 <- NULL
+dat2$count <- dat4$x
+dat2$x <- NULL
+dat2$Group.1 <- NULL
 
-a <- merge(dat1,dat4, by.x = "subjnr")
-
-## remove subjects with less than 50 records 
+a <- merge(dat1,dat2, by.x = "subjnr")
 
 dat3 <- subset(a, a$count >= 50)
 length(unique(dat3$subjnr))
@@ -49,18 +48,17 @@ length(unique(dat3$subjnr))
 
 ## Aggregate over subjects
 
-dat2 <- aggregate(dat3[,c("NAc", "positiveAffect","stress","intention")],by=list(dat3$beepnr,dat3$dagnr), FUN=mean, na.rm=F);    
-dat2$dagnr <- dat2$Group.2
-dat2$beepnr <- dat2$Group.1
-dat2$Group.1 <- NULL
-dat2$Group.2 <- NULL
+dat4 <- aggregate(dat3[,c("NAc", "positiveAffect","stress","intention")],by=list(dat3$beepnr,dat3$dagnr), FUN=mean, na.rm=F);    
+dat4$dagnr <- dat4$Group.2
+dat4$beepnr <- dat4$Group.1
+dat4$Group.1 <- NULL
+dat4$Group.2 <- NULL
 
 ######################    ANALYSES   #########################
 
 ### Step 1: plotting the raw data for three subjects and average (Figure 1)
 
-pdat <- dat2   # averaged over all subjects
-
+pdat <- dat4                                         # averaged over all subjects
 pdat <- subset(dat3, dat3$subjnr == 2)               # ppn 2, 15, 18 selected for Figure 1
                                                       
 npoints <- dim(pdat)[1]
@@ -89,9 +87,9 @@ summary(a$fit)
 ### End step 2
 
 
-### Step 3: Fit extra term in the model with day as covariate 
+### Step 3: Fit extra term in the model with day as covariate in aggregated data 
 
-a <- fitCyclic(pdat, form = "y ~ cvar + svar + dagnr", yvar = "intention", xvar="beepnr",ymin=-1.0, ymax=0.5, step = 0.25)
+a <- fitCyclic(dat4, form = "y ~ cvar + svar + dagnr", yvar = "intention", xvar="beepnr",ymin=-1.0, ymax=0.5, step = 0.25)
 
 a$parameters
 summary(a$fit)
@@ -144,23 +142,28 @@ dat$svar2 <- sin((2*pi/P2)*dat$xvar2)
 
 
 
-fit0 <- lmer(yvar ~ 1 + (1  |subjnr),data = dat)                  # null model
-fit1 <- lmer(yvar ~ cvar + svar + (1 |subjnr),data = dat)                  # cyclic effect of beeps
-fit2 <- lmer(yvar ~ cvar + svar + (1 +  svar + cvar |subjnr),data = dat)                  # cyclic effect of beeps
+fit0 <- lmer(yvar ~ 1 + (1  |subjnr),data = dat)                                   # null model
+fit1 <- lmer(yvar ~ cvar + svar + (1 |subjnr),data = dat)                          # dayly cyclic effect 
+fit2 <- lmer(yvar ~ cvar + svar + (1 +  svar + cvar |subjnr),data = dat)           # daily random cyclic effect 
 
-fit3 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + (1  |subjnr),data = dat)                  # cyclic effect of beeps and days
+fit3 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + (1 + svar + cvar |subjnr),data = dat)       # dayly and weekly cyclic effect 
 
-summary(fit3)
-anova(fit2, fit1, fit0)
+fit <- fit3
 
-a0 <- fixef(fit3)[1]
-a1 <- fixef(fit3)[2]
-a2 <- fixef(fit3)[3]
-a3 <- fixef(fit3)[4]
-a4 <- fixef(fit3)[5]
+summary(fit)
+
+a0 <- fixef(fit)[1]
+a1 <- fixef(fit)[2]
+a2 <- fixef(fit)[3]
+a3 <- fixef(fit)[4]
+a4 <- fixef(fit)[5]
+
 
 b <- c(a0,cycpar(a1,a2, P),cycpar(a3,a4, P))     ## convert to parameters for linear model
 b
+
+anova(fit3, fit2, fit1, fit0)
+
 
 dat$ypred <-  a0 + b[2]*cos(2*pi/P*(dat$beepnr - b[3]))  + b[4]*cos(2*pi/P2*(dat$dagnr - b[5]))
 
