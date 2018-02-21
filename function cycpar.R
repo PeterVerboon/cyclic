@@ -9,7 +9,7 @@
 
 
 
-cycpar <- function(a1,a2) {  
+cycpar <- function(a1,a2, P) {  
   
   b1 <- sqrt(a1**2 + a2**2)
   
