@@ -11,7 +11,8 @@ fitCyclic <- function(dat, form = y ~ cvar + svar, yvar, xvar, ymin = -1.0, ymax
     dat$x <- dat[,xvar]
 
     
-
+    # fit cyclic model within days across beeps
+    
     fitp <- lm(form, data=dat)
 
     a0 <- fitp$coefficients[1]
@@ -56,8 +57,8 @@ fitCyclic <- function(dat, form = y ~ cvar + svar, yvar, xvar, ymin = -1.0, ymax
   
   
       pdat2 <- aggregate(dat[,yvar],by=list(dat[,xvar]), FUN=mean, na.rm=F)   
-      pdat2$y <- pdat2$x
-      pdat2$x <- pdat2$Group.1
+      pdat2$y <- pdat2[,2]
+      pdat2$x <- pdat2[,1]
      
     ypred2 <-  a0 + b1*cos(2*pi/P*(pdat2$x - b2))   
     
@@ -95,7 +96,6 @@ a$rawDataPlot
 a$meansPlot
 a$oneCyclePlot
 a$parameters
-#a$fit
 summary(a$fit)
 
 

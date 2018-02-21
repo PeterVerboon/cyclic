@@ -66,7 +66,7 @@ pdat <- dat2   # averaged over all subjects
 pdat <- subset(dat3, dat3$subjnr == 15)               # ppn 2, 15, 18 for Intention
                                                       # ppn 41, 50, 15 for positiveAffect,
                                                       # ppn 27, 17 has weekly cycle!
-                                                      # ppn 41, 50 for Stressc
+                                                      # ppn 15, 41, 50 for Stressc
 npoints <- dim(pdat)[1]
 x <- c(1:npoints)
 pdat$day <- as.factor(pdat$dagnr)
@@ -82,19 +82,21 @@ g
 
 ## Analyze cyclic model and plot
 
-a <- fitCyclic(pdat, yvar = "Stressc", xvar="beepnr", ymin = -2.5, ymax = 1.5, step=.30)
+a <- fitCyclic(pdat, form= "y ~ cvar + svar  ",yvar = "positiveAffect", xvar="beepnr", ymin = -2.5, ymax = 1.5, step=.30)
 
 a$rawDataPlot
 a$meansPlot
+a$oneCyclePlot
 a$parameters
 summary(a$fit)
 
 ## fit extra model with day as covariate 
 
-a <- fitCyclic(pdat, form = "y ~ cvar + svar + dagnr", yvar = "positiveAffect", xvar="beepnr",ymin=-0.5, ymax=0.5)
+a <- fitCyclic(pdat, form = "y ~ cvar + svar + dagnr", yvar = "positiveAffect", xvar="beepnr",ymin=-1.5, ymax=1.5, step = 0.25)
 
 a$rawDataPlot
 a$meansPlot
+a$oneCyclePlot
 a$parameters
 summary(a$fit)
 
@@ -103,30 +105,56 @@ summary(a$fit)
 
 dat <- dat3
 
-dat$yvar <- dat$positiveAffect
+dat$yvar <- dat$intention
 dat$xvar <- dat$beepnr 
 P <- max(dat$xvar)
 dat$cvar <- cos((2*pi/P)*dat$xvar)
 dat$svar <- sin((2*pi/P)*dat$xvar)
 
+dat$xvar2 <- dat$dagnr 
+P2 <- max(dat$xvar2)
+dat$cvar2 <- cos((2*pi/P2)*dat$xvar2)
+dat$svar2 <- sin((2*pi/P2)*dat$xvar2)
 
-fit <- lmer(yvar ~ cvar + svar + (1 +  svar + cvar |subjnr),data = dat)                  # cyclic effect of beeps
 
-summary(fit)
 
-a0 <- fixef(fit)[1]
-a1 <- fixef(fit)[2]
-a2 <- fixef(fit)[3]
-b3 <- fixef(fit)[4]
+fit0 <- lmer(yvar ~ 1 + (1  |subjnr),data = dat)                  # null model
+fit1 <- lmer(yvar ~ cvar + svar + (1 |subjnr),data = dat)                  # cyclic effect of beeps
+fit2 <- lmer(yvar ~ cvar + svar + (1 +  svar + cvar |subjnr),data = dat)                  # cyclic effect of beeps
 
-par <- cycpar(a1,a2)
-b <- c(a0,par,b3)
+fit3 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + (1  |subjnr),data = dat)                  # cyclic effect of beeps
+
+summary(fit3)
+anova(fit2, fit1, fit0)
+
+a0 <- fixef(fit3)[1]
+a1 <- fixef(fit3)[2]
+a2 <- fixef(fit3)[3]
+a3 <- fixef(fit3)[4]
+a4 <- fixef(fit3)[5]
+
+par <- cycpar(a1,a2, P)
+b <- c(a0,par)
+par <- cycpar(a3,a4, P2)
+b <- c(b,par)
 b
 
-dat$ypred = predict(fit)
-pdat <- subset(dat, dat$subjnr %in% c(2,15,18))
-pdat$subj <- as.factor(pdat$subjnr)
+dat$ypred <-  a0 + b[2]*cos(2*pi/P*(dat$beepnr - b[3]))  + b[4]*cos(2*pi/P2*(dat$dagnr - b[5]))
 
-p <- ggplot(pdat, aes(x = beepnr, y = positiveAffect, colour = subj)) + geom_point(size=3)
-   + geom_line(aes(y = ypred),size=1) 
-print(p)
+dat$ypred <-  a0 + b[4]*cos(2*pi/P2*(dat$dagnr - b[5]))
+
+
+dat$ypred = predict(fit)
+
+pdat <- subset(dat, dat$subjnr %in% c(15))
+pdat$day <- as.factor(pdat$dagnr)
+npoints <- dim(pdat)[1]
+pdat$xall <- c(1:npoints)
+
+g0 <- ggplot(pdat) + geom_point(aes(x=pdat$xall, y=pdat$intention, colour=pdat$day))
+g0 <- g0 + scale_x_discrete(name ="Time points (beeps within days)",  labels=pdat$beepnr, limits=c(1:npoints))
+g0 <- g0 + labs(y = yvar)
+g0 <- g0 + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
+g0 <- g0 + geom_line(aes(x=pdat$xall, y=pdat$ypred)) 
+g0 <- g0 + coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step)) 
+g0
