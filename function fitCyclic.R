@@ -33,11 +33,17 @@ fitCyclic <- function(dat, form = y ~ cvar + svar, yvar, xvar, ymin = -1.0, ymax
     dat$xall <- c(1:npoints)
     dat$day <- as.factor(dat$dagnr)
     
+    # raw data plot
+    
     g0 <- ggplot(dat) + geom_point(aes(x=xall, y=dat$y, colour=dat$day))
     g0 <- g0 + scale_x_discrete(name ="Time points (beeps within days)",  labels=dat$x, limits=c(1:npoints))
+    g0 <- g0 + labs(y = yvar)
     g0 <- g0 + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
     g0 <- g0 + geom_line(aes(x=dat$xall, y=ypred)) 
+    g0 <- g0 + coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step)) 
     g0
+    
+    # one Cycle plot 
     
     g <- ggplot(dat)  + geom_point(aes(x=dat$x,y=dat$y))
     g <- g + geom_hline(yintercept=a0, colour="blue")  
@@ -45,7 +51,7 @@ fitCyclic <- function(dat, form = y ~ cvar + svar, yvar, xvar, ymin = -1.0, ymax
     g <- g + geom_line(aes(x=dat$x, y=ypred)) 
     g <- g + labs(x = "Time points", y = yvar)
     g <- g + scale_x_discrete(name ="Time points",  limits=c(1:P))
-    g <- g + ylim(ymin, ymax)
+    g <- g + coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step)) 
     g <- g + theme(axis.text = element_text(size = 12, colour="black"))
   
   
@@ -55,14 +61,15 @@ fitCyclic <- function(dat, form = y ~ cvar + svar, yvar, xvar, ymin = -1.0, ymax
      
     ypred2 <-  a0 + b1*cos(2*pi/P*(pdat2$x - b2))   
     
+    # mean plot
+    
     g1 <- ggplot(pdat2) + geom_point(aes(x=pdat2$x,y=pdat2$y))
     g1 <- g1 + geom_hline(yintercept=a0, colour="blue")
     g1 <- g1 + geom_vline(xintercept=b2, colour="red")
     g1 <- g1 + geom_line(aes(x=pdat2$x, y=ypred2))
     g1 <- g1 + labs(x = "Time points", y = yvar)
     g1 <- g1 + scale_x_discrete(name ="Time points",  limits=c(1:P))
-    #g1 <- g1 + ylim(ymin, ymax)
-    g1 <- g1 + scale_y_continuous(breaks=seq(ymin, ymax, step)) 
+    g1 <- g1 + coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step)) 
     g1 <- g1 + theme(axis.text = element_text(size = 12, colour="black"))
 
     
@@ -80,9 +87,9 @@ fitCyclic <- function(dat, form = y ~ cvar + svar, yvar, xvar, ymin = -1.0, ymax
 ## test
 
 
-pdat <- subset(dat3, dat3$subjnr==2)
+pdat <- subset(dat3, dat3$subjnr==15)
 
-a <- fitCyclic(pdat,form= "y ~ cvar + svar ",yvar = "intention", xvar="beepnr" , ymin=-1.5, ymax=1.5,step=0.25)
+a <- fitCyclic(pdat,form= "y ~ cvar + svar + dagnr ",yvar = "intention", xvar="beepnr" , ymin=-2.0, ymax=1.0,step=0.25)
 
 a$rawDataPlot
 a$meansPlot
