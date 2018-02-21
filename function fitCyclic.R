@@ -10,10 +10,8 @@ fitCyclic <- function(dat, form = y ~ cvar + svar, yvar, xvar, ymin = -1.0, ymax
     dat$x <- dat[,xvar]
     P <- max(dat[,xvar])
     
-    # if (is.null(predx)) {fitp <- lm(y ~ cvar + svar, data = dat)}
-    #              else   {fitp <- lm(y ~ cvar + svar + predx , data = dat)}
- 
-       fitp <- lm(form, data=dat)
+
+    fitp <- lm(form, data=dat)
 
     a0 <- fitp$coefficients[1]
     a1 <- fitp$coefficients[2]
