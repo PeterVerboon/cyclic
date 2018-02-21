@@ -4,11 +4,12 @@ fitCyclic <- function(dat, form = y ~ cvar + svar, yvar, xvar, ymin = -1.0, ymax
   
     result <- list() 
   
+    P <- max(dat[,xvar])
     dat$cvar <- cos((2*pi/P)*dat[,xvar])
     dat$svar <- sin((2*pi/P)*dat[,xvar])
     dat$y <- dat[,yvar]
     dat$x <- dat[,xvar]
-    P <- max(dat[,xvar])
+
     
 
     fitp <- lm(form, data=dat)
@@ -17,7 +18,7 @@ fitCyclic <- function(dat, form = y ~ cvar + svar, yvar, xvar, ymin = -1.0, ymax
     a1 <- fitp$coefficients[2]
     a2 <- fitp$coefficients[3] 
 
-    par <- cycpar(a1,a2) 
+    par <- cycpar(a1,a2, P) 
 
     b <- c(a0,par)
     
@@ -26,10 +27,19 @@ fitCyclic <- function(dat, form = y ~ cvar + svar, yvar, xvar, ymin = -1.0, ymax
     b1 <- b[2]
     b2 <- b[3] 
     
-    ypred <-  a0 + b1*cos(2*pi/P*(dat$x - b2))   
+    ypred <-  a0 + b1*cos(2*pi/P*(dat$x - b2))  
     
-    g <- ggplot(dat)                   
-    g <- g + geom_point(aes(x=dat$x,y=dat$y))
+    npoints <- dim(dat)[1]
+    dat$xall <- c(1:npoints)
+    dat$day <- as.factor(dat$dagnr)
+    
+    g0 <- ggplot(dat) + geom_point(aes(x=xall, y=dat$y, colour=dat$day))
+    g0 <- g0 + scale_x_discrete(name ="Time points (beeps within days)",  labels=dat$x, limits=c(1:npoints))
+    g0 <- g0 + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
+    g0 <- g0 + geom_line(aes(x=dat$xall, y=ypred)) 
+    g0
+    
+    g <- ggplot(dat)  + geom_point(aes(x=dat$x,y=dat$y))
     g <- g + geom_hline(yintercept=a0, colour="blue")  
     g <- g + geom_vline(xintercept=b2, colour="red") 
     g <- g + geom_line(aes(x=dat$x, y=ypred)) 
@@ -45,8 +55,7 @@ fitCyclic <- function(dat, form = y ~ cvar + svar, yvar, xvar, ymin = -1.0, ymax
      
     ypred2 <-  a0 + b1*cos(2*pi/P*(pdat2$x - b2))   
     
-    g1 <- ggplot(pdat2)
-    g1 <- g1 + geom_point(aes(x=pdat2$x,y=pdat2$y))
+    g1 <- ggplot(pdat2) + geom_point(aes(x=pdat2$x,y=pdat2$y))
     g1 <- g1 + geom_hline(yintercept=a0, colour="blue")
     g1 <- g1 + geom_vline(xintercept=b2, colour="red")
     g1 <- g1 + geom_line(aes(x=pdat2$x, y=ypred2))
@@ -56,9 +65,10 @@ fitCyclic <- function(dat, form = y ~ cvar + svar, yvar, xvar, ymin = -1.0, ymax
     g1 <- g1 + scale_y_continuous(breaks=seq(ymin, ymax, step)) 
     g1 <- g1 + theme(axis.text = element_text(size = 12, colour="black"))
 
-    result$meansPlot <- g1
     
-    result$rawDataPlot <- g
+    result$meansPlot <- g1
+    result$rawDataPlot <- g0
+    result$oneCyclePlot <- g
     result$fit  <- fitp
     result$parameters <- b
     
@@ -70,12 +80,13 @@ fitCyclic <- function(dat, form = y ~ cvar + svar, yvar, xvar, ymin = -1.0, ymax
 ## test
 
 
-pdat <- subset(dat3, dat1$subjnr==2)
+pdat <- subset(dat3, dat3$subjnr==2)
 
-a <- fitCyclic(pdat,form= "y ~ cvar + svar + dagnr",yvar = "intention", xvar="beepnr" , ymin=-1.5, ymax=1.5)
+a <- fitCyclic(pdat,form= "y ~ cvar + svar ",yvar = "intention", xvar="beepnr" , ymin=-1.5, ymax=1.5,step=0.25)
 
 a$rawDataPlot
 a$meansPlot
+a$oneCyclePlot
 a$parameters
 #a$fit
 summary(a$fit)

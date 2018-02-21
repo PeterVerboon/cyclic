@@ -1,16 +1,19 @@
 require(dplyr)   # for summarise
 require(ggplot2)
 require(lme4);   # for lmer
+require(userfriendlyscience)
 
 options(digids=3)
 
 ## DATASET 2  CATHERINE  ##
 
-data <-read.spss("Boonen_kort.sav", use.value.labels=F, to.data.frame=TRUE)
+data <- getData()
+# getData(filename="/Users/peterverboon/Documents/Open Universiteit/Onderzoek/Project Cyclic models/SmokingLapse.sav");
 
 dat1 <- data[,c("subjnr","beepnr", "dagnr", "NAc", "PAc","Stressc","Zintentie","rookgedrag")]
 dat1$intention <- dat1$Zintentie
 dat1$positiveAffect <- scale(dat1$PAc)
+dat1$stress <- scale(dat1$Stressc)
 
 
 ## Count number of record per subject
@@ -37,17 +40,18 @@ a <- summarise(group_by(dat3, subjnr),mean=mean(intention), sd=sd(intention))
 a <- summarise(group_by(dat3, subjnr),mean=mean(positiveAffect), sd=sd(positiveAffect))
 a <- summarise(group_by(dat3, subjnr),mean=mean(Stressc), sd=sd(positiveAffect))
 
-a <- merge(dat3, a, by.x = "subjnr")
+a <- merge(dat3, a,  by.x = "subjnr")
+
 
 # remove subjects with very small variation in DV
 
-dat3 <- subset(dat3, a$sd > .10)   
+dat3 <- subset(a, a$sd > .10)   
 length(unique(dat3$subjnr))
 
 
 ## aggregate over subjects
 
-dat2 <- aggregate(dat3[,c("NAc", "positiveAffect","Stressc","intention")],by=list(dat3$beepnr,dat3$dagnr), FUN=mean, na.rm=F);    # aggregate across subjects
+dat2 <- aggregate(dat3[,c("NAc", "positiveAffect","stress","intention")],by=list(dat3$beepnr,dat3$dagnr), FUN=mean, na.rm=F);    # aggregate across subjects
 dat2$dagnr <- dat2$Group.2
 dat2$beepnr <- dat2$Group.1
 dat2$Group.1 <- NULL
@@ -68,8 +72,8 @@ x <- c(1:npoints)
 pdat$day <- as.factor(pdat$dagnr)
 
 
-g <- ggplot(pdat)
-g <- g + geom_point(aes(x=x, y=Stressc, colour=day))
+g <- ggplot(pdat,aes(x=x, y=pdat$stress, colour=pdat$day))
+g <- g + geom_point()
 g <- g + scale_x_discrete(name ="Time points (beeps within days)",  labels=pdat$beepnr, limits=c(1:npoints))
 g <- g + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
 g
