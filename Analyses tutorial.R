@@ -122,7 +122,7 @@ fit0 <- lmer(yvar ~ 1 + (1  |subjnr),data = dat)                  # null model
 fit1 <- lmer(yvar ~ cvar + svar + (1 |subjnr),data = dat)                  # cyclic effect of beeps
 fit2 <- lmer(yvar ~ cvar + svar + (1 +  svar + cvar |subjnr),data = dat)                  # cyclic effect of beeps
 
-fit3 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + (1  |subjnr),data = dat)                  # cyclic effect of beeps
+fit3 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + (1  |subjnr),data = dat)                  # cyclic effect of beeps and days
 
 summary(fit3)
 anova(fit2, fit1, fit0)
@@ -133,15 +133,10 @@ a2 <- fixef(fit3)[3]
 a3 <- fixef(fit3)[4]
 a4 <- fixef(fit3)[5]
 
-par <- cycpar(a1,a2, P)
-b <- c(a0,par)
-par <- cycpar(a3,a4, P2)
-b <- c(b,par)
+b <- c(a0,cycpar(a1,a2, P),cycpar(a3,a4, P))     ## convert to parameters for linear model
 b
 
-dat$ypred <-  a0 + b[2]*cos(2*pi/P*(dat$beepnr - b[3]))  + b[4]*cos(2*pi/P2*(dat$dagnr - b[5]))
-
-dat$ypred <-  a0 + b[4]*cos(2*pi/P2*(dat$dagnr - b[5]))
+dat$ypred <-  b[1] + b[2]*cos(2*pi/P*(dat$beepnr - b[3]))  + b[4]*cos(2*pi/P2*(dat$dagnr - b[5]))
 
 
 dat$ypred = predict(fit)

@@ -1,6 +1,6 @@
 
 
-fitCyclic <- function(dat, form = y ~ cvar + svar, yvar, xvar, ymin = -1.0, ymax = 1.0, step=0.25 ) {  
+fitCyclic <- function(dat, form = y ~ cvar + svar + , yvar, xvar, ymin = -1.0, ymax = 1.0, step=0.25 ) {  
   
     result <- list() 
   
@@ -90,7 +90,7 @@ fitCyclic <- function(dat, form = y ~ cvar + svar, yvar, xvar, ymin = -1.0, ymax
 
 pdat <- subset(dat3, dat3$subjnr==15)
 
-a <- fitCyclic(pdat,form= "y ~ cvar + svar + dagnr ",yvar = "intention", xvar="beepnr" , ymin=-2.0, ymax=1.0,step=0.25)
+a <- fitCyclic(pdat,form= "y ~ cvar + svar   ",yvar = "intention", xvar="dagnr" , ymin=-2.0, ymax=1.0,step=0.25)
 
 a$rawDataPlot
 a$meansPlot
