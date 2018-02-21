@@ -1,11 +1,15 @@
-require(dplyr)   # for summarise
-require(ggplot2)
-require(lme4);   # for lmer
-require(userfriendlyscience)
+
+#### Packages necessary 
+
+require(userfriendlyscience)   # for reading the data
+require(dplyr)                 # for summarise
+require(ggplot2)               # for gglot
+require(lme4);                 # for lmer
+
 
 options(digids=3)
 
-## DATASET 2  CATHERINE  ##
+#### Preliminary STEPS   ####
 
 data <- getData()
 # getData(filename="/Users/peterverboon/Documents/Open Universiteit/Onderzoek/Project Cyclic models/SmokingLapse.sav");
@@ -34,74 +38,96 @@ a <- merge(dat1,dat4, by.x = "subjnr")
 dat3 <- subset(a, a$count >= 50)
 length(unique(dat3$subjnr))
 
-## compute variability of DV per subject
+## Compute variability of intention per subject and remove subjects with very small variation in intention
 
 a <- summarise(group_by(dat3, subjnr),mean=mean(intention), sd=sd(intention))
-a <- summarise(group_by(dat3, subjnr),mean=mean(positiveAffect), sd=sd(positiveAffect))
-a <- summarise(group_by(dat3, subjnr),mean=mean(Stressc), sd=sd(positiveAffect))
-
 a <- merge(dat3, a,  by.x = "subjnr")
-
-
-# remove subjects with very small variation in DV
 
 dat3 <- subset(a, a$sd > .10)   
 length(unique(dat3$subjnr))
 
 
-## aggregate over subjects
+## Aggregate over subjects
 
-dat2 <- aggregate(dat3[,c("NAc", "positiveAffect","stress","intention")],by=list(dat3$beepnr,dat3$dagnr), FUN=mean, na.rm=F);    # aggregate across subjects
+dat2 <- aggregate(dat3[,c("NAc", "positiveAffect","stress","intention")],by=list(dat3$beepnr,dat3$dagnr), FUN=mean, na.rm=F);    
 dat2$dagnr <- dat2$Group.2
 dat2$beepnr <- dat2$Group.1
 dat2$Group.1 <- NULL
 dat2$Group.2 <- NULL
 
+######################    ANALYSES   #########################
 
-
-### plot raw data
+### Step 1: plotting the raw data for three subjects and average (Figure 1)
 
 pdat <- dat2   # averaged over all subjects
 
-pdat <- subset(dat3, dat3$subjnr == 15)               # ppn 2, 15, 18 for Intention
-                                                      # ppn 41, 50, 15 for positiveAffect,
-                                                      # ppn 27, 17 has weekly cycle!
-                                                      # ppn 15, 41, 50 for Stressc
+pdat <- subset(dat3, dat3$subjnr == 2)               # ppn 2, 15, 18 selected for Figure 1
+                                                      
 npoints <- dim(pdat)[1]
 x <- c(1:npoints)
 pdat$day <- as.factor(pdat$dagnr)
 
-
-g <- ggplot(pdat,aes(x=x, y=pdat$stress, colour=pdat$day))
+g <- ggplot(pdat,aes(x=x, y=pdat$intention, colour=pdat$day))
 g <- g + geom_point()
 g <- g + scale_x_discrete(name ="Time points (beeps within days)",  labels=pdat$beepnr, limits=c(1:npoints))
 g <- g + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
 g
 
+### End step 1
+
+### Repeat step 1 for aggregated data, and subjects 2, 15 and 18
 
 
-## Analyze cyclic model and plot
+### Step 2: Analyze cyclic model and plot (Figure 2)
+ 
+a <- fitCyclic(pdat, form= "y ~ cvar + svar  ",yvar = "intention", xvar="beepnr", ymin = -1.0, ymax = 0.5, step= 0.25)
 
-a <- fitCyclic(pdat, form= "y ~ cvar + svar  ",yvar = "positiveAffect", xvar="beepnr", ymin = -2.5, ymax = 1.5, step=.30)
-
-a$rawDataPlot
 a$meansPlot
-a$oneCyclePlot
 a$parameters
 summary(a$fit)
 
-## fit extra model with day as covariate 
+### End step 2
 
-a <- fitCyclic(pdat, form = "y ~ cvar + svar + dagnr", yvar = "positiveAffect", xvar="beepnr",ymin=-1.5, ymax=1.5, step = 0.25)
 
-a$rawDataPlot
-a$meansPlot
-a$oneCyclePlot
+### Step 3: Fit extra term in the model with day as covariate 
+
+a <- fitCyclic(pdat, form = "y ~ cvar + svar + dagnr", yvar = "intention", xvar="beepnr",ymin=-1.0, ymax=0.5, step = 0.25)
+
 a$parameters
 summary(a$fit)
 
+### End step 3
 
-## Analyze cyclic model with MLA and plot
+
+### Step 4: Apply cylic model with daily period for stress and postive affect for subjec 15 (Figure 3)
+
+pdat <- subset(dat3, dat3$subjnr == 15)   
+
+a <- fitCyclic(pdat, form= "y ~ cvar + svar  ",yvar = "stress", xvar="beepnr", ymin = -1.0, ymax = 0.5, step= 0.25)
+
+a$rawDataPlot
+a$meansPlot
+
+### End step 4
+### Repeat step 4 for positiveAffect and intention
+
+
+### Step 5: Apply cylic model with weekly period for stress and postive affect for subjec 15 (Figure 4)
+
+pdat <- subset(dat3, dat3$subjnr == 15)   
+
+a <- fitCyclic(pdat, form= "y ~ cvar + svar  ",yvar = "stress", xvar="dagnr", ymin = -2.0, ymax = 1.0, step= 0.25)
+
+a$rawDataPlot
+a$meansPlot
+summary(a$fit)
+
+### End step 5
+### Repeat step 5 for positiveAffect and intention
+
+
+
+## Step 6: Analyze cyclic model with MLA and plot
 
 dat <- dat3
 
@@ -136,7 +162,7 @@ a4 <- fixef(fit3)[5]
 b <- c(a0,cycpar(a1,a2, P),cycpar(a3,a4, P))     ## convert to parameters for linear model
 b
 
-dat$ypred <-  b[1] + b[2]*cos(2*pi/P*(dat$beepnr - b[3]))  + b[4]*cos(2*pi/P2*(dat$dagnr - b[5]))
+dat$ypred <-  a0 + b[2]*cos(2*pi/P*(dat$beepnr - b[3]))  + b[4]*cos(2*pi/P2*(dat$dagnr - b[5]))
 
 
 dat$ypred = predict(fit)
