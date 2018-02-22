@@ -54,6 +54,8 @@ dat4$beepnr <- dat4$Group.1
 dat4$Group.1 <- NULL
 dat4$Group.2 <- NULL
 
+
+
 ######################    ANALYSES   #########################
 
 ### Step 1: plotting the raw data for three subjects and average (Figure 1)
@@ -125,11 +127,12 @@ summary(a$fit)
 
 
 
-## Step 6: Analyze cyclic model with MLA and plot
+## Step 6: Analyze cyclic model with MLA and model comparison
 
 dat <- dat3
 
 dat$yvar <- dat$intention
+
 dat$xvar <- dat$beepnr 
 P <- max(dat$xvar)
 dat$cvar <- cos((2*pi/P)*dat$xvar)
@@ -141,14 +144,14 @@ dat$cvar2 <- cos((2*pi/P2)*dat$xvar2)
 dat$svar2 <- sin((2*pi/P2)*dat$xvar2)
 
 
-
 fit0 <- lmer(yvar ~ 1 + (1  |subjnr),data = dat)                                   # null model
 fit1 <- lmer(yvar ~ cvar + svar + (1 |subjnr),data = dat)                          # dayly cyclic effect 
 fit2 <- lmer(yvar ~ cvar + svar + (1 +  svar + cvar |subjnr),data = dat)           # daily random cyclic effect 
 
 fit3 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + (1 + svar + cvar |subjnr),data = dat)       # dayly and weekly cyclic effect 
+fit4 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + (1 + svar + cvar + cvar2 + svar2 |subjnr),data = dat)       # dayly and weekly cyclic effect 
 
-fit <- fit3
+fit <- fit4
 
 summary(fit)
 
@@ -162,23 +165,37 @@ a4 <- fixef(fit)[5]
 b <- c(a0,cycpar(a1,a2, P),cycpar(a3,a4, P))     ## convert to parameters for linear model
 b
 
-anova(fit3, fit2, fit1, fit0)
+anova(fit4, fit3, fit2, fit1, fit0)                   ## model comparison (Table 1)
 
 
-dat$ypred <-  a0 + b[2]*cos(2*pi/P*(dat$beepnr - b[3]))  + b[4]*cos(2*pi/P2*(dat$dagnr - b[5]))
+### End step 6
 
 
-dat$ypred = predict(fit)
 
-pdat <- subset(dat, dat$subjnr %in% c(15))
+### Step 7: Compute additional fit values and kake plot of most complex model for aggregated data (fit 4, model 5 in tutorial) 
+
+
+dat3$fittedIntention <- predict(fit)
+cor(dat3$intention, dat3$fittedIntention)
+
+ sum( (dat3$intention - predict(fit)) **2) / sum(dat3$intention ** 2)    ## ratio residuals and DV 
+
+pdat <- dat4
+
+pdat$ypred <-  a0 + b[2]*cos(2*pi/P*(pdat$beepnr - b[3]))  + b[4]*cos(2*pi/P2*(pdat$dagnr - b[5]))
 pdat$day <- as.factor(pdat$dagnr)
 npoints <- dim(pdat)[1]
 pdat$xall <- c(1:npoints)
+ymin <- -0.5; ymax <- 0.5; step <- 0.1
 
-g0 <- ggplot(pdat) + geom_point(aes(x=pdat$xall, y=pdat$intention, colour=pdat$day))
-g0 <- g0 + scale_x_discrete(name ="Time points (beeps within days)",  labels=pdat$beepnr, limits=c(1:npoints))
-g0 <- g0 + labs(y = yvar)
-g0 <- g0 + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
-g0 <- g0 + geom_line(aes(x=pdat$xall, y=pdat$ypred)) 
-g0 <- g0 + coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step)) 
-g0
+p <- ggplot(pdat) + geom_point(aes(x=pdat$xall, y=pdat$intention, colour=pdat$day))
+p <- p + scale_x_discrete(name ="Time points (beeps within days)",  labels=pdat$beepnr, limits=c(1:npoints))
+p <- p + labs(y = "intention")
+p <- p + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
+p <- p + geom_line(aes(x=pdat$xall, y=pdat$ypred)) 
+p <- p + coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step)) 
+p
+
+## End step 7
+
+
