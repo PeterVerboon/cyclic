@@ -144,14 +144,22 @@ dat$cvar2 <- cos((2*pi/P2)*dat$xvar2)
 dat$svar2 <- sin((2*pi/P2)*dat$xvar2)
 
 
-fit0 <- lmer(yvar ~ 1 + (1  |subjnr),data = dat)                                   # null model
-fit1 <- lmer(yvar ~ cvar + svar + (1 |subjnr),data = dat)                          # dayly cyclic effect 
-fit2 <- lmer(yvar ~ cvar + svar + (1 +  svar + cvar |subjnr),data = dat)           # daily random cyclic effect 
+fit0 <- lmer(yvar ~ 1 + (1  |subjnr),data = dat)                                                # null model
+
+ICC <- (as.data.frame(VarCorr(fit0))[1,"vcov"]) / sum(as.data.frame(VarCorr(fit0))[,"vcov"])    # compute ICC
+
+fit1 <- lmer(yvar ~ cvar + svar + (1 |subjnr),data = dat)                                       # dayly cyclic effect 
+fit2 <- lmer(yvar ~ cvar + svar + (1 +  svar + cvar |subjnr),data = dat)                        # daily random cyclic effect 
 
 fit3 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + (1 + svar + cvar |subjnr),data = dat)       # dayly and weekly cyclic effect 
 fit4 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + (1 + svar + cvar + cvar2 + svar2 |subjnr),data = dat)       # dayly and weekly cyclic effect 
 
-fit <- fit4
+fit5 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + stress + (1 + svar + cvar + cvar2 + svar2 + stress |subjnr),data = dat)       # dayly and weekly cyclic effect 
+
+
+fit <- fit5
+
+
 
 summary(fit)
 
@@ -160,12 +168,13 @@ a1 <- fixef(fit)[2]
 a2 <- fixef(fit)[3]
 a3 <- fixef(fit)[4]
 a4 <- fixef(fit)[5]
+a5 <- fixef(fit)[6]
 
 
 b <- c(a0,cycpar(a1,a2, P),cycpar(a3,a4, P))     ## convert to parameters for linear model
 b
 
-anova(fit4, fit3, fit2, fit1, fit0)                   ## model comparison (Table 1)
+anova(fit5, fit4, fit3, fit2, fit1, fit0)                   ## model comparison (Table 1)
 
 
 ### End step 6
