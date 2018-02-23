@@ -203,7 +203,7 @@ anova(fit5, fit4, fit3, fit2, fit1, fit0)                   ## model comparison 
 
 
 
-### Step 7: Compute additional fit values and kake plot of most complex model for aggregated data (fit 4, model 5 in tutorial) 
+### Step 7: Compute additional fit values and make plot of most complex model for aggregated data (fit 4, model 5 in tutorial) 
 
 
 dat3$fittedIntention <- predict(fit)
