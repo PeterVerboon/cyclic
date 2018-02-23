@@ -9,6 +9,28 @@ require(lme4);                 # for lmer
 
 options(digids=3)
 
+## Construct Figure 1 with example data
+
+a0 <- 1
+b1 <- 2
+b2 <- 10
+P <- 24
+
+T <- seq(0, 24, by =0.1)
+y <- a0 + b1*cos(2*(pi/P)*(T - b2)) 
+
+g <- ggplot()                   
+g <- g + geom_line(aes(x=T, y=y)) 
+g <- g + labs(x = "Time points", y = "Dependent variable ")
+g <- g + theme(axis.text = element_text(size = 10, colour="black"))
+g <- g + scale_x_continuous(breaks = seq(0,24,2)) 
+g <- g + geom_line(aes(x=b2, y=seq(1,3,0.1)), lty="dashed") 
+g <- g + geom_line(aes(x=seq(0,24,0.1), y=a0)) 
+g <- g + annotate("text", x = 1, y = 1.2, label = "b0")
+g <- g + annotate("text", x = 10.8, y = 2, label = "b1")
+g <- g + annotate("text", x = 10, y = 0.8, label = "b2")
+g
+
 #### Preliminary STEPS   ####
 
 data <- getData()
