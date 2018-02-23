@@ -1,6 +1,6 @@
 
 
-fitCyclic <- function(dat, form = y ~ cvar + svar + , yvar, xvar, ymin = -1.0, ymax = 1.0, step=0.25 ) {  
+fitCyclic <- function(dat, form = y ~ cvar + svar , yvar, xvar, ymin = -1.0, ymax = 1.0, step=0.25 ) {  
   
     result <- list() 
   

@@ -1,6 +1,6 @@
 
-fitCyclic2MLA <- function(dat, form = y ~ cvar + svar + cvar2 + svar2 + (cvar + svar + cvar2 + svar2 + | id),
-                       yvar, xvar1, xvar2,id, ymin = -1.0, ymax = 1.0, step=0.25 ) { 
+fitCyclic2MLA <- function(dat, form = y ~ cvar + svar + cvar2 + svar2 + (cvar + svar + cvar2 + svar2 | id), yvar, xvar1, xvar2,id, ymin = -1.0, ymax = 1.0, step=0.25 )
+  { 
   
   require(lme4)
  
@@ -23,7 +23,8 @@ fitCyclic2MLA <- function(dat, form = y ~ cvar + svar + cvar2 + svar2 + (cvar + 
 
 summary(fit)
 
-a3 <- 0 ; a4 <- 0; a5 <- 0
+a3 <- 0 ; a4 <- 0; a5 <- 0;
+
 a0 <- fixef(fit)[1]
 a1 <- fixef(fit)[2]
 a2 <- fixef(fit)[3]
@@ -31,8 +32,17 @@ a3 <- fixef(fit)[4]
 a4 <- fixef(fit)[5]
 a5 <- fixef(fit)[6]
 
-b <- c(a0,cycpar(a1,a2, P),cycpar(a3,a4, P))     ## convert to parameters for linear model
+b <- c(a0,cycpar(a1,a2, P),cycpar(a3,a4, P2))     ## convert to parameters for linear model
 names(b) <- c("Intercept", "dayly amplitude", "dayly phase" ,  "weekly amplitude" , "weekly phase" )
+
+return(b)
+
+}
+
+fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + (cvar + svar + cvar2 + svar2 | id), 
+                   yvar="intention", xvar1="beepnr", xvar2="dagnr",id = "subjnr", ymin = -1.0, ymax = 1.0, step=0.25 )
+
+
 
 
 pdat <- dat4

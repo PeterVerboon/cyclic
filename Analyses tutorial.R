@@ -50,7 +50,7 @@ dat2 <- aggregate(dat1[,c("count")],by=list(dat1$subjnr), FUN=sum, na.rm=T);
 dat2$subjnr <- dat2$Group.1
 
 dat1$count <- NULL
-dat2$count <- dat4$x
+dat2$count <- dat2[,2]
 dat2$x <- NULL
 dat2$Group.1 <- NULL
 
@@ -174,12 +174,13 @@ fit1 <- lmer(yvar ~ cvar + svar + (1 |subjnr),data = dat)                       
 fit2 <- lmer(yvar ~ cvar + svar + (1 +  svar + cvar |subjnr),data = dat)                        # daily random cyclic effect 
 
 fit3 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + (1 + svar + cvar |subjnr),data = dat)       # dayly and weekly cyclic effect 
-fit4 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + (1 + svar + cvar + cvar2 + svar2 |subjnr),data = dat)       # dayly and weekly cyclic effect 
+fit4 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + (1 + svar + cvar + svar2 + cvar2 |subjnr),data = dat)       # dayly and weekly cyclic effect 
 
-fit5 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + stress + (1 + svar + cvar + cvar2 + svar2 + stress |subjnr),data = dat)       # dayly and weekly cyclic effect 
+fit5 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + stress + (1 + svar + cvar + svar2 + cvar2 + stress |subjnr),data = dat)       # dayly and weekly cyclic effect 
 
 
-fit <- fit5
+fit <- fit4
+
 
 
 
@@ -193,7 +194,7 @@ a4 <- fixef(fit)[5]
 a5 <- fixef(fit)[6]
 
 
-b <- c(a0,cycpar(a1,a2, P),cycpar(a3,a4, P))     ## convert to parameters for linear model
+b <- c(a0,cycpar(a1,a2, P),cycpar(a3,a4, P2))     ## convert to parameters for linear model
 b
 
 anova(fit5, fit4, fit3, fit2, fit1, fit0)                   ## model comparison (Table 1)
