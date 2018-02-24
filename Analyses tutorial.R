@@ -151,53 +151,55 @@ summary(a$fit)
 
 ## Step 6: Analyze cyclic model with MLA and model comparison
 
-dat <- dat3
+                                              
+model1 <- fitCyclicMLA(dat=dat3, form = y ~ 1 + (1 | id), 
+                       yvar="intention", id = "subjnr", 
+                       ymin = -0.5, ymax = 0.5, step=0.10 )
+model1$fit
 
-dat$yvar <- dat$intention
+ICC <- (as.data.frame(VarCorr(model1$fit))[1,"vcov"]) / sum(as.data.frame(VarCorr(model1$fit))[,"vcov"])    # compute ICC
 
-dat$xvar <- dat$beepnr 
-P <- max(dat$xvar)
-dat$cvar <- cos((2*pi/P)*dat$xvar)
-dat$svar <- sin((2*pi/P)*dat$xvar)
+model2 <- fitCyclicMLA(dat=dat3, form = y ~ cvar + svar + (1 | id), 
+                       yvar="intention", xvar1="beepnr",xvar2="dagnr", id = "subjnr", 
+                       ymin = -0.5, ymax = 0.5, step=0.10 )
 
-dat$xvar2 <- dat$dagnr 
-P2 <- max(dat$xvar2)
-dat$cvar2 <- cos((2*pi/P2)*dat$xvar2)
-dat$svar2 <- sin((2*pi/P2)*dat$xvar2)
+model2$plot
+model2$parameters
+model2$fit
+
+model3 <- fitCyclicMLA(dat=dat3, form = y ~ cvar + svar + (cvar + svar | id), 
+                      yvar="intention", xvar1="beepnr",xvar2="dagnr", id = "subjnr", 
+                      ymin = -0.5, ymax = 0.5, step=0.10 )
+
+model3$plot
+model3$parameters
+model3$fit
+
+model4 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + (cvar + svar | id), 
+                        yvar="intention", xvar1="beepnr", xvar2="dagnr",id = "subjnr", 
+                        ymin = -0.5, ymax = 0.5, step=0.10 )
+model4$plot
+model4$parameters
+model4$fit
+
+model5 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + (cvar + svar + cvar2 + svar2 | id), 
+                        yvar="intention", xvar1="beepnr", xvar2="dagnr",id = "subjnr", 
+                        ymin = -0.5, ymax = 0.5, step=0.10 )
+
+model5$plot
+model5$parameters
+model5$fit
+
+model6 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + stress + (cvar + svar + cvar2 + svar2 + stress | id), 
+                        yvar="intention", xvar1="beepnr", xvar2="dagnr",id = "subjnr", 
+                        ymin = -0.5, ymax = 0.5, step=0.10 )
+model6$plot
+model6$parameters
+model6$fit
 
 
-fit0 <- lmer(yvar ~ 1 + (1  |subjnr),data = dat)                                                # null model
+anova(model6$fit, model5$fit, model4$fit,model3$fit, model2$fit, model1$fit)  
 
-ICC <- (as.data.frame(VarCorr(fit0))[1,"vcov"]) / sum(as.data.frame(VarCorr(fit0))[,"vcov"])    # compute ICC
-
-fit1 <- lmer(yvar ~ cvar + svar + (1 |subjnr),data = dat)                                       # dayly cyclic effect 
-fit2 <- lmer(yvar ~ cvar + svar + (1 +  svar + cvar |subjnr),data = dat)                        # daily random cyclic effect 
-
-fit3 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + (1 + svar + cvar |subjnr),data = dat)       # dayly and weekly cyclic effect 
-fit4 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + (1 + svar + cvar + svar2 + cvar2 |subjnr),data = dat)       # dayly and weekly cyclic effect 
-
-fit5 <- lmer(yvar ~ cvar + svar + cvar2 + svar2 + stress + (1 + svar + cvar + svar2 + cvar2 + stress |subjnr),data = dat)       # dayly and weekly cyclic effect 
-
-
-fit <- fit4
-
-
-
-
-summary(fit)
-
-a0 <- fixef(fit)[1]
-a1 <- fixef(fit)[2]
-a2 <- fixef(fit)[3]
-a3 <- fixef(fit)[4]
-a4 <- fixef(fit)[5]
-a5 <- fixef(fit)[6]
-
-
-b <- c(a0,cycpar(a1,a2, P),cycpar(a3,a4, P2))     ## convert to parameters for linear model
-b
-
-anova(fit5, fit4, fit3, fit2, fit1, fit0)                   ## model comparison (Table 1)
 
 
 ### End step 6
