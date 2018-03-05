@@ -1,0 +1,293 @@
+---
+title: "Appendix"
+author: "Peter Verboon"
+date: "2 maart 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Appendix with tutorial analysing cyclic model
+
+### Preliminary Steps
+
+First we need to install and load the packages necessary for the analyses. Also three cyclic functions should be activated.
+
+```{r tutorial, eval=FALSE}
+ require(userfriendlyscience)   # for reading the data
+ require(dplyr)                 # for summarise
+ require(ggplot2)               # for gglot
+ require(lme4);                 # for lmer 
+```
+
+ 
+There are four functions used in this appendix. These function can be downloaded from Github: https://github.com/PeterVerboon/Cyclic-models.
+ 
+ function cycpar(): this function computes the cyclic parameters of the from the linear model
+ function fitCyclic()
+ function fitCyclicMLA()
+ function fitCyclic2MLA()
+
+
+We generate some data and construct Figure 1 with these data.
+
+```{r tutorial-0, eval=FALSE}
+a0 <- 1;
+b1 <- 2;
+b2 <- 10;
+P <- 24;
+
+T <- seq(0, 24, by =0.1);
+y <- a0 + b1*cos(2*(pi/P)*(T - b2)) 
+
+g <- ggplot() + geom_line(aes(x=T, y=y)) ;
+g <- g + labs(x = "Time points", y = "Dependent variable ");
+g <- g + theme(axis.text = element_text(size = 10, colour="black"));
+g <- g + scale_x_continuous(breaks = seq(0,24,2)) ;
+g <- g + geom_line(aes(x=b2, y=seq(1,3,0.1)), lty="dashed") ;
+g <- g + geom_line(aes(x=seq(0,24,0.1), y=a0)) ;
+g <- g + annotate("text", x = 1, y = 1.2, label = "b0");
+g <- g + annotate("text", x = 10.8, y = 2, label = "b1");
+g <- g + annotate("text", x = 10, y = 0.8, label = "b2");
+g
+```
+
+The "smoking" data are read from the .csv file or from the SPSS .sav file, named SmokingLapse.sav. With the getData function we can select the .sav file from the computer. Check the names in the dataframe.
+
+```{r tutorial-1, eval=FALSE}
+data <- read.csv2("SmokingLapse.csv", fileEncoding= "UTF-8-BOM", header = TRUE) 
+
+data <- getData()
+
+names(dat)
+```
+
+Select the relevant variables from this dataframe and standardize them. The results are put in dataframe dat1.
+
+```{r tutorial-2, eval=FALSE}
+dat1 <- dat[,c("subjnr","beepnr", "daynr","positiveAffect","stress","intention")];
+dat1$intention <- scale(dat1$intention);
+dat1$positiveAffect <- scale(dat1$positiveAffect);
+dat1$stress <- scale(dat1$stress);
+```
+
+Next we count the number of records per subject and remove subjects with less than 50 records. The resulting data.frame is called dat3.
+
+```{r tutorial-3, eval=FALSE}
+dat1$count <- 1
+dat2 <- aggregate(dat1[,c("count")],by=list(dat1$subjnr), FUN=sum, na.rm=T);
+dat2$subjnr <- dat2$Group.1
+dat1$count <- NULL;
+dat2$count <- dat2[,2]
+dat2$x <- NULL
+dat2$Group.1 <- NULL
+
+dat3 <- merge(dat1,dat2, by.x = "subjnr")
+
+rm(dat2)
+
+dat3 <- subset(dat3, dat3$count >= 50)
+length(unique(dat3$subjnr))
+```
+
+We also compute variability of intention per subject and remove subjects with very small variation in intention.
+
+```{r tutorial-4, eval=FALSE}
+a <- summarise(group_by(dat3, subjnr),mean=mean(intention), sd=sd(intention))
+a <- merge(dat3, a,  by.x = "subjnr")
+
+dat3 <- subset(a, a$sd > .10)   
+length(unique(dat3$subjnr))
+```
+
+The next step is to contruct a dataset that is aggregated over subjects, which is put in dat4. This dataframe will be used in subsequent analyses.
+
+```{r tutorial-5, eval=FALSE}
+dat4 <- aggregate(dat3[,c("NAc","positiveAffect","stress","intention")],
+                  by=list(dat3$beepnr,dat3$daynr), FUN=mean, na.rm=F);    
+dat4$daynr <- dat4$Group.2
+dat4$beepnr <- dat4$Group.1
+dat4$Group.1 <- NULL
+dat4$Group.2 <- NULL
+```
+
+&nbsp;
+
+
+###    ANALYSES  
+
+#### Step 1
+
+The  the raw data for three subjects and average are ploted. This makes Figure 1 from the tutorial.
+
+
+```{r tutorial-6, eval=FALSE}
+pdat <- dat4                                         # averaged over all subjects
+pdat <- subset(dat3, dat3$subjnr == 2)               # ppn 2, 15, 18 selected for Figure 1
+                                                      
+npoints <- dim(pdat)[1]
+x <- c(1:npoints)
+pdat$day <- as.factor(pdat$dagnr)
+
+g <- ggplot(pdat,aes(x=x, y=pdat$intention, colour=pdat$day))
+g <- g + geom_point()
+g <- g + scale_x_discrete(name ="Time points (beeps within days)",labels=pdat$beepnr, limits=c(1:npoints))
+g <- g + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
+g
+
+```
+
+We have to repeat step 1 for the aggregated data in dat4, and for subjects 2, 15 and 18.
+
+ &nbsp;  
+ 
+ 
+  
+#### Step 2
+
+Now we analyze the cyclic model and plot the result. This is Figure 2 from the tutorial.
+
+```{r tutorial-7, eval=FALSE} 
+a <- fitCyclic(pdat, form= "y ~ cvar + svar  ",yvar = "intention", xvar="beepnr", ymin = -1.0, ymax = 0.5, step= 0.25)
+
+a$meansPlot
+a$parameters
+summary(a$fit)
+```
+  
+ &nbsp;  
+ 
+
+#### Step 3
+
+Fit an extra term in the model with day as covariate in aggregated data. Show the parameters and the fit of the model. 
+
+```{r tutorial-8, eval=FALSE} 
+out <- fitCyclic(dat4, form = "y ~ cvar + svar + daynr", yvar = "intention", xvar="beepnr",ymin=-1.0, ymax=0.5, step = 0.25)
+
+out$parameters
+summary(out$fit)
+```
+
+&nbsp; 
+
+
+#### Step 4
+
+Apply the cylic model with daily period for the variables stress and positive affect for subject 15 to obtain a plot of the raw data with the fitted cycles and a plot of the aggregated data. Together with intention this makes Figure 3.
+
+```{r tutorial-9, eval=FALSE} 
+pdat <- subset(dat3, dat3$subjnr == 15)   
+
+out <- fitCyclic(pdat, form= "y ~ cvar + svar  ",yvar = "stress", xvar="beepnr", ymin = -1.0, ymax = 0.5, step= 0.25)
+
+out$rawDataPlot
+out$meansPlot
+```
+
+&nbsp; 
+
+
+
+#### Step 5
+
+Apply the cylic model with weekly period for stress and postive affect for subjec 15 instead of daily period (Figure 4).
+
+```{r tutorial-10, eval=FALSE} 
+pdat <- subset(dat3, dat3$subjnr == 15)   
+
+out <- fitCyclic(pdat, form= "y ~ cvar + svar  ",yvar = "stress", xvar="dagnr", ymin = -2.0, ymax = 1.0, step= 0.25)
+
+out$rawDataPlot
+out$meansPlot
+summary(out$fit)
+
+```
+
+&nbsp; 
+
+
+
+#### Step 6
+
+Analyze the data with the cyclic model using  MLA and model comparison. each consecutive model is more complex. The intraclass correlation is computed with the null model (model1).
+
+```{r tutorial-11, eval=FALSE}                                               
+model1 <- fitCyclicMLA(dat=dat3, form = y ~ 1 + (1 | id), 
+                       yvar="intention", id = "subjnr", 
+                       ymin = -0.5, ymax = 0.5, step=0.10 )
+model1$fit
+
+ICC <- (as.data.frame(VarCorr(model1$fit))[1,"vcov"]) / sum(as.data.frame(VarCorr(model1$fit))[,"vcov"])          # compute ICC
+
+model2 <- fitCyclicMLA(dat=dat3, form = y ~ cvar + svar + (1 | id),  yvar="intention", xvar1="beepnr",xvar2="dagnr", id = "subjnr", ymin = -0.5, ymax = 0.5, step=0.10 )
+
+model2$plot
+model2$parameters
+model2$fit
+
+model3 <- fitCyclicMLA(dat=dat3, form = y ~ cvar + svar + (cvar + svar | id),  yvar="intention", xvar1="beepnr",xvar2="dagnr", id = "subjnr",  ymin = -0.5, ymax = 0.5, step=0.10 )
+
+model3$plot
+model3$parameters
+model3$fit
+
+model4 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + (cvar + svar | id), yvar="intention", xvar1="beepnr", xvar2="dagnr",id = "subjnr", ymin = -0.5, ymax = 0.5, step=0.10 )
+model4$plot
+model4$parameters
+model4$fit
+
+model5 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + (cvar + svar + cvar2 + svar2 | id), yvar="intention", xvar1="beepnr", xvar2="dagnr",id = "subjnr", ymin = -0.5, ymax = 0.5, step=0.10 )
+model5$plot
+model5$parameters
+model5$fit
+
+model6 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + stress + (cvar + svar + cvar2 + svar2 + stress | id), yvar="intention", xvar1="beepnr", xvar2="dagnr",id = "subjnr", ymin = -0.5, ymax = 0.5, step=0.10 )
+model6$plot
+model6$parameters
+model6$fit
+
+# compare the models
+
+anova(model6$fit, model5$fit, model4$fit,model3$fit, model2$fit, model1$fit)  
+
+
+```
+
+&nbsp; 
+
+
+
+#### Step 7
+
+Compute additional fit values and make plot of most complex model for aggregated data (fit 4, Figure 5 in tutorial) 
+
+```{r tutorial-12, eval=FALSE} 
+
+dat3$fittedIntention <- predict(fit)
+cor(dat3$intention, dat3$fittedIntention)
+
+sum( (dat3$intention - predict(fit)) **2) / sum(dat3$intention ** 2)    # ratio residuals and dependent variable 
+
+pdat <- dat4
+
+pdat$ypred <-  a0 + b[2]*cos(2*pi/P*(pdat$beepnr - b[3])) + b[4]*cos(2*pi/P2*(pdat$dagnr - b[5]))
+pdat$day <- as.factor(pdat$daynr)
+npoints <- dim(pdat)[1]
+pdat$xall <- c(1:npoints)
+ymin <- -0.5; ymax <- 0.5; step <- 0.1
+
+p <- ggplot(pdat) + geom_point(aes(x=pdat$xall, y=pdat$intention,colour=pdat$day))
+p <- p + scale_x_discrete(name ="Time points (beeps within days)", labels=pdat$beepnr, limits=c(1:npoints))
+p <- p + labs(y = "intention")
+p <- p + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
+p <- p + geom_line(aes(x=pdat$xall, y=pdat$ypred)) 
+p <- p + coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step)) 
+p
+
+```
+
+
+
