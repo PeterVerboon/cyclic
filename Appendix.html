@@ -123,8 +123,8 @@ $(document).ready(function () {
 </div>
 
 
-<div id="appendix-with-tutorial-analysing-cyclic-model" class="section level2">
-<h2>Appendix with tutorial analysing cyclic model</h2>
+<div id="appendix-of-tutorial-analyzing-cyclic-model" class="section level2">
+<h2>Appendix of tutorial analyzing cyclic model</h2>
 <div id="preliminary-steps" class="section level3">
 <h3>Preliminary Steps</h3>
 <p>First we need to install and load the packages necessary for the analyses. Also three cyclic functions should be activated.</p>
@@ -133,7 +133,7 @@ $(document).ready(function () {
  require(ggplot2)               # for gglot
  require(lme4);                 # for lmer </code></pre>
 <p>There are four functions used in this appendix. These function can be downloaded from Github: <a href="https://github.com/PeterVerboon/Cyclic-models" class="uri">https://github.com/PeterVerboon/Cyclic-models</a>.</p>
-<p>function cycpar():computes the cyclic parameters from the linear model parameters <br> function fitCyclic(): fits linear model to obtain cyclic parameters and gives plots <br> function fitCyclicMLA(): fits linear model to obtain cyclic parameters and gives plots (one cycle) <br> function fitCyclic2MLA(): fits linear model to obtain cyclic parameters and gives plots (two cycles)</p>
+<p>function cycpar():computes the cyclic parameters from the linear model parameters <br> function fitCyclic(): fits linear model to obtain cyclic parameters and gives plots <br> function fitCyclicMLA(): fits MLA model to obtain cyclic parameters and gives plots (one cycle) <br> function fitCyclic2MLA(): fits MLA model to obtain cyclic parameters and gives plots (two cycles)</p>
 <p>We generate some data and construct Figure 1 with these data.</p>
 <pre class="r"><code>a0 &lt;- 1;
 b1 &lt;- 2;
@@ -154,7 +154,7 @@ g &lt;- g + annotate(&quot;text&quot;, x = 10.8, y = 2, label = &quot;b1&quot;);
 g &lt;- g + annotate(&quot;text&quot;, x = 10, y = 0.8, label = &quot;b2&quot;);
 g</code></pre>
 <p>The “smoking” data are read from the .csv file or from the SPSS .sav file, named SmokingLapse.sav. With the getData function we can select the .sav file from the computer. Check the names in the dataframe.</p>
-<pre class="r"><code>data &lt;- read.csv2(&quot;SmokingLapse.csv&quot;, fileEncoding= &quot;UTF-8-BOM&quot;, header = TRUE) 
+<pre class="r"><code>data1 &lt;- read.csv2(&quot;SmokingLapse.csv&quot;, fileEncoding= &quot;UTF-8-BOM&quot;, header = TRUE) 
 
 data &lt;- getData()
 

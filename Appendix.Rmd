@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Appendix with tutorial analysing cyclic model
+## Appendix of tutorial analyzing cyclic model
 
 ### Preliminary Steps
 
@@ -27,8 +27,8 @@ There are four functions used in this appendix. These function can be downloaded
  
  function cycpar():computes the cyclic parameters from the linear model parameters <br>
  function fitCyclic(): fits linear model to obtain cyclic parameters and gives                           plots <br>
- function fitCyclicMLA():  fits linear model to obtain cyclic parameters and gives                            plots (one cycle) <br>
- function fitCyclic2MLA(): fits linear model to obtain cyclic parameters and gives                            plots (two cycles)
+ function fitCyclicMLA():  fits MLA model to obtain cyclic parameters and gives                            plots (one cycle) <br>
+ function fitCyclic2MLA(): fits MLA model to obtain cyclic parameters and gives                            plots (two cycles)
 
 
 We generate some data and construct Figure 1 with these data.
