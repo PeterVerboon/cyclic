@@ -1,4 +1,4 @@
-subjnr;daynr;beepnr;gender;education;age;intention;smokeLapse;smokeLapseSum;Stress;StressLag1;positiveAffect;negativeAffect;negativeAffectLag1;positiveAffectLag1
+subjnr;daynr;beepnr;gender;education;age;intention;smokeLapse;smokeLapseSum;stress;stressLag1;positiveAffect;negativeAffect;negativeAffectLag1;positiveAffectLag1
 1;1;5;1;4;28;5;0;9;0,271666667; ;4;2; ; 
 1;1;6;1;4;28;5;0;9;-0,061666667;2,666666667;5;2;2;4
 1;1;7;1;4;28;4;1;9;0,271666667;2,333333333;3,8;2,5;2;5
