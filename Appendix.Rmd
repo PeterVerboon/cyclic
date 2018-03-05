@@ -9,11 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Appendix of tutorial analyzing cyclic model
+## Appendix of tutorial analyzing cyclic models
 
 ### Preliminary Steps
 
-First we need to install and load the packages necessary for the analyses. Also three cyclic functions should be activated.
+First we need to install and load the packages necessary for the analyses. 
 
 ```{r tutorial, eval=FALSE}
  require(userfriendlyscience)   # for reading the data
@@ -23,13 +23,17 @@ First we need to install and load the packages necessary for the analyses. Also 
 ```
 
  
-There are four functions used in this appendix. These function can be downloaded from Github: https://github.com/PeterVerboon/Cyclic-models.
+There are four functions used in this appendix that should be activated by running the code. These functions can be downloaded from Github: https://github.com/PeterVerboon/Cyclic-models.
  
  function cycpar():computes the cyclic parameters from the linear model parameters <br>
- function fitCyclic(): fits linear model to obtain cyclic parameters and gives                           plots <br>
- function fitCyclicMLA():  fits MLA model to obtain cyclic parameters and gives                            plots (one cycle) <br>
- function fitCyclic2MLA(): fits MLA model to obtain cyclic parameters and gives                            plots (two cycles)
+ function fitCyclic(): fits a linear model to obtain cyclic parameters and        provides plots <br>
+ function fitCyclicMLA():  fits a MLA model to obtain cyclic parameters and provides plots (one cycle) <br>
+ function fitCyclic2MLA(): fits a MLA model to obtain cyclic parameters and provides plots (two cycles)
 
+
+These functions should be helpful for applying a cyclic model to your data. The functions provide options for plotting the fitted cyclic patterns.
+
+&nbsp;
 
 We generate some data and construct Figure 1 with these data.
 
@@ -54,7 +58,7 @@ g <- g + annotate("text", x = 10, y = 0.8, label = "b2");
 g
 ```
 
-The "smoking" data are read from the .csv file or from the SPSS .sav file, named SmokingLapse.sav. With the getData function we can select the .sav file from the computer. Check the names in the dataframe.
+The "smoking" data are read from the .csv file or from the SPSS .sav file, named SmokingLapse.sav. With the getData function (from the "userfriendlyscience" package) we can select the .sav file from the computer. Check the names in the dataframe.
 
 ```{r tutorial-1, eval=FALSE}
 data1 <- read.csv2("SmokingLapse.csv", fileEncoding= "UTF-8-BOM", header = TRUE) 
@@ -102,7 +106,7 @@ dat3 <- subset(a, a$sd > .10)
 length(unique(dat3$subjnr))
 ```
 
-The next step is to contruct a dataset that is aggregated over subjects, which is put in dat4. This dataframe will be used in subsequent analyses.
+The next step is to construct a dataset that is aggregated over subjects, which is called dat4. This dataframe will be used in subsequent analyses.
 
 ```{r tutorial-5, eval=FALSE}
 dat4 <- aggregate(dat3[,c("NAc","positiveAffect","stress","intention")],
@@ -120,7 +124,7 @@ dat4$Group.2 <- NULL
 
 #### Step 1
 
-The  the raw data for three subjects and average are ploted. This makes Figure 1 from the tutorial.
+The raw data for three subjects and average are plotted. This makes Figure 1 from the tutorial.
 
 
 ```{r tutorial-6, eval=FALSE}
@@ -139,7 +143,7 @@ g
 
 ```
 
-We have to repeat step 1 for the aggregated data in dat4, and for subjects 2, 15 and 18.
+We have to repeat step 1 for the aggregated data in respectively dat4, and for subjects 2, 15 and 18.
 
  &nbsp;  
  
@@ -193,7 +197,7 @@ out$meansPlot
 
 #### Step 5
 
-Apply the cylic model with weekly period for stress and postive affect for subjec 15 instead of daily period (Figure 4).
+Apply, only for subject 15, the cylic model with a weekly period for stress and positive affect, instead of a daily period. This is shown in Figure 4.
 
 ```{r tutorial-10, eval=FALSE} 
 pdat <- subset(dat3, dat3$subjnr == 15)   
@@ -212,7 +216,7 @@ summary(out$fit)
 
 #### Step 6
 
-Analyze the data with the cyclic model using  MLA and model comparison. each consecutive model is more complex. The intraclass correlation is computed with the null model (model1).
+Analyze the data with the cyclic model using  MLA and model comparison. Each consecutive model is more complex. The intraclass correlation is computed with the null model (model1).
 
 ```{r tutorial-11, eval=FALSE}                                               
 model1 <- fitCyclicMLA(dat=dat3, form = y ~ 1 + (1 | id), 
@@ -262,7 +266,7 @@ anova(model6$fit, model5$fit, model4$fit,model3$fit, model2$fit, model1$fit)
 
 #### Step 7
 
-Compute additional fit values and make plot of most complex model for aggregated data (fit 4, Figure 5 in tutorial) 
+Compute additional fit values and make plot of most complex model for aggregated data (Figure 5 in the tutorial).
 
 ```{r tutorial-12, eval=FALSE} 
 

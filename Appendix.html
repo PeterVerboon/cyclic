@@ -123,17 +123,19 @@ $(document).ready(function () {
 </div>
 
 
-<div id="appendix-of-tutorial-analyzing-cyclic-model" class="section level2">
-<h2>Appendix of tutorial analyzing cyclic model</h2>
+<div id="appendix-of-tutorial-analyzing-cyclic-models" class="section level2">
+<h2>Appendix of tutorial analyzing cyclic models</h2>
 <div id="preliminary-steps" class="section level3">
 <h3>Preliminary Steps</h3>
-<p>First we need to install and load the packages necessary for the analyses. Also three cyclic functions should be activated.</p>
+<p>First we need to install and load the packages necessary for the analyses.</p>
 <pre class="r"><code> require(userfriendlyscience)   # for reading the data
  require(dplyr)                 # for summarise
  require(ggplot2)               # for gglot
  require(lme4);                 # for lmer </code></pre>
-<p>There are four functions used in this appendix. These function can be downloaded from Github: <a href="https://github.com/PeterVerboon/Cyclic-models" class="uri">https://github.com/PeterVerboon/Cyclic-models</a>.</p>
-<p>function cycpar():computes the cyclic parameters from the linear model parameters <br> function fitCyclic(): fits linear model to obtain cyclic parameters and gives plots <br> function fitCyclicMLA(): fits MLA model to obtain cyclic parameters and gives plots (one cycle) <br> function fitCyclic2MLA(): fits MLA model to obtain cyclic parameters and gives plots (two cycles)</p>
+<p>There are four functions used in this appendix that should be activated by running the code. These functions can be downloaded from Github: <a href="https://github.com/PeterVerboon/Cyclic-models" class="uri">https://github.com/PeterVerboon/Cyclic-models</a>.</p>
+<p>function cycpar():computes the cyclic parameters from the linear model parameters <br> function fitCyclic(): fits a linear model to obtain cyclic parameters and provides plots <br> function fitCyclicMLA(): fits a MLA model to obtain cyclic parameters and provides plots (one cycle) <br> function fitCyclic2MLA(): fits a MLA model to obtain cyclic parameters and provides plots (two cycles)</p>
+<p>These functions should be helpful for applying a cyclic model to your data. The functions provide options for plotting the fitted cyclic patterns.</p>
+<p> </p>
 <p>We generate some data and construct Figure 1 with these data.</p>
 <pre class="r"><code>a0 &lt;- 1;
 b1 &lt;- 2;
@@ -153,7 +155,7 @@ g &lt;- g + annotate(&quot;text&quot;, x = 1, y = 1.2, label = &quot;b0&quot;);
 g &lt;- g + annotate(&quot;text&quot;, x = 10.8, y = 2, label = &quot;b1&quot;);
 g &lt;- g + annotate(&quot;text&quot;, x = 10, y = 0.8, label = &quot;b2&quot;);
 g</code></pre>
-<p>The “smoking” data are read from the .csv file or from the SPSS .sav file, named SmokingLapse.sav. With the getData function we can select the .sav file from the computer. Check the names in the dataframe.</p>
+<p>The “smoking” data are read from the .csv file or from the SPSS .sav file, named SmokingLapse.sav. With the getData function (from the “userfriendlyscience” package) we can select the .sav file from the computer. Check the names in the dataframe.</p>
 <pre class="r"><code>data1 &lt;- read.csv2(&quot;SmokingLapse.csv&quot;, fileEncoding= &quot;UTF-8-BOM&quot;, header = TRUE) 
 
 data &lt;- getData()
@@ -185,7 +187,7 @@ a &lt;- merge(dat3, a,  by.x = &quot;subjnr&quot;)
 
 dat3 &lt;- subset(a, a$sd &gt; .10)   
 length(unique(dat3$subjnr))</code></pre>
-<p>The next step is to contruct a dataset that is aggregated over subjects, which is put in dat4. This dataframe will be used in subsequent analyses.</p>
+<p>The next step is to construct a dataset that is aggregated over subjects, which is called dat4. This dataframe will be used in subsequent analyses.</p>
 <pre class="r"><code>dat4 &lt;- aggregate(dat3[,c(&quot;NAc&quot;,&quot;positiveAffect&quot;,&quot;stress&quot;,&quot;intention&quot;)],
                   by=list(dat3$beepnr,dat3$daynr), FUN=mean, na.rm=F);    
 dat4$daynr &lt;- dat4$Group.2
@@ -198,7 +200,7 @@ dat4$Group.2 &lt;- NULL</code></pre>
 <h3>ANALYSES</h3>
 <div id="step-1" class="section level4">
 <h4>Step 1</h4>
-<p>The the raw data for three subjects and average are ploted. This makes Figure 1 from the tutorial.</p>
+<p>The raw data for three subjects and average are plotted. This makes Figure 1 from the tutorial.</p>
 <pre class="r"><code>pdat &lt;- dat4                                         # averaged over all subjects
 pdat &lt;- subset(dat3, dat3$subjnr == 2)               # ppn 2, 15, 18 selected for Figure 1
                                                       
@@ -211,7 +213,7 @@ g &lt;- g + geom_point()
 g &lt;- g + scale_x_discrete(name =&quot;Time points (beeps within days)&quot;,labels=pdat$beepnr, limits=c(1:npoints))
 g &lt;- g + theme(axis.text = element_text(size = 6, colour=&quot;black&quot;),legend.position=&quot;none&quot;)
 g</code></pre>
-<p>We have to repeat step 1 for the aggregated data in dat4, and for subjects 2, 15 and 18.</p>
+<p>We have to repeat step 1 for the aggregated data in respectively dat4, and for subjects 2, 15 and 18.</p>
 <p> </p>
 </div>
 <div id="step-2" class="section level4">
@@ -246,7 +248,7 @@ out$meansPlot</code></pre>
 </div>
 <div id="step-5" class="section level4">
 <h4>Step 5</h4>
-<p>Apply the cylic model with weekly period for stress and postive affect for subjec 15 instead of daily period (Figure 4).</p>
+<p>Apply, only for subject 15, the cylic model with a weekly period for stress and positive affect, instead of a daily period. This is shown in Figure 4.</p>
 <pre class="r"><code>pdat &lt;- subset(dat3, dat3$subjnr == 15)   
 
 out &lt;- fitCyclic(pdat, form= &quot;y ~ cvar + svar  &quot;,yvar = &quot;stress&quot;, xvar=&quot;dagnr&quot;, ymin = -2.0, ymax = 1.0, step= 0.25)
@@ -258,7 +260,7 @@ summary(out$fit)</code></pre>
 </div>
 <div id="step-6" class="section level4">
 <h4>Step 6</h4>
-<p>Analyze the data with the cyclic model using MLA and model comparison. each consecutive model is more complex. The intraclass correlation is computed with the null model (model1).</p>
+<p>Analyze the data with the cyclic model using MLA and model comparison. Each consecutive model is more complex. The intraclass correlation is computed with the null model (model1).</p>
 <pre class="r"><code>model1 &lt;- fitCyclicMLA(dat=dat3, form = y ~ 1 + (1 | id), 
                        yvar=&quot;intention&quot;, id = &quot;subjnr&quot;, 
                        ymin = -0.5, ymax = 0.5, step=0.10 )
@@ -300,7 +302,7 @@ anova(model6$fit, model5$fit, model4$fit,model3$fit, model2$fit, model1$fit)  </
 </div>
 <div id="step-7" class="section level4">
 <h4>Step 7</h4>
-<p>Compute additional fit values and make plot of most complex model for aggregated data (fit 4, Figure 5 in tutorial)</p>
+<p>Compute additional fit values and make plot of most complex model for aggregated data (Figure 5 in the tutorial)</p>
 <pre class="r"><code>dat3$fittedIntention &lt;- predict(fit)
 cor(dat3$intention, dat3$fittedIntention)
 
