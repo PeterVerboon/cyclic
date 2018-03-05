@@ -57,7 +57,7 @@ g
 The "smoking" data are read from the .csv file or from the SPSS .sav file, named SmokingLapse.sav. With the getData function we can select the .sav file from the computer. Check the names in the dataframe.
 
 ```{r tutorial-1, eval=FALSE}
-data <- read.csv2("SmokingLapse.csv", fileEncoding= "UTF-8-BOM", header = TRUE) 
+data1 <- read.csv2("SmokingLapse.csv", fileEncoding= "UTF-8-BOM", header = TRUE) 
 
 data <- getData()
 
