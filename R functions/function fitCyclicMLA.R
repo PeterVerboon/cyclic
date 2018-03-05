@@ -1,4 +1,21 @@
 
+
+##
+##   This function fits the cyclic model, using a multilevel model. 
+##   One cycles is fitted.
+##   
+##   xvar = time variabele 
+##   yvar = dependent variable
+##   ymin, ymax and steps are parameters that control axes of the plot
+##   form = contains a formule which can be extended with  additional variabeles
+##   id = the clustering variable
+##
+##   See Verboon & Leontjevas (2018). 
+##   Analyzing cyclic patterns in psychological data_a tutorial
+##
+##   The function needs ggplot()
+
+
 fitCyclicMLA <- function(dat, form = y ~ cvar + svar + (cvar + svar | id), 
                           yvar, xvar1=NULL,xvar2,id,ymin = -1.0, ymax = 1.0, step=0.25 )
 { 

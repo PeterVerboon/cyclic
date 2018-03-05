@@ -1,5 +1,5 @@
 
-# This function computes the cyclic parameters from parameters linear model (see Verboon & Leontjevas, 2016)
+# This function computes the cyclic parameters from parameters linear model (see Verboon & Leontjevas, 2018)
 
 # a1 = b1*cos((2π/P)*b2a)      parameter of term cos((2π/P)*T) 
 # a2 = b1*sin((2π/P)*b2a)      parameter of term sin((2π/P)*T)

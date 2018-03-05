@@ -1,3 +1,15 @@
+##
+##   This function fits the cyclic model, using a simple linear model. 
+##   
+##   xvar = time variabele
+##   yvar = dependent variable
+##   ymin, ymax and steps are parameters that control axes of the plot
+##   form = contains a formule which can be extended with  additional variabeles
+##
+##   See Verboon & Leontjevas (2018). 
+##   Analyzing cyclic patterns in psychological data_a tutorial
+##
+##   The function needs ggplot()
 
 
 fitCyclic <- function(dat, form = y ~ cvar + svar , yvar, xvar, ymin = -1.0, ymax = 1.0, step=0.25 ) {  
@@ -85,17 +97,6 @@ fitCyclic <- function(dat, form = y ~ cvar + svar , yvar, xvar, ymin = -1.0, yma
 }     # end function
 
 
-## test
 
-
-pdat <- subset(dat3, dat3$subjnr==15)
-
-a <- fitCyclic(pdat,form= "y ~ cvar + svar   ",yvar = "positiveAffect", xvar="dagnr" , ymin=-2.0, ymax=1.0,step=0.25)
-
-a$rawDataPlot
-a$meansPlot
-a$oneCyclePlot
-a$parameters
-summary(a$fit)
 
 
