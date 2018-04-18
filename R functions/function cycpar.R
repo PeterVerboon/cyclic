@@ -25,4 +25,4 @@ cycpar <- function(a1,a2, P) {
   names(out) <- c("amplitude","phase")
   out
   
-} # END FUNCTION
+} # end function

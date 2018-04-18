@@ -1,7 +1,7 @@
 ---
-title: "Appendix"
-author: "Peter Verboon"
-date: "2 maart 2018"
+title: "Appendix of tutorial analyzing cyclic models"
+author: "Peter Verboon & Roeslan Leontjevas"
+date: "April, 18, 2018"
 output: html_document
 ---
 
@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Appendix of tutorial analyzing cyclic models
+### ---------------------------------------------------------------------------
 
 ### Preliminary Steps
 
@@ -26,8 +26,8 @@ First we need to install and load the packages necessary for the analyses.
 There are four functions used in this appendix that should be activated by running the code. These functions can be downloaded from Github: https://github.com/PeterVerboon/Cyclic-models.
  
  function cycpar():computes the cyclic parameters from the linear model parameters <br>
- function fitCyclic(): fits a linear model to obtain cyclic parameters and        provides plots <br>
- function fitCyclicMLA():  fits a MLA model to obtain cyclic parameters and provides plots (one cycle) <br>
+ function fitCyclic(): fits a linear model to obtain cyclic parameters and provides plots <br>
+ function fitCyclicMLA(): fits a MLA model to obtain cyclic parameters and provides plots (one cycle) <br>
  function fitCyclic2MLA(): fits a MLA model to obtain cyclic parameters and provides plots (two cycles)
 
 
@@ -61,9 +61,9 @@ g
 The "smoking" data are read from the .csv file or from the SPSS .sav file, named SmokingLapse.sav. With the getData function (from the "userfriendlyscience" package) we can select the .sav file from the computer. Check the names in the dataframe.
 
 ```{r tutorial-1, eval=FALSE}
-data1 <- read.csv2("SmokingLapse.csv", fileEncoding= "UTF-8-BOM", header = TRUE) 
+dat <- read.csv2("SmokingData.csv", fileEncoding= "UTF-8-BOM", header = TRUE) 
 
-data <- getData()
+dat <- getData()
 
 names(dat)
 ```
@@ -109,7 +109,7 @@ length(unique(dat3$subjnr))
 The next step is to construct a dataset that is aggregated over subjects, which is called dat4. This dataframe will be used in subsequent analyses.
 
 ```{r tutorial-5, eval=FALSE}
-dat4 <- aggregate(dat3[,c("NAc","positiveAffect","stress","intention")],
+dat4 <- aggregate(dat3[,c("positiveAffect","stress","intention")],
                   by=list(dat3$beepnr,dat3$daynr), FUN=mean, na.rm=F);    
 dat4$daynr <- dat4$Group.2
 dat4$beepnr <- dat4$Group.1
@@ -124,7 +124,7 @@ dat4$Group.2 <- NULL
 
 #### Step 1
 
-The raw data for three subjects and average are plotted. This makes Figure 1 from the tutorial.
+The raw data for three subjects and average are plotted. This makes Figure 2 from the tutorial.
 
 
 ```{r tutorial-6, eval=FALSE}
@@ -133,7 +133,7 @@ pdat <- subset(dat3, dat3$subjnr == 2)               # ppn 2, 15, 18 selected fo
                                                       
 npoints <- dim(pdat)[1]
 x <- c(1:npoints)
-pdat$day <- as.factor(pdat$dagnr)
+pdat$day <- as.factor(pdat$daynr)
 
 g <- ggplot(pdat,aes(x=x, y=pdat$intention, colour=pdat$day))
 g <- g + geom_point()
@@ -151,7 +151,7 @@ We have to repeat step 1 for the aggregated data in respectively dat4, and for s
   
 #### Step 2
 
-Now we analyze the cyclic model and plot the result. This is Figure 2 from the tutorial.
+Now we analyze the cyclic model and plot the result. This is Figure 3 from the tutorial.
 
 ```{r tutorial-7, eval=FALSE} 
 a <- fitCyclic(pdat, form= "y ~ cvar + svar  ",yvar = "intention", xvar="beepnr", ymin = -1.0, ymax = 0.5, step= 0.25)
@@ -180,7 +180,7 @@ summary(out$fit)
 
 #### Step 4
 
-Apply the cylic model with daily period for the variables stress and positive affect for subject 15 to obtain a plot of the raw data with the fitted cycles and a plot of the aggregated data. Together with intention this makes Figure 3.
+Apply the cylic model with daily period for the variables stress and positive affect for subject 15 to obtain a plot of the raw data with the fitted cycles and a plot of the aggregated data. Together with intention this makes Figure 4.
 
 ```{r tutorial-9, eval=FALSE} 
 pdat <- subset(dat3, dat3$subjnr == 15)   
@@ -197,12 +197,12 @@ out$meansPlot
 
 #### Step 5
 
-Apply, only for subject 15, the cylic model with a weekly period for stress and positive affect, instead of a daily period. This is shown in Figure 4.
+Apply, only for subject 15, the cylic model with a weekly period for stress and positive affect, instead of a daily period. This is shown in Figure 5.
 
 ```{r tutorial-10, eval=FALSE} 
 pdat <- subset(dat3, dat3$subjnr == 15)   
 
-out <- fitCyclic(pdat, form= "y ~ cvar + svar  ",yvar = "stress", xvar="dagnr", ymin = -2.0, ymax = 1.0, step= 0.25)
+out <- fitCyclic(pdat, form= "y ~ cvar + svar  ",yvar = "stress", xvar="daynr", ymin = -2.0, ymax = 1.0, step= 0.25)
 
 out$rawDataPlot
 out$meansPlot
@@ -226,29 +226,29 @@ model1$fit
 
 ICC <- (as.data.frame(VarCorr(model1$fit))[1,"vcov"]) / sum(as.data.frame(VarCorr(model1$fit))[,"vcov"])          # compute ICC
 
-model2 <- fitCyclicMLA(dat=dat3, form = y ~ cvar + svar + (1 | id),  yvar="intention", xvar1="beepnr",xvar2="dagnr", id = "subjnr", ymin = -0.5, ymax = 0.5, step=0.10 )
+model2 <- fitCyclicMLA(dat=dat3, form = y ~ cvar + svar + (1 | id),  yvar="intention", xvar1="beepnr",xvar2="daynr", id = "subjnr", ymin = -0.5, ymax = 0.5, step=0.10 )
 
 model2$plot
 model2$parameters
 model2$fit
 
-model3 <- fitCyclicMLA(dat=dat3, form = y ~ cvar + svar + (cvar + svar | id),  yvar="intention", xvar1="beepnr",xvar2="dagnr", id = "subjnr",  ymin = -0.5, ymax = 0.5, step=0.10 )
+model3 <- fitCyclicMLA(dat=dat3, form = y ~ cvar + svar + (cvar + svar | id),  yvar="intention", xvar1="beepnr",xvar2="daynr", id = "subjnr",  ymin = -0.5, ymax = 0.5, step=0.10 )
 
 model3$plot
 model3$parameters
 model3$fit
 
-model4 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + (cvar + svar | id), yvar="intention", xvar1="beepnr", xvar2="dagnr",id = "subjnr", ymin = -0.5, ymax = 0.5, step=0.10 )
+model4 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + (cvar + svar | id), yvar="intention", xvar1="beepnr", xvar2="daynr",id = "subjnr", ymin = -0.5, ymax = 0.5, step=0.10 )
 model4$plot
 model4$parameters
 model4$fit
 
-model5 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + (cvar + svar + cvar2 + svar2 | id), yvar="intention", xvar1="beepnr", xvar2="dagnr",id = "subjnr", ymin = -0.5, ymax = 0.5, step=0.10 )
+model5 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + (cvar + svar + cvar2 + svar2 | id), yvar="intention", xvar1="beepnr", xvar2="daynr",id = "subjnr", ymin = -0.5, ymax = 0.5, step=0.10 )
 model5$plot
 model5$parameters
 model5$fit
 
-model6 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + stress + (cvar + svar + cvar2 + svar2 + stress | id), yvar="intention", xvar1="beepnr", xvar2="dagnr",id = "subjnr", ymin = -0.5, ymax = 0.5, step=0.10 )
+model6 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + stress + (cvar + svar + cvar2 + svar2 + stress | id), yvar="intention", xvar1="beepnr", xvar2="daynr",id = "subjnr", ymin = -0.5, ymax = 0.5, step=0.10 )
 model6$plot
 model6$parameters
 model6$fit
@@ -266,7 +266,7 @@ anova(model6$fit, model5$fit, model4$fit,model3$fit, model2$fit, model1$fit)
 
 #### Step 7
 
-Compute additional fit values and make plot of most complex model for aggregated data (Figure 5 in the tutorial).
+Compute additional fit values and make plot of most complex model for aggregated data (Figure 6 in the tutorial).
 
 ```{r tutorial-12, eval=FALSE} 
 
@@ -277,7 +277,7 @@ sum( (dat3$intention - predict(fit)) **2) / sum(dat3$intention ** 2)    # ratio 
 
 pdat <- dat4
 
-pdat$ypred <-  a0 + b[2]*cos(2*pi/P*(pdat$beepnr - b[3])) + b[4]*cos(2*pi/P2*(pdat$dagnr - b[5]))
+pdat$ypred <-  a0 + b[2]*cos(2*pi/P*(pdat$beepnr - b[3])) + b[4]*cos(2*pi/P2*(pdat$daynr - b[5]))
 pdat$day <- as.factor(pdat$daynr)
 npoints <- dim(pdat)[1]
 pdat$xall <- c(1:npoints)

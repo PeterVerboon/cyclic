@@ -85,13 +85,4 @@ return(result)
  }  ## End function
 
 
-# test
 
-model3 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + (cvar + svar | id), 
-              yvar="intention", xvar1="beepnr",id = "subjnr", 
-              ymin = -0.5, ymax = 0.5, step=0.10 )
-
-
-model3$plot
-model3$parameters
-model3$fit

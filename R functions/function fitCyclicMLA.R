@@ -81,11 +81,11 @@ fitCyclicMLA <- function(dat, form = y ~ cvar + svar + (cvar + svar | id),
 
 # test
 
-model <- fitCyclicMLA(dat=dat3, form = y ~ cvar + svar + (cvar + svar | id), 
-                        yvar="intention", xvar1="beepnr",xvar2="dagnr", id = "subjnr", 
-                        ymin = -0.5, ymax = 0.5, step=0.10 )
-
-
-model$plot
-model$parameters
-model$fit
+# model <- fitCyclicMLA(dat=dat3, form = y ~ cvar + svar + (cvar + svar | id), 
+#                         yvar="intention", xvar1="beepnr",xvar2="dagnr", id = "subjnr", 
+#                         ymin = -0.5, ymax = 0.5, step=0.10 )
+# 
+# 
+# model$plot
+# model$parameters
+# model$fit
