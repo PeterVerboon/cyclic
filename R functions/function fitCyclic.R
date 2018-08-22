@@ -6,13 +6,13 @@
 ##   ymin, ymax and steps are parameters that control axes of the plot
 ##   form = contains a formule which can be extended with  additional variabeles
 ##
-##   See Verboon & Leontjevas (2018). 
+##   See "authors" (2018). 
 ##   Analyzing cyclic patterns in psychological data_a tutorial
 ##
 ##   The function needs ggplot()
 
 
-fitCyclic <- function(dat, form = y ~ cvar + svar , yvar, xvar, ymin = -1.0, ymax = 1.0, step=0.25 ) {  
+fitCyclic <- function(dat, form = y ~ cvar + svar , yvar, xvar, dayNumber, ymin = -1.0, ymax = 1.0, step=0.25 ) {  
   
     result <- list() 
   
@@ -30,7 +30,7 @@ fitCyclic <- function(dat, form = y ~ cvar + svar , yvar, xvar, ymin = -1.0, yma
     a0 <- fitp$coefficients[1]
     a1 <- fitp$coefficients[2]
     a2 <- fitp$coefficients[3] 
-
+   
     par <- cycpar(a1,a2, P) 
 
     b <- c(a0,par)
@@ -41,11 +41,11 @@ fitCyclic <- function(dat, form = y ~ cvar + svar , yvar, xvar, ymin = -1.0, yma
     b2 <- b[3] 
     
     ypred <-  a0 + b1*cos(2*pi/P*(dat$x - b2))  
-    
+      
     npoints <- dim(dat)[1]
     dat$xall <- c(1:npoints)
-    dat$day <- as.factor(dat$dagnr)
-    
+    dat$day <- as.factor(dat[,dayNumber])
+     
     # raw data plot
     
     g0 <- ggplot(dat) + geom_point(aes(x=xall, y=dat$y, colour=dat$day))
