@@ -154,7 +154,7 @@ We have to repeat step 1 for the aggregated data in respectively dat4, and for s
 Now we analyze the cyclic model and plot the result. This is Figure 3 from the tutorial.
 
 ```{r tutorial-7, eval=FALSE} 
-a <- fitCyclic(pdat, form= "y ~ cvar + svar  ",yvar = "intention", xvar="beepnr", ymin = -1.0, ymax = 0.5, step= 0.25)
+a <- fitCyclic(pdat, form= "y ~ cvar + svar  ",yvar = "intention", xvar="beepnr", dayNumber = "daynr", ymin = -1.0, ymax = 0.5, step= 0.25)
 
 a$meansPlot
 a$parameters
