@@ -4,7 +4,7 @@
 ##   xvar = time variabele
 ##   yvar = dependent variable
 ##   ymin, ymax and steps are parameters that control axes of the plot
-##   form = contains a formule which can be extended with  additional variabeles
+##   cov = vector of names containing additional variabeles (e.g. cov = c("x1", "daynr"))
 ##
 ##   See "authors" (2018). 
 ##   Analyzing cyclic patterns in psychological data_a tutorial
@@ -12,15 +12,19 @@
 ##   The function needs ggplot()
 
 
-fitCyclic <- function(dat, form = y ~ cvar + svar , yvar, xvar, dayNumber, ymin = -1.0, ymax = 1.0, step=0.25 ) {  
+
+fitCyclic <- function(dat, yvar, xvar, dayNumber, cov = NULL , ymin = -1.0, ymax = 1.0, step=0.25 ) {  
   
     result <- list() 
+    
+    ifelse (is.null(cov),form <- paste0("y ~ cvar + svar"), form <- paste0("y ~ cvar + svar + ", cov) )
   
     P <- max(dat[,xvar])
     dat$cvar <- cos((2*pi/P)*dat[,xvar])
     dat$svar <- sin((2*pi/P)*dat[,xvar])
     dat$y <- dat[,yvar]
     dat$x <- dat[,xvar]
+    dat$day <- as.factor(dat[,dayNumber])
 
     
     # fit cyclic model within days across beeps
@@ -31,6 +35,8 @@ fitCyclic <- function(dat, form = y ~ cvar + svar , yvar, xvar, dayNumber, ymin 
     a1 <- fitp$coefficients[2]
     a2 <- fitp$coefficients[3] 
    
+    if(!is.null(cov)) { a.cov <- fitp$coefficients[4:(3+length(cov))]} 
+    
     par <- cycpar(a1,a2, P) 
 
     b <- c(a0,par)
@@ -40,11 +46,12 @@ fitCyclic <- function(dat, form = y ~ cvar + svar , yvar, xvar, dayNumber, ymin 
     b1 <- b[2]
     b2 <- b[3] 
     
-    ypred <-  a0 + b1*cos(2*pi/P*(dat$x - b2))  
+    if (!is.null(cov))  { ypred <-  a0 + b1*cos(2*pi/P*(dat$x - b2)) +  as.matrix(dat[,cov]) %*% a.cov 
+       } else { ypred <-  a0 + b1*cos(2*pi/P*(dat$x - b2)) }
       
     npoints <- dim(dat)[1]
     dat$xall <- c(1:npoints)
-    dat$day <- as.factor(dat[,dayNumber])
+    
      
     # raw data plot
     
@@ -54,14 +61,16 @@ fitCyclic <- function(dat, form = y ~ cvar + svar , yvar, xvar, dayNumber, ymin 
     g0 <- g0 + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
     g0 <- g0 + geom_line(aes(x=dat$xall, y=ypred)) 
     g0 <- g0 + coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step)) 
-    g0
+    
     
     # one Cycle plot 
+    
+    ypred1 <-  a0 + b1*cos(2*pi/P*(dat$x - b2))
     
     g <- ggplot(dat)  + geom_point(aes(x=dat$x,y=dat$y))
     g <- g + geom_hline(yintercept=a0, colour="blue")  
     g <- g + geom_vline(xintercept=b2, colour="red") 
-    g <- g + geom_line(aes(x=dat$x, y=ypred)) 
+    g <- g + geom_line(aes(x=dat$x, y=ypred1)) 
     g <- g + labs(x = "Time points", y = yvar)
     g <- g + scale_x_discrete(name ="Time points",  limits=c(1:P))
     g <- g + coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step)) 
