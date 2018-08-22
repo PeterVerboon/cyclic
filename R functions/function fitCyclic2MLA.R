@@ -10,7 +10,7 @@
 ##   form = contains a formule which can be extended with  additional variabeles
 ##   id = the clustering variable
 ##
-##   See Verboon & Leontjevas (2018). 
+##   See "authors" (2018). 
 ##   Analyzing cyclic patterns in psychological data_a tutorial
 ##
 ##   The function needs ggplot()
