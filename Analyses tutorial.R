@@ -7,7 +7,7 @@ options(digids=3)
 
 ## DATASET 2  CATHERINE  ##
 
-data <- getData()
+getDat()
 # getData(filename="/Users/peterverboon/Documents/Open Universiteit/Onderzoek/Project Cyclic models/SmokingLapse.sav");
 
 dat1 <- data[,c("subjnr","beepnr", "daynr", "NAc", "PAc","Stressc","Zintentie","rookgedrag")]
@@ -15,6 +15,9 @@ dat1$intention <- dat1$Zintentie
 dat1$positiveAffect <- scale(dat1$PAc)
 dat1$stress <- scale(dat1$Stressc)
 
+# work
+
+dat1$intention <- scale(dat1$intention)
 
 ## Count number of record per subject
 
@@ -92,12 +95,48 @@ summary(a$fit)
 
 ## fit extra model with day as covariate 
 
-a <- fitCyclic(pdat, form = "y ~ cvar + svar + dagnr", yvar = "positiveAffect", xvar="beepnr",ymin=-0.5, ymax=0.5)
+a <- fitCyclic(pdat,  yvar = "positiveAffect", xvar="beepnr",dayNumber = "daynr", 
+               cov = "daynr", ymin=-0.5, ymax=0.5)
 
 a$rawDataPlot
 a$meansPlot
 a$parameters
 summary(a$fit)
+
+pdat <- subset(dat3, dat3$subjnr == 15)   
+
+out <- fitCyclic(pdat,yvar = "stress", xvar="beepnr", dayNumber = "daynr", 
+                 ymin = -1.0, ymax = 0.5, step= 0.25)
+
+out$rawDataPlot
+out$meansPlot
+
+#### Step 5
+
+
+
+## Apply, only for subject 15, the cylic model with a weekly period for stress and positive affect, instead of a daily period. This is shown in Figure 5.
+
+
+pdat <- subset(dat3, dat3$subjnr == 15)   
+
+out <- fitCyclic(pdat, yvar = "stress", xvar="daynr", dayNumber = "daynr", 
+                 ymin = -2.0, ymax = 1.0, step= 0.25)
+
+out$rawDataPlot
+out$meansPlot
+summary(out$fit)
+
+
+model1 <- fitCyclicMLA(dat=dat3, form = y ~ 1 + (1 | id), 
+                       yvar="intention", id = "subjnr", 
+                       ymin = -0.5, ymax = 0.5, step=0.10 )
+model1$fit
+
+
+
+
+
 
 
 ## Analyze cyclic model with MLA and plot

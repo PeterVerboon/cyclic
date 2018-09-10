@@ -154,7 +154,8 @@ We have to repeat step 1 for the aggregated data in respectively dat4, and for s
 Now we analyze the cyclic model and plot the result. This is Figure 3 from the tutorial.
 
 ```{r tutorial-7, eval=FALSE} 
-a <- fitCyclic(pdat, form= "y ~ cvar + svar  ",yvar = "intention", xvar="beepnr", dayNumber = "daynr", ymin = -1.0, ymax = 0.5, step= 0.25)
+a <- fitCyclic(pdat,yvar = "intention", xvar="beepnr", dayNumber = "daynr", 
+               ymin = -1.0, ymax = 0.5, step= 0.25)
 
 a$meansPlot
 a$parameters
@@ -169,7 +170,7 @@ summary(a$fit)
 Fit an extra term in the model with day as covariate in aggregated data. Show the parameters and the fit of the model. 
 
 ```{r tutorial-8, eval=FALSE} 
-out <- fitCyclic(dat4, form = "y ~ cvar + svar + daynr", yvar = "intention", xvar="beepnr",ymin=-1.0, ymax=0.5, step = 0.25)
+out <- fitCyclic(pdat,  yvar = "positiveAffect", xvar="beepnr",dayNumber = "daynr",        cov = "daynr", ymin=-0.5, ymax=0.5)
 
 out$parameters
 summary(out$fit)
@@ -185,7 +186,8 @@ Apply the cylic model with daily period for the variables stress and positive af
 ```{r tutorial-9, eval=FALSE} 
 pdat <- subset(dat3, dat3$subjnr == 15)   
 
-out <- fitCyclic(pdat, form= "y ~ cvar + svar  ",yvar = "stress", xvar="beepnr", ymin = -1.0, ymax = 0.5, step= 0.25)
+out <- fitCyclic(pdat,yvar = "stress", xvar="beepnr", dayNumber = "daynr", 
+                 ymin = -1.0, ymax = 0.5, step= 0.25)
 
 out$rawDataPlot
 out$meansPlot
@@ -202,7 +204,8 @@ Apply, only for subject 15, the cylic model with a weekly period for stress and 
 ```{r tutorial-10, eval=FALSE} 
 pdat <- subset(dat3, dat3$subjnr == 15)   
 
-out <- fitCyclic(pdat, form= "y ~ cvar + svar  ",yvar = "stress", xvar="daynr", ymin = -2.0, ymax = 1.0, step= 0.25)
+out <- fitCyclic(pdat, yvar = "stress", xvar="daynr", dayNumber = "daynr",
+                 ymin = -2.0, ymax = 1.0, step= 0.25)
 
 out$rawDataPlot
 out$meansPlot
