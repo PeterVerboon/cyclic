@@ -1,7 +1,7 @@
-require(dplyr)   # for summarise
+#require(dplyr)   # for summarise
 require(ggplot2)
 require(lme4);   # for lmer
-require(userfriendlyscience)
+#require(userfriendlyscience)
 
 options(digids=3)
 
@@ -18,6 +18,18 @@ dat1$stress <- scale(dat1$Stressc)
 # work
 
 dat1$intention <- scale(dat1$intention)
+dat1$Stress <- NULL
+
+
+
+save(dat1, file="smokedat.Rdata")
+
+################ START TUTORIAL ##############################
+
+load("smokedat.Rdata")
+names(dat1)
+
+nall <- length(unique(dat1$subjnr))
 
 ## Count number of record per subject
 
@@ -26,30 +38,34 @@ dat2 <- aggregate(dat1[,c("count")],by=list(dat1$subjnr), FUN=sum, na.rm=T);
 dat2$subjnr <- dat2$Group.1
 dat1$count <- NULL;
 dat2$count <- dat2[,2]
-dat2$x <- NULL
-dat2$Group.1 <- NULL
 
-dat3 <- merge(dat1,dat2, by.x = "subjnr")
+dat3 <- merge(dat1,dat2[,c("subjnr","count")], by.x = "subjnr")
 
 rm(dat2)
 
 ## remove subjects with less than 50 records 
 
 dat3 <- subset(dat3, dat3$count >= 50)
-length(unique(dat3$subjnr))
+nfew <- nall - length(unique(dat3$subjnr))
 
 ## compute variability of DV per subject
 
-a <- summarise(group_by(dat3, subjnr),mean=mean(intention), sd=sd(intention))
-#a <- summarise(group_by(dat3, subjnr),mean=mean(positiveAffect), sd=sd(positiveAffect))
-#a <- summarise(group_by(dat3, subjnr),mean=mean(Stressc), sd=sd(positiveAffect))
-
-a <- merge(dat3, a,  by.x = "subjnr")
+dat2 <- aggregate(dat3$intention,by=list(dat3$subjnr), FUN=sd, na.rm=F)
+dat2$subjnr <- dat2$Group.1
+dat2$Group.1 <- NULL
+dat2 <- merge(dat3, dat2,  by.x = "subjnr")
 
 # remove subjects with very small variation in DV
 
-dat3 <- subset(a, a$sd > .10)   
-length(unique(dat3$subjnr))
+dat3 <- subset(dat2, dat2$V1 > .10)  
+rm(dat2)
+nsmall <- (nall - nfew) - length(unique(dat3$subjnr))
+
+cat("Number of subjects in data set: ", nall)
+cat("Number of subjects with less than 50 records: ", nfew)
+cat("Number of subjects with SD smaller than .10: ", nsmall)
+cat("Number of subjects used in analysis: ",length(unique(dat3$subjnr)))
+
 
 
 ## aggregate over subjects
@@ -74,6 +90,7 @@ x <- c(1:npoints)
 pdat$day <- as.factor(pdat$daynr)
 
 
+# Plot raw DV of single subject
 
 g <- ggplot(pdat,aes(x=x, y=pdat$intention, colour=pdat$day))
 g <- g + geom_point()

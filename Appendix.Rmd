@@ -1,7 +1,7 @@
 ---
 title: "Appendix of tutorial analyzing cyclic models"
 author: "Peter Verboon & Roeslan Leontjevas"
-date: "April, 18, 2018"
+date: "`r format(Sys.time(), '%Y-%m-%d')`"
 output: html_document
 ---
 
@@ -58,53 +58,58 @@ g <- g + annotate("text", x = 10, y = 0.8, label = "b2");
 g
 ```
 
-The "smoking" data are read from the .csv file or from the SPSS .sav file, named SmokingLapse.sav. With the getData function (from the "userfriendlyscience" package) we can select the .sav file from the computer. Check the names in the dataframe.
+The "smoking" data can be read from the .csv file or the Rdata object can be loaded, named smokedat.Rdata. This is a dataframe called dat1, which contains a selection of variables from the original data file. Check the names in the dataframe.
 
-```{r tutorial-1, eval=FALSE}
-dat <- read.csv2("SmokingData.csv", fileEncoding= "UTF-8-BOM", header = TRUE) 
+```{r tutorial-1, eval=TRUE}
+load("smokedat.Rdata")
+names(dat1)
+nall <- length(unique(dat1$subjnr))
 
-dat <- getData()
-
-names(dat)
 ```
 
-Select the relevant variables from this dataframe and standardize them. The results are put in dataframe dat1.
+We count the number of records per subject and remove subjects with less than 50 records. The resulting data.frame is called dat3.
 
-```{r tutorial-2, eval=FALSE}
-dat1 <- dat[,c("subjnr","beepnr", "daynr","positiveAffect","stress","intention")];
-dat1$intention <- scale(dat1$intention);
-dat1$positiveAffect <- scale(dat1$positiveAffect);
-dat1$stress <- scale(dat1$stress);
-```
-
-Next we count the number of records per subject and remove subjects with less than 50 records. The resulting data.frame is called dat3.
-
-```{r tutorial-3, eval=FALSE}
+```{r tutorial-3, eval=TRUE}
 dat1$count <- 1
 dat2 <- aggregate(dat1[,c("count")],by=list(dat1$subjnr), FUN=sum, na.rm=T);
 dat2$subjnr <- dat2$Group.1
 dat1$count <- NULL;
 dat2$count <- dat2[,2]
-dat2$x <- NULL
-dat2$Group.1 <- NULL
 
-dat3 <- merge(dat1,dat2, by.x = "subjnr")
-
+dat3 <- merge(dat1,dat2[,c("subjnr","count")], by.x = "subjnr")
 rm(dat2)
 
 dat3 <- subset(dat3, dat3$count >= 50)
-length(unique(dat3$subjnr))
+nfew <- nall - length(unique(dat3$subjnr))
+
 ```
 
-We also compute variability of intention per subject and remove subjects with very small variation in intention.
+We also compute variability of intention per subject and remove subjects with very small variation in intention. The result is also in dat3.
 
-```{r tutorial-4, eval=FALSE}
-a <- summarise(group_by(dat3, subjnr),mean=mean(intention), sd=sd(intention))
-a <- merge(dat3, a,  by.x = "subjnr")
+```{r tutorial-4, eval=TRUE}
 
-dat3 <- subset(a, a$sd > .10)   
-length(unique(dat3$subjnr))
+dat2 <- aggregate(dat3$intention,by=list(dat3$subjnr), FUN=sd, na.rm=F)
+dat2$subjnr <- dat2$Group.1
+dat2$Group.1 <- NULL
+dat2 <- merge(dat3, dat2,  by.x = "subjnr")
+dat3 <- subset(dat2, dat2$V1 > .10)  
+rm(dat2)
+nsmall <- (nall - nfew) - length(unique(dat3$subjnr))
+
 ```
+
+
+```{r tutorial-printn, eval=TRUE, echo=FALSE}
+
+cat(" Number of subjects in data set:              ", nall," \n",
+    "Number of subjects with less than 50 records: ", nfew ," \n" ,
+    "Number of subjects with SD smaller than .10:  ", nsmall," \n" ,
+    "Number of subjects used in analysis:         ",length(unique(dat3$subjnr)))
+
+```
+
+
+
 
 The next step is to construct a dataset that is aggregated over subjects, which is called dat4. This dataframe will be used in subsequent analyses.
 
