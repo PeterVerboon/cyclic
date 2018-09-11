@@ -3,6 +3,7 @@
 ##   
 ##   xvar = time variabele
 ##   yvar = dependent variable
+##   P = period of cycle
 ##   ymin, ymax and steps are parameters that control axes of the plot
 ##   cov = vector of names containing additional variabeles (e.g. cov = c("x1", "daynr"))
 ##
@@ -13,13 +14,17 @@
 
 
 
-fitCyclic <- function(dat, yvar, xvar, dayNumber, cov = NULL , ymin = -1.0, ymax = 1.0, step=0.25 ) {  
+fitCyclic <- function(dat, yvar, xvar, dayNumber, cov = NULL , P = NULL, 
+                      ymin = -1.0, ymax = 1.0, step=0.25 ) {  
   
     result <- list() 
     
+    if (is.null(yvar)) {stop ("dependent variable has not been specified")}
+    
     ifelse (is.null(cov),form <- paste0("y ~ cvar + svar"), form <- paste0("y ~ cvar + svar + ", cov) )
-  
-    P <- max(dat[,xvar])
+
+    if (is.null(P)) {P <- max(dat[,xvar])}
+    
     dat$cvar <- cos((2*pi/P)*dat[,xvar])
     dat$svar <- sin((2*pi/P)*dat[,xvar])
     dat$y <- dat[,yvar]
