@@ -46,7 +46,8 @@ fitCyclic <- function(dat, yvar, xvar, dayNumber, cov = NULL , ymin = -1.0, ymax
     b1 <- b[2]
     b2 <- b[3] 
     
-    if (!is.null(cov))  { ypred <-  a0 + b1*cos(2*pi/P*(dat$x - b2)) +  as.matrix(dat[,cov]) %*% a.cov 
+    if (!is.null(cov))  { 
+       ypred <-  a0 + b1*cos(2*pi/P*(dat$x - b2)) +  as.matrix(dat[,cov]) %*% a.cov 
        } else { ypred <-  a0 + b1*cos(2*pi/P*(dat$x - b2)) }
       
     npoints <- dim(dat)[1]

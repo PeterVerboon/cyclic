@@ -15,13 +15,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
 First we need to install and load the packages necessary for the analyses. 
 
-```{r tutorial, eval=FALSE}
- require(userfriendlyscience)   # for reading the data
- require(dplyr)                 # for summarise
+```{r tutorial-f1, eval=TRUE, include= FALSE}
+
  require(ggplot2)               # for gglot
  require(lme4);                 # for lmer 
 ```
+```{r tutorial-f2, eval=FALSE, echo=TRUE}
 
+ require(ggplot2)               # for gglot
+ require(lme4);                 # for lmer 
+```
  
 There are four functions used in this appendix that should be activated by running the code. These functions can be downloaded from Github: https://github.com/PeterVerboon/Cyclic-models.
  

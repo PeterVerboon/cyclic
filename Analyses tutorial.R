@@ -7,18 +7,17 @@ options(digids=3)
 
 ## DATASET 2  CATHERINE  ##
 
-getDat()
+# getDat()
 # getData(filename="/Users/peterverboon/Documents/Open Universiteit/Onderzoek/Project Cyclic models/SmokingLapse.sav");
 
-dat1 <- data[,c("subjnr","beepnr", "daynr", "NAc", "PAc","Stressc","Zintentie","rookgedrag")]
-dat1$intention <- dat1$Zintentie
-dat1$positiveAffect <- scale(dat1$PAc)
-dat1$stress <- scale(dat1$Stressc)
-
+# dat1 <- data[,c("subjnr","beepnr", "daynr", "NAc", "PAc","Stressc","Zintentie","rookgedrag")]
+# dat1$intention <- dat1$Zintentie
+# dat1$positiveAffect <- scale(dat1$PAc)
+# dat1$stress <- scale(dat1$Stressc)
 # work
-
-dat1$intention <- scale(dat1$intention)
-dat1$Stress <- NULL
+# 
+# dat1$intention <- scale(dat1$intention)
+# dat1$Stress <- NULL
 
 
 
@@ -61,11 +60,10 @@ dat3 <- subset(dat2, dat2$V1 > .10)
 rm(dat2)
 nsmall <- (nall - nfew) - length(unique(dat3$subjnr))
 
-cat("Number of subjects in data set: ", nall)
-cat("Number of subjects with less than 50 records: ", nfew)
-cat("Number of subjects with SD smaller than .10: ", nsmall)
-cat("Number of subjects used in analysis: ",length(unique(dat3$subjnr)))
-
+cat(" Number of subjects in data set:              ", nall," \n",
+    "Number of subjects with less than 50 records: ", nfew ," \n" ,
+    "Number of subjects with SD smaller than .10:  ", nsmall," \n" ,
+    "Number of subjects used in analysis:         ",length(unique(dat3$subjnr)))
 
 
 ## aggregate over subjects
