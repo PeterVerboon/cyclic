@@ -115,6 +115,7 @@ a <- fitCyclic(pdat,  yvar = "positiveAffect", xvar="beepnr",dayNumber = "daynr"
 
 a$rawDataPlot
 a$meansPlot
+a$oneCyclePlot
 a$parameters
 summary(a$fit)
 
@@ -125,6 +126,7 @@ out <- fitCyclic(pdat,yvar = "stress", xvar="beepnr", dayNumber = "daynr",
 
 out$rawDataPlot
 out$meansPlot
+out$oneCyclePlot
 
 #### Step 5
 

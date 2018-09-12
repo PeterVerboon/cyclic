@@ -1,6 +1,6 @@
 ---
 title: "Appendix of tutorial analyzing cyclic models"
-author: "Peter Verboon & Roeslan Leontjevas"
+author: " "
 date: "`r format(Sys.time(), '%Y-%m-%d')`"
 output: html_document
 ---

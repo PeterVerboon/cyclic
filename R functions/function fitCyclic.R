@@ -70,7 +70,9 @@ fitCyclic <- function(dat, yvar, xvar, dayNumber = NULL, cov = NULL , P = NULL,
     
     # one Cycle plot 
     
-    ypred1 <-  a0 + b1*cos(2*pi/P*(dat$x - b2))
+    if (!is.null(cov))  { 
+      ypred1 <-  a0 + b1*cos(2*pi/P*(dat$x - b2)) +  mean(dat[,cov]) * a.cov 
+      } else { dat$ypred <-  a0 + b1*cos(2*pi/P*(dat$x - b2)) }
     
     g <- ggplot(dat)  + geom_point(aes(x=dat$x,y=dat$y))
     g <- g + geom_hline(yintercept=a0, colour="blue")  
@@ -81,12 +83,13 @@ fitCyclic <- function(dat, yvar, xvar, dayNumber = NULL, cov = NULL , P = NULL,
     g <- g + coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step)) 
     g <- g + theme(axis.text = element_text(size = 12, colour="black"))
   
-  
-      pdat2 <- aggregate(dat[,yvar],by=list(dat[,xvar]), FUN=mean, na.rm=F)   
+      pdat2 <- aggregate(dat[,c(yvar,cov)],by=list(dat[,xvar]), FUN=mean, na.rm=F)   
       pdat2$y <- pdat2[,2]
       pdat2$x <- pdat2[,1]
      
-    ypred2 <-  a0 + b1*cos(2*pi/P*(pdat2$x - b2))   
+    if (!is.null(cov))  { 
+       ypred2 <-  a0 + b1*cos(2*pi/P*(pdat2$x - b2)) +  as.matrix(pdat2[,cov]) %*% a.cov 
+       } else { ypred2 <-  a0 + b1*cos(2*pi/P*(pdat2$x - b2)) }
     
     # mean plot
     
