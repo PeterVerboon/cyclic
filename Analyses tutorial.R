@@ -100,7 +100,7 @@ g
 
 ## Analyze cyclic model and plot
 
-a <- fitCyclic(pdat, yvar = "intention", xvar="beepnr", dayNumber = "daynr", 
+a <- fitCyclic(pdat,yvar = "intention",  xvar="beepnr", dayNumber = "daynr", 
                ymin = -2.5, ymax = 1.5, step=.30)
 
 a$rawDataPlot

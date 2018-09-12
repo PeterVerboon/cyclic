@@ -178,7 +178,7 @@ summary(a$fit)
 Fit an extra term in the model with day as covariate in aggregated data. Show the parameters and the fit of the model. 
 
 ```{r tutorial-8, eval=FALSE} 
-out <- fitCyclic(pdat,  yvar = "positiveAffect", xvar="beepnr",dayNumber = "daynr",        cov = "daynr", ymin=-0.5, ymax=0.5)
+out <- fitCyclic(pdat,  yvar = "positiveAffect", xvar="beepnr",dayNumber = "daynr", cov = "daynr", ymin=-0.5, ymax=0.5)
 
 out$parameters
 summary(out$fit)
