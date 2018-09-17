@@ -1,20 +1,4 @@
 
-
-##
-##   This function fits the cyclic model, using a multilevel model.
-##   One cycles is fitted.
-##
-##   xvar = time variabele
-##   yvar = dependent variable
-##   ymin, ymax and steps are parameters that control axes of the plot
-##   form = contains a formule which can be extended with  additional variabeles
-##   id = the clustering variable
-##
-##   See "authors" (2018).
-##   Analyzing cyclic patterns in psychological data_a tutorial
-##
-##   The function needs ggplot()
-
 #' Fits the cyclic model, using a simple linear model.
 
 #'
@@ -22,7 +6,7 @@
 #' @param xvar time variabele
 #' @param yvar dependent variable
 #' @param P is the periodicity of the cycle
-#' @param ymin,ymax,steps parameters that control axes of the plot
+#' @param ymin,ymax,step parameters that control axes of the plot
 #' @param form contains a formule which can be extended with  additional variabeles
 #' @keywords cyclic model ESM
 #' @return list containing the following elements:
@@ -31,43 +15,80 @@
 #' @return rawDataPlot =     plot of predicted values for all observations
 #' @return meansPlot =       plot with predictions averaged over subjects,
 #' @return oneCyclePlot =    plot with predictions for one cycle,
-#' @import ggplot2
+#' @import ggplot2 
+#' @import lme4
 #' @export
 #' @examples
-#' cycpar(a1,a2,P)
-fitCyclicMLA <- function(dat, form = y ~ cvar + svar + (cvar + svar | id),
-                          yvar, xvar1=NULL,xvar2,id,ymin = -1.0, ymax = 1.0, step=0.25 )
+#' fitCyclicMLA(dat, yvar = dependVar, xvar1 = "beepnr", xvar2 =)
+fitCyclicMLA <- function(dat, yvar, xvar1 = NULL, xvar2, id, ncycle = 1, random = "intercept",
+                         ymin = -1.0, ymax = 1.0, step=0.25 )
 {
-
-  require(lme4)
-  require(ggplot2)
 
   result <- list()
 
   dat$y <- dat[,yvar]
   dat$id <- dat[,id]
+  
+  # Null model
+  if (is.null(xvar1)) {
+    form <- "y ~ 1 + (1 | id)"
+    result$fit <- lmer(form,data = dat); return(result)    
+    }
 
-  if (is.null(xvar1)) {result$fit <- lmer(form,data = dat); return(result)    }
-
+  if (ncycle == 1 & random == "second") {cat("Number of cycles is set to 2");  ncycle <- 2 }
+  
+  ifelse (ncycle == 1, fixedPart <- paste0("y ~ cvar + svar + "), 
+                       fixedPart <- paste0("y ~ cvar + svar + cvar2 + svar2 + ") )
+  
+  covtext <- paste0(cov, " + ", collapse = "")
+  if (!is.null(cov)) { fixedPart <- paste0(fixedPart, covtext) }
+  
+  if (random == "intercept") { randomPart <- "(1 | id)" }
+  if (random == "first")     { randomPart <- "(cvar + svar | id)"  }
+  if (random == "second")    { randomPart <- "(cvar2 + svar2 | id)"  }
+  if (random == "cov")       { randomPart <- paste0("( ", cov, " | id)")   }
+  if (random == "all" & ncycle == 1)  { randomPart <- paste0("(cvar + svar + ", covtext, "1 | id)")  }
+  if (random == "all" & ncycle == 2)  { randomPart <- paste0("(cvar + svar + cvar2 + svar2 + ", covtext, "1 | id)")  }
+ 
+  form <- paste0(fixedPart, randomPart)
+  
+  
+  
+  
   P <- max(dat[,xvar1])
   dat$cvar <- cos((2*pi/P)*dat[,xvar1])
   dat$svar <- sin((2*pi/P)*dat[,xvar1])
 
+  if (!ncycle == 1) {
+      P2 <- max(dat[,xvar2])
+      dat$cvar2 <- cos((2*pi/P2)*dat[,xvar2])
+      dat$svar2 <- sin((2*pi/P2)*dat[,xvar2]) 
+  }
+  
   # fit cyclic model using MLA
 
   fit <- lmer(form,data = dat)
 
   summary(fit)
 
-  a1<- NA; a2 <- NA; a3 <- NA ;
 
   a0 <- fixef(fit)[1]
   a1 <- fixef(fit)[2]
   a2 <- fixef(fit)[3]
-  a3 <- fixef(fit)[4]
+  if (ncycle == 1 & !is.null(cov)) acov <- fixef(fit)[c(4:(3+length(cov))]
+  if (!ncycle == 1) { 
+    a3 <- fixef(fit)[4]
+    a4 <- fixef(fit)[5] 
+    if (!is.null(cov)) acov <- fixef(fit)[c(6:(5+length(cov))]
+  }
 
-  b <- c(a0,cycpar(a1,a2, P),a3)     ## convert to parameters for linear model
+  ## convert to parameters for linear model
+  b <- c(a0,cycpar(a1,a2, P),acov)     
   names(b) <- c("Intercept", " amplitude", " phase" ,  "predictor")
+  
+  b <- c(a0,cycpar(a1,a2, P),cycpar(a3,a4, P2),acov)     ## convert to parameters for linear model
+  names(b) <- c("Intercept", "daily amplitude", "daily phase" ,  "weekly amplitude" , "weekly phase","predictor" )
+  
 
   ## Aggregate over subjects
 

@@ -132,7 +132,8 @@ out$oneCyclePlot
 
 
 
-## Apply, only for subject 15, the cylic model with a weekly period for stress and positive affect, instead of a daily period. This is shown in Figure 5.
+## Apply, only for subject 15, the cylic model with a weekly period for stress and positive affect, instead of a daily period. 
+## This is shown in Figure 5.
 
 
 pdat <- subset(dat3, dat3$subjnr == 15)   
@@ -145,15 +146,58 @@ out$meansPlot
 summary(out$fit)
 
 
+
+## Multilevel models
+
+
 model1 <- fitCyclicMLA(dat=dat3, form = y ~ 1 + (1 | id), 
                        yvar="intention", id = "subjnr", 
                        ymin = -0.5, ymax = 0.5, step=0.10 )
 model1$fit
 
+## Intraclass correlation
 
+ICC <- (as.data.frame(VarCorr(model1$fit))[1,"vcov"]) / sum(as.data.frame(VarCorr(model1$fit))[,"vcov"])  
+cat("The Intraclass correlation (ICC) is: ", ICC)
 
+model2 <- fitCyclicMLA(dat=dat3, random = "intercept",  ncycle = 1,
+                       yvar="intention", xvar1="beepnr",xvar2="daynr", id = "subjnr", 
+                       ymin = -0.5, ymax = 0.5, step=0.10 )
 
+model2$plot
+model2$parameters
+model2$fit
 
+model3 <- fitCyclicMLA(dat=dat3, form = y ~ cvar + svar + (cvar + svar | id),  
+                       yvar="intention", xvar1="beepnr",xvar2="daynr", id = "subjnr",  
+                       ymin = -0.5, ymax = 0.5, step=0.10 )
+
+model3$plot
+model3$parameters
+model3$fit
+
+## Fitting two cyclic process: within day and within week
+
+model4 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + (cvar + svar | id), 
+                        yvar="intention", xvar1="beepnr", xvar2="daynr",id = "subjnr", 
+                        ymin = -0.5, ymax = 0.5, step=0.10 )
+model4$plot
+model4$parameters
+model4$fit
+
+model5 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + (cvar + svar + cvar2 + svar2 | id), yvar="intention", xvar1="beepnr", xvar2="daynr",id = "subjnr", ymin = -0.5, ymax = 0.5, step=0.10 )
+model5$plot
+model5$parameters
+model5$fit
+
+model6 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + stress + (cvar + svar + cvar2 + svar2 + stress | id), yvar="intention", xvar1="beepnr", xvar2="daynr",id = "subjnr", ymin = -0.5, ymax = 0.5, step=0.10 )
+model6$plot
+model6$parameters
+model6$fit
+
+# compare the models
+
+anova(model6$fit, model5$fit, model4$fit,model3$fit, model2$fit, model1$fit)  
 
 
 ## Analyze cyclic model with MLA and plot

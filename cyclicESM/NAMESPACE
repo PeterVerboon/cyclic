@@ -2,4 +2,5 @@
 
 export(cycpar)
 export(fitCyclic)
+export(fitCyclicMLA)
 import(ggplot2)
