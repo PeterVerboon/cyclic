@@ -23,8 +23,8 @@ fitCyclic <- function(dat, yvar, xvar, dayNumber = NULL, cov = NULL , P = NULL,
                       ymin = -1.0, ymax = 1.0, step=0.25 ) {  
   
     result <- list() 
+    result$input <- as.list(environment())
     
-  
     ifelse (is.null(cov),form <- paste0("y ~ cvar + svar"), form <- paste0("y ~ cvar + svar + ", cov) )
 
     if (is.null(P)) {P <- max(dat[,xvar])}
@@ -113,10 +113,11 @@ fitCyclic <- function(dat, yvar, xvar, dayNumber = NULL, cov = NULL , P = NULL,
     result$oneCyclePlot <- g
     result$fit  <- fitp
     result$parameters <- b
+    result$formula <- form
     
     return(result)
 
-}     # end function
+}     
 
 
 

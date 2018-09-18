@@ -12,9 +12,11 @@ fitCyclic(dat, yvar, xvar, dayNumber = NULL, cov = NULL, P = NULL,
 
 \item{xvar}{time variabele}
 
+\item{dayNumber}{indicates the days, used in the plots. If NULL plot assumes only one day.}
+
 \item{cov}{vector of names containing additional variabeles (e.g. cov = c("x1", "daynr"))}
 
-\item{P}{is the periodicity of the cycle}
+\item{P}{the periodicity of the cycle. If NULL the maximum of xvar will be taken.}
 
 \item{ymin, ymax, steps}{parameters that control axes of the plot}
 }
@@ -35,7 +37,7 @@ oneCyclePlot =    plot with predictions for one cycle,
 This function fits the cyclic model, using a simple linear model (see Verboon & Leontjevas, 2018)
 }
 \examples{
-cycpar(a1,a2,P)
+fitCyclic(dat, yvar = y = "dependentVar", xvar = "beepnr", dayNumber = "daynr")
 }
 \keyword{ESM}
 \keyword{cyclic}
