@@ -34,6 +34,7 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
   if (!ncycle == 1 & is.null(xvar2)) {stop("Two cyclic patterns were requested, but parameter 'xvar2' has not been specified") }
   ifelse (is.null(xvar2), dat$day <- 1  , dat$day <- as.factor(dat[,xvar2]))
   if (ncycle == 1 & random == "second") {cat("Number of cycles is set to 2");  ncycle <- 2 }
+  if (is.null(cov) & random == "cov") {cat("No covariates are specified. Random term is set to 'intercept'");  random <- "intercept" }
   
   # construct formula
   ifelse (ncycle == 1, fixedPart <- paste0("y ~ cvar + svar"), 
@@ -45,7 +46,7 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
   if (random == "intercept") { randomPart <- "(1 | id)" }
   if (random == "first")     { randomPart <- "(cvar + svar | id)"  }
   if (random == "second")    { randomPart <- "(cvar2 + svar2 | id)"  }
-  if (random == "cov")       { randomPart <- paste0("( ", cov, " | id)")   }
+  if (random == "cov")       { randomPart <- paste0("( ", covtext, " | id)")   }
   if (random == "all" & ncycle == 1)  { randomPart <- paste0("(cvar + svar + ", covtext, "| id)")  }
   if (random == "all" & ncycle == 2)  { randomPart <- paste0("(cvar + svar + cvar2 + svar2 + ", covtext, "| id)")  }
  
@@ -81,7 +82,7 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
  # convert to parameters from linear model
   if (ncycle == 1) { 
     b <- c(a0,cycpar(a1,a2, P),a.cov)     
-    names(b) <- c("intercept", " amplitude", " phase" ,  cov)
+    names(b) <- c("intercept", "amplitude", "phase" ,  cov)
   }
   
   if (!ncycle == 1) {
@@ -90,7 +91,7 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
   }
  
   result$fit <- fit
-  result$parameters <- data.frame(b)
+  result$parameters <- b
   result$formule <- form
   result$period <- c(P, P2)
  
@@ -103,10 +104,10 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
 # test
 
 model <- fitCyclicMLA(dat=dat3,  yvar="intention", xvar1="beepnr",xvar2="daynr", id = "subjnr",
-                      random = "intercept",  ncycle = 2, cov =c("stress"), 
-                      ymin = -0.5, ymax = 0.5, step=0.10 )
+                      random = "all",  ncycle = 1, cov = c("stress", "positiveAffect"), 
+                      ymin = -0.5, ymax = 0.5, step=0.10)
 #
-#
+print(model)
  model$parameters
  model$fit
  model$formule
@@ -117,14 +118,21 @@ model <- fitCyclicMLA(dat=dat3,  yvar="intention", xvar1="beepnr",xvar2="daynr",
  
  plot.fitCyclicMLA <- function(x,...) {
   
- dat <- model$input$dat 
- b <- model$parameters
- ncycle <- model$input$ncycle
- P <- model$period[1]
- if (!ncycle == 1) P2 <- model$period[2]
- ymin <- model$input$ymin
- ymax <- model$input$ymax
- step <- model$input$step
+ dat <- x$input$dat 
+ yvar <- x$input$yvar
+ xvar1 <-  x$input$xvar1
+ xvar2 <- x$input$xvar2
+ cov <- x$input$cov
+ b <- x$parameters
+ ncycle <- x$input$ncycle
+ P <- x$period[1]
+ if (!ncycle == 1) P2 <- x$period[2]
+ 
+ args <- list(...)
+ ifelse(!is.null(args[['ymin']]), ymin <- args[['ymin']], ymin <- x$input$ymin)
+ ifelse(!is.null(args[['ymax']]), ymin <- args[['ymax']], ymin <- x$input$ymax)
+ ifelse(!is.null(args[['step']]), ymin <- args[['step']], ymin <- x$input$step)
+ 
  
  datm <- aggregate(dat[,c(yvar,cov)],by=list(dat[,xvar1],dat[,xvar2]), FUN=mean, na.rm=F);
  datm$xvar2 <- as.numeric(datm$Group.2)
@@ -148,7 +156,6 @@ model <- fitCyclicMLA(dat=dat3,  yvar="intention", xvar1="beepnr",xvar2="daynr",
    }
  }
  
- # make plot
  datm$day <- as.factor(datm$xvar2)
  npoints <- dim(datm)[1]
  datm$xall <- c(1:npoints)
@@ -164,23 +171,30 @@ model <- fitCyclicMLA(dat=dat3,  yvar="intention", xvar1="beepnr",xvar2="daynr",
  }
 
  plot(model) 
+ plot(model, ymin = -1)
  
- print.fitCyclicMLA <- function(x,digits=3,...) {
+ 
+ print.fitCyclicMLA <- function(x,digits=2,...) {
    
-   ncycle <- model$input$ncycle
-  
-   cat("The dependent variable is:   ",model$input$yvar, "\n", sep="")
+   ncycle <- x$input$ncycle
+   b <- data.frame(x$parameters)
+   colnames(b) <- "estimates"
    
-   cat("The time variable is:        ",model$input$xvar1, "\n", sep="")
-   if (!ncycle == 1) cat("The second time variable is: ",model$input$xvar2, "\n\n", sep="")
-   cat("The parameters of the fitted model are: ", "\n")
-   print(model$parameters)
+   cat("The dependent variable is:   ",x$input$yvar, "\n", sep="")
+   cat("The first time variable is:  ",x$input$xvar1, "\n", sep="")
+   if (!ncycle == 1) cat("The second time variable is: ",x$input$xvar2, "\n", sep="")
+   if (!is.null(x$input$cov)) cat("The covariates are:        ",x$input$cov, "\n", sep="  ")
+   cat("\n")
+   cat("The period of the first cycle is: ", x$period[1] ,"\n")
+   if (!ncycle == 1) cat("The period of the second cycle is: ", x$period[2] ,"\n\n")
+   cat("The formula used to fit the model is:   ",x$formule, "\n\n")
+   cat("The parameters of the fitted model are: ", "\n\n")
+   print(b, digits = digits)
    cat("\n\n")
-   cat("The period of the first cycle is: ", model$period[1] ,"\n")
-   if (!ncycle == 1) cat("The period of the second cycle is: ", model$period[2] ,"\n\n")
-   cat("The formula used to fit the model is:   ",model$formule, "\n")
-   
-   
+   cat("The deviance of the fitted model is:   ",deviance(x$fit, REML = FALSE), "\n\n")
+   cat("The standard deviation of and correlation between the random effects are: ", "\n\n")
+   print(VarCorr(x$fit, REML = FALSE), digits = digits)
+  
  }
 
  print(model) 

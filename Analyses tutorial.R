@@ -90,12 +90,10 @@ pdat$day <- as.factor(pdat$daynr)
 
 # Plot raw DV of single subject
 
-g <- ggplot(pdat,aes(x=x, y=pdat$intention, colour=pdat$day))
-g <- g + geom_point()
+g <- ggplot(pdat,aes(x=x, y=pdat$intention, colour=pdat$day)) + geom_point()
 g <- g + scale_x_discrete(name ="Time points (beeps within days)",  labels=pdat$beepnr, limits=c(1:npoints))
 g <- g + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
 g
-
 
 
 ## Analyze cyclic model and plot
