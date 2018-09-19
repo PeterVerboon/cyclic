@@ -10,12 +10,12 @@
 #' @param ncycle is the number of cyclic processes in the model (1 = 1, otherwise = 2)
 #' @param P is the periodicity of the first cyclic process
 #' @param P2 is the periodicity of the second cyclic process
-#' @param random keyword indicating which terms should be random effect in the model, Th efollowing ketwords are available
-#' "intercept" for intercept only, 
-#' "first" for cyclic parameters of first cyclic process
-#' "second" for cyclic parameters of second cyclic process
-#' "cov" covariates, no cyclic terms
-#' "all" all terms 
+#' @param random keyword indicating which terms should be random effect in the model. The following keywords are available: 
+#' "intercept"= intercept only;  
+#' "first"= cyclic parameters of first cyclic process; 
+#' "second" = cyclic parameters of second cyclic process; 
+#' "cov" = covariates only, no cyclic terms; and finally
+#' "all" = all terms 
 #' @param ymin,ymax,step parameters that control axes of the plot
 #' @keywords cyclic model ESM
 #' @return list containing the following elements:
@@ -27,9 +27,7 @@
 #' @import lme4
 #' @export
 #' @examples
-#' @method print  prints selection of the results with labels
-#' @method plot   plots the result of aggregated data
-#' model <- fitCyclicMLA(dat=data,  yvar="intention", xvar1="beepnr", xvar2="daynr", id = "subjnr",
+#'   model <- fitCyclicMLA(dat=data,  yvar="intention", xvar1="beepnr", xvar2="daynr", id = "subjnr",
 #'   random = "all",  ncycle = 1, cov = c("stress", "positiveAffect"), 
 #'   ymin = -0.5, ymax = 0.5, step=0.10)
 fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL, cov = NULL,  
@@ -132,15 +130,12 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
 
 
 #'
-#' This function plots the result of fitting a cyclic model on ESM data
-#' @param x fitcyclicMLA object
-#' @param ... ymin,ymax,step can specified that control axes of the plot
-#' @keywords cyclic model ESM
-#' @return plot of the aggregated data with the predicted values from the model 
+#' Plots fitCyclicMLA object
+#' @param ... ymin, ymax, step can specified to control axes of the plot
+#' @return plots of the aggregated data with the predicted values from the model 
+#' @method plot fitCyclicMLA
 #' @import ggplot2
 #' @export
-#' @examples
-#' plot(model)
 plot.fitCyclicMLA <- function(x,...) {
   
   dat <- x$input$dat 
@@ -199,14 +194,9 @@ plot.fitCyclicMLA <- function(x,...) {
 
 
 #'
-#' This function prints the result of a cyclic model, fitted on ESM data
-#' @param x fitCyclicMLA
-#' @param digits number of decimals
-#' @keywords cyclic model ESM
-#' @return overview of the input and the results of the analysis
+#' Prints fitCyclicMLA object
+#' @method print fitCyclicMLA
 #' @export
-#' @examples
-#' print(model)
 print.fitCyclicMLA <- function(x,digits=2,...) {
   
   ncycle <- x$input$ncycle

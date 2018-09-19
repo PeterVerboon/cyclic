@@ -4,8 +4,8 @@
 \alias{fitCyclic}
 \title{Fits the cyclic model, using a simple linear model.}
 \usage{
-fitCyclic(dat, yvar, xvar, dayNumber = NULL, cov = NULL, P = NULL,
-  ymin = -1, ymax = 1, step = 0.25)
+fitCyclic(dat, yvar = NULL, xvar = NULL, dayNumber = NULL,
+  cov = NULL, P = NULL, ymin = -1, ymax = 1, step = 0.25)
 }
 \arguments{
 \item{yvar}{dependent variable}
@@ -18,7 +18,7 @@ fitCyclic(dat, yvar, xvar, dayNumber = NULL, cov = NULL, P = NULL,
 
 \item{P}{the periodicity of the cycle. If NULL the maximum of xvar will be taken.}
 
-\item{ymin, ymax, steps}{parameters that control axes of the plot}
+\item{ymin, ymax, step}{parameters that control axes of the plot}
 }
 \value{
 list containing the following elements:

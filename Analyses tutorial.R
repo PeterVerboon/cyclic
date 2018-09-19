@@ -1,7 +1,7 @@
-#require(dplyr)   # for summarise
-require(ggplot2)
-require(lme4);   # for lmer
-#require(userfriendlyscience)
+
+#require(ggplot2)
+#require(lme4);   # for lmer
+
 
 options(digids=3)
 
@@ -63,7 +63,7 @@ nsmall <- (nall - nfew) - length(unique(dat3$subjnr))
 cat(" Number of subjects in data set:              ", nall," \n",
     "Number of subjects with less than 50 records: ", nfew ," \n" ,
     "Number of subjects with SD smaller than .10:  ", nsmall," \n" ,
-    "Number of subjects used in analysis:         ",length(unique(dat3$subjnr)))
+    "Number of subjects used in analysis:         ",length(unique(dat3$subjnr)), "\n")
 
 
 ## aggregate over subjects
@@ -98,33 +98,29 @@ g
 
 ## Analyze cyclic model and plot
 
-a <- fitCyclic(pdat,yvar = "intention",  xvar="beepnr", dayNumber = "daynr", 
+model_a <- fitCyclic(pdat,yvar = "intention",  xvar="beepnr", dayNumber = "daynr", 
                ymin = -2.5, ymax = 1.5, step=.30)
 
-a$rawDataPlot
-a$meansPlot
-a$parameters
-summary(a$fit)
+print(model_a)
+plot(model_a)
 
 ## fit extra model with day as covariate 
 
-a <- fitCyclic(pdat,  yvar = "positiveAffect", xvar="beepnr",dayNumber = "daynr", 
-               cov = "daynr", ymin=-0.5, ymax=0.5)
+model_b <- fitCyclic(pdat,  yvar = "positiveAffect", xvar="beepnr",dayNumber = "daynr", 
+                     cov = "daynr", ymin=-0.5, ymax=0.5)
 
-a$rawDataPlot
-a$meansPlot
-a$oneCyclePlot
-a$parameters
-summary(a$fit)
+print(model_b)
+plot(model_b)
 
 pdat <- subset(dat3, dat3$subjnr == 15)   
 
-out <- fitCyclic(pdat,yvar = "stress", xvar="beepnr", dayNumber = "daynr", 
-                 ymin = -1.0, ymax = 0.5, step= 0.25)
+model_c <- fitCyclic(pdat,yvar = "stress", xvar="beepnr", dayNumber = "daynr", 
+                     ymin = -1.0, ymax = 0.5, step= 0.25)
 
-out$rawDataPlot
-out$meansPlot
-out$oneCyclePlot
+print(model_c)
+plot(model_c)
+
+
 
 #### Step 5
 
@@ -136,12 +132,11 @@ out$oneCyclePlot
 
 pdat <- subset(dat3, dat3$subjnr == 15)   
 
-out <- fitCyclic(pdat, yvar = "stress", xvar="daynr", dayNumber = "daynr", 
-                 ymin = -2.0, ymax = 1.0, step= 0.25)
+model_d <- fitCyclic(pdat, yvar = "stress", xvar="daynr", dayNumber = "daynr", 
+                     ymin = -2.0, ymax = 1.0, step= 0.25)
 
-out$rawDataPlot
-out$meansPlot
-summary(out$fit)
+print(model_d)
+plot(model_d, plotType = "means")
 
 
 
