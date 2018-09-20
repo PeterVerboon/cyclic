@@ -1,32 +1,13 @@
 
-#require(ggplot2)
-#require(lme4);   # for lmer
 
 
-options(digids=3)
-
-## DATASET 2  CATHERINE  ##
-
-# getDat()
-# getData(filename="/Users/peterverboon/Documents/Open Universiteit/Onderzoek/Project Cyclic models/SmokingLapse.sav");
-
-# dat1 <- data[,c("subjnr","beepnr", "daynr", "NAc", "PAc","Stressc","Zintentie","rookgedrag")]
-# dat1$intention <- dat1$Zintentie
-# dat1$positiveAffect <- scale(dat1$PAc)
-# dat1$stress <- scale(dat1$Stressc)
-# work
-# 
-# dat1$intention <- scale(dat1$intention)
-# dat1$Stress <- NULL
-
-
-
-save(dat1, file="smokedat.Rdata")
 
 ################ START TUTORIAL ##############################
 
 load("smokedat.Rdata")
-names(dat1)
+names(smokedat)
+
+dat1 <- smokedat
 
 nall <- length(unique(dat1$subjnr))
 
@@ -90,15 +71,17 @@ pdat$day <- as.factor(pdat$daynr)
 
 # Plot raw DV of single subject
 
-g <- ggplot(pdat,aes(x=x, y=pdat$intention, colour=pdat$day)) + geom_point()
-g <- g + scale_x_discrete(name ="Time points (beeps within days)",  labels=pdat$beepnr, limits=c(1:npoints))
-g <- g + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
+require(ggplot2)
+
+g <- ggplot(pdat,aes(x=x, y=pdat$intention, colour=pdat$day)) + geom_point() +
+     scale_x_discrete(name ="Time points (beeps within days)",  labels=pdat$beepnr, limits=c(1:npoints)) +
+     theme(axis.text = element_text(size = 6, colour="black"),legend.position="none") 
 g
 
 
 ## Analyze cyclic model and plot
 
-model_a <- fitCyclic(pdat,yvar = "intention",  xvar="beepnr", dayNumber = "daynr", 
+model_a <- fitCyclic(pdat,yvar = "intention",  xvar1 ="beepnr", xvar2 = "daynr", 
                ymin = -2.5, ymax = 1.5, step=.30)
 
 print(model_a)
@@ -106,7 +89,7 @@ plot(model_a)
 
 ## fit extra model with day as covariate 
 
-model_b <- fitCyclic(pdat,  yvar = "positiveAffect", xvar="beepnr",dayNumber = "daynr", 
+model_b <- fitCyclic(pdat,  yvar = "positiveAffect", xvar1 ="beepnr",xvar2 = "daynr", 
                      cov = "daynr", ymin=-0.5, ymax=0.5)
 
 print(model_b)
@@ -114,7 +97,7 @@ plot(model_b)
 
 pdat <- subset(dat3, dat3$subjnr == 15)   
 
-model_c <- fitCyclic(pdat,yvar = "stress", xvar="beepnr", dayNumber = "daynr", 
+model_c <- fitCyclic(pdat,yvar = "stress", xvar1 ="beepnr", xvar2 = "daynr", 
                      ymin = -1.0, ymax = 0.5, step= 0.25)
 
 print(model_c)
@@ -132,7 +115,7 @@ plot(model_c)
 
 pdat <- subset(dat3, dat3$subjnr == 15)   
 
-model_d <- fitCyclic(pdat, yvar = "stress", xvar="daynr", dayNumber = "daynr", 
+model_d <- fitCyclic(pdat, yvar = "stress", xvar1 ="daynr", xvar2 = "daynr", 
                      ymin = -2.0, ymax = 1.0, step= 0.25)
 
 print(model_d)
@@ -143,10 +126,10 @@ plot(model_d, plotType = "means")
 ## Multilevel models
 
 
-model1 <- fitCyclicMLA(dat=dat3, form = y ~ 1 + (1 | id), 
-                       yvar="intention", id = "subjnr", 
+model1 <- fitCyclicMLA(dat=dat3, yvar="intention", id = "subjnr", 
                        ymin = -0.5, ymax = 0.5, step=0.10 )
-model1$fit
+print(model1)
+plot(model1)
 
 ## Intraclass correlation
 
@@ -157,70 +140,39 @@ model2 <- fitCyclicMLA(dat=dat3, random = "intercept",  ncycle = 1,
                        yvar="intention", xvar1="beepnr",xvar2="daynr", id = "subjnr", 
                        ymin = -0.5, ymax = 0.5, step=0.10 )
 
-model2$plot
-model2$parameters
-model2$fit
+print(model2)
+plot(model2)
 
-model3 <- fitCyclicMLA(dat=dat3, form = y ~ cvar + svar + (cvar + svar | id),  
-                       yvar="intention", xvar1="beepnr",xvar2="daynr", id = "subjnr",  
-                       ymin = -0.5, ymax = 0.5, step=0.10 )
 
-model3$plot
-model3$parameters
-model3$fit
+model3 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr",xvar2="daynr", id = "subjnr", 
+                      ncycle = 1, random = "first",ymin = -0.5, ymax = 0.5, step=0.10 )
+
+print(model3)
+plot(model3)
+
 
 ## Fitting two cyclic process: within day and within week
 
-model4 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + (cvar + svar | id), 
-                        yvar="intention", xvar1="beepnr", xvar2="daynr",id = "subjnr", 
-                        ymin = -0.5, ymax = 0.5, step=0.10 )
-model4$plot
-model4$parameters
-model4$fit
+model4 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr", xvar2="daynr",id = "subjnr", 
+                        ncycle = 2, random = "first", ymin = -0.5, ymax = 0.5, step=0.10 )
+print(model4)
+plot(model4)
 
-model5 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + (cvar + svar + cvar2 + svar2 | id), yvar="intention", xvar1="beepnr", xvar2="daynr",id = "subjnr", ymin = -0.5, ymax = 0.5, step=0.10 )
-model5$plot
-model5$parameters
-model5$fit
+model5 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr", xvar2="daynr",id = "subjnr",
+                       ncycle = 2, random = "all", ymin = -0.5, ymax = 0.5, step=0.10 )
 
-model6 <- fitCyclic2MLA(dat=dat3, form = y ~ cvar + svar + cvar2 + svar2 + stress + (cvar + svar + cvar2 + svar2 + stress | id), yvar="intention", xvar1="beepnr", xvar2="daynr",id = "subjnr", ymin = -0.5, ymax = 0.5, step=0.10 )
-model6$plot
-model6$parameters
-model6$fit
+print(model5)
+plot(model5)
+
+model6 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr", xvar2="daynr",id = "subjnr", cov = "stress",
+                        ncycle = 2, random = "all", ymin = -0.5, ymax = 0.5, step=0.10 )
+
+print(model6)
+plot(model6)
 
 # compare the models
 
 anova(model6$fit, model5$fit, model4$fit,model3$fit, model2$fit, model1$fit)  
 
 
-## Analyze cyclic model with MLA and plot
 
-dat <- dat3
-
-dat$yvar <- dat$positiveAffect
-dat$xvar <- dat$beepnr 
-P <- max(dat$xvar)
-dat$cvar <- cos((2*pi/P)*dat$xvar)
-dat$svar <- sin((2*pi/P)*dat$xvar)
-
-
-fit <- lmer(yvar ~ cvar + svar + (1 +  svar + cvar |subjnr),data = dat)                  # cyclic effect of beeps
-
-summary(fit)
-
-a0 <- fixef(fit)[1]
-a1 <- fixef(fit)[2]
-a2 <- fixef(fit)[3]
-b3 <- fixef(fit)[4]
-
-par <- cycpar(a1,a2)
-b <- c(a0,par,b3)
-b
-
-dat$ypred = predict(fit)
-pdat <- subset(dat, dat$subjnr %in% c(2,15,18))
-pdat$subj <- as.factor(pdat$subjnr)
-
-p <- ggplot(pdat, aes(x = beepnr, y = positiveAffect, colour = subj)) + geom_point(size=3)
-   + geom_line(aes(y = ypred),size=1) 
-print(p)

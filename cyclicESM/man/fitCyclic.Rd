@@ -4,19 +4,19 @@
 \alias{fitCyclic}
 \title{Fits the cyclic model, using a simple linear model.}
 \usage{
-fitCyclic(dat, yvar = NULL, xvar = NULL, dayNumber = NULL,
-  cov = NULL, P = NULL, ymin = -1, ymax = 1, step = 0.25)
+fitCyclic(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, cov = NULL,
+  P = NULL, ymin = -1, ymax = 1, step = 0.25)
 }
 \arguments{
 \item{yvar}{dependent variable}
 
-\item{xvar}{time variabele}
+\item{xvar1}{time variabele indicator, usually indicates the beeps}
 
-\item{dayNumber}{indicates the days, used in the plots. If NULL plot assumes only one day.}
+\item{xvar2}{time variabele indicator, usually indicates the days, used in plot. If NULL only one day is assumed}
 
 \item{cov}{vector of names containing additional variabeles (e.g. cov = c("x1", "daynr"))}
 
-\item{P}{the periodicity of the cycle. If NULL the maximum of xvar will be taken.}
+\item{P}{the periodicity of the cycle. If NULL the maximum of xvar1 will be taken.}
 
 \item{ymin, ymax, step}{parameters that control axes of the plot}
 }
@@ -37,7 +37,7 @@ oneCyclePlot =    plot with predictions for one cycle,
 This function fits the cyclic model, using a simple linear model (see Verboon & Leontjevas, 2018)
 }
 \examples{
-fitCyclic(dat, yvar = y = "dependentVar", xvar = "beepnr", dayNumber = "daynr")
+fitCyclic(dat, yvar = y = "dependentVar", xvar1 = "beepnr", xvar2 = "daynr")
 }
 \keyword{ESM}
 \keyword{cyclic}
