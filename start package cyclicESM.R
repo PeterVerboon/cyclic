@@ -14,6 +14,10 @@ create("cyclicESM")
 setwd("./cyclicESM")
 document()
 
+devtools::build_vignettes(pkg = "cyclicESM") 
+devtools::use_data(smokedat, cyclicESM)
+devtools::use_package("lme4") 
+
 setwd("..")
 install("cyclicESM")
 

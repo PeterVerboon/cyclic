@@ -24,7 +24,6 @@
 #' @return formula =     specification of lmer model
 #' @return period =      specified periodicity of cyclic process
 #' @import ggplot2
-#' @import lme4
 #' @export
 #' @examples
 #'   model <- fitCyclicMLA(dat=data,  yvar="intention", xvar1="beepnr", xvar2="daynr", id = "subjnr",
@@ -53,7 +52,7 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
   if (is.null(xvar1)) {
     cat("The intercept only model was requested, since parameter 'xvar1' is empty")
     form <- "y ~ 1 + (1 | id)"
-    result$fit <- lmer(form,data = dat)
+    result$fit <- lme4::lmer(form,data = dat)
     class(result)  <- "fitCyclicMLA"
     return(result)
   }
@@ -99,16 +98,16 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
 
   # fit cyclic model using MLA
 
-  fit <- lmer(form,data = dat)
+  fit <- lme4::lmer(form,data = dat)
 
-  a0 <- fixef(fit)[1]
-  a1 <- fixef(fit)[2]
-  a2 <- fixef(fit)[3]
-  if (ncycle == 1 & !is.null(cov)) a.cov <- fixef(fit)[4:(3+length(cov))]
+  a0 <- lme4::fixef(fit)[1]
+  a1 <- lme4::fixef(fit)[2]
+  a2 <- lme4::fixef(fit)[3]
+  if (ncycle == 1 & !is.null(cov)) a.cov <- lme4::fixef(fit)[4:(3+length(cov))]
   if (!ncycle == 1) {
-    a3 <- fixef(fit)[4] ;
-    a4 <- fixef(fit)[5] ;
-    if (!is.null(cov)) a.cov <- fixef(fit)[6:(5+length(cov))]
+    a3 <- lme4::fixef(fit)[4] ;
+    a4 <- lme4::fixef(fit)[5] ;
+    if (!is.null(cov)) a.cov <- lme4::fixef(fit)[6:(5+length(cov))]
   }
 
   # convert to parameters from linear model
@@ -228,7 +227,7 @@ print.fitCyclicMLA <- function(x,digits=2,...) {
   cat("\n\n")
   cat("The deviance of the fitted model is:   ",deviance(x$fit, REML = FALSE), "\n\n")
   cat("The standard deviation of and correlation between the random effects are: ", "\n\n")
-  print(VarCorr(x$fit, REML = FALSE), digits = digits)
+  print(lme4::VarCorr(x$fit, REML = FALSE), digits = digits)
 
 }
 

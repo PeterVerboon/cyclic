@@ -1,11 +1,13 @@
 
 
-
+library(cyclicESM)
 
 ################ START TUTORIAL ##############################
 
-load("smokedat.Rdata")
+#load("data/smokedat.rda")
+data("smokedat")
 names(smokedat)
+
 
 dat1 <- smokedat
 
@@ -133,7 +135,7 @@ plot(model1)
 
 ## Intraclass correlation
 
-ICC <- (as.data.frame(VarCorr(model1$fit))[1,"vcov"]) / sum(as.data.frame(VarCorr(model1$fit))[,"vcov"])  
+ICC <- (as.data.frame(lme4::VarCorr(model1$fit))[1,"vcov"]) / sum(as.data.frame(VarCorr(model1$fit))[,"vcov"])  
 cat("The Intraclass correlation (ICC) is: ", ICC)
 
 model2 <- fitCyclicMLA(dat=dat3, random = "intercept",  ncycle = 1,
