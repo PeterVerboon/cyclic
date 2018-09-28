@@ -205,7 +205,10 @@ plot.fitCyclicMLA <- function(x,...) {
 print.fitCyclicMLA <- function(x,digits=2,...) {
 
   if (is.null(x$input$xvar1)) {
-    cat("The intercept-only model has been fitted", "\n\n")
+    cat("\n","The intercept-only model has been fitted", "\n\n")
+    cat(" The R-square of the fitted model is: ", 1-var(residuals(x$fit))/(var(model.response(model.frame(x$fit)))), "\n")
+    ICC <- (as.data.frame(lme4::VarCorr(model1$fit))[1,"vcov"]) / sum(as.data.frame(lme4::VarCorr(model1$fit))[,"vcov"])          
+    cat(" The Intraclass correlation (ICC) is: ", ICC, "\n\n")
     print(x$fit)
     return()
   }
@@ -226,6 +229,7 @@ print.fitCyclicMLA <- function(x,digits=2,...) {
   print(b, digits = digits)
   cat("\n\n")
   cat("The deviance of the fitted model is:   ",deviance(x$fit, REML = FALSE), "\n\n")
+  cat("The R-square of the fitted model is:   ", 1-var(residuals(x$fit))/(var(model.response(model.frame(x$fit)))), "\n\n")
   cat("The standard deviation of and correlation between the random effects are: ", "\n\n")
   print(lme4::VarCorr(x$fit, REML = FALSE), digits = digits)
 

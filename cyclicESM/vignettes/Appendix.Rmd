@@ -35,12 +35,9 @@ The function ` fitCyclicMLA() ` fits a MLA model with ` lmer() ` from the lme4 p
 These functions should be helpful for applying a cyclic model to your data. The functions have methods for printing the results and plotting the fitted cyclic patterns.
 
 &nbsp;
-As an illustration of a cyclic process we generate perfect cyclic data and construct Figure 1 with these data using the following code. First we need to install and load the package ggplot2 necessary for plotting. 
+As an illustration of a cyclic process we generate perfect cyclic data and construct Figure 1 with these data using the following code. The package ggplot2 is used for plotting. 
 
 ```{r tutorial-0, eval=FALSE}
-
-install.packages(ggplot2)
-require(ggplot2)              
 
 a0 <- 1;
 b1 <- 2;
@@ -170,7 +167,7 @@ Now we analyze the cyclic model and plot the result, again for the average and f
 model_a <- fitCyclic(pdat,yvar = "intention",  xvar1 ="beepnr", xvar2 = "daynr", 
                      ymin = -2.5, ymax = 1.5, step=.30)
 print(model_a)
-plot(model_a)
+plot(model_a, type = c("raw","means"))
 ```
 
 
@@ -247,9 +244,6 @@ Analyze the data with the cyclic model using  MLA and model comparison. Each con
 model1 <- fitCyclicMLA(dat=dat3, yvar="intention", id = "subjnr")
 print(model1)
 
-ICC <- (as.data.frame(lme4::VarCorr(model1$fit))[1,"vcov"]) / sum(as.data.frame(lme4::VarCorr(model1$fit))[,"vcov"])          
-cat("The Intraclass correaltionn (ICC) is: ", ICC)
-
 ```
 
 The next two models fit a daily cycle to the data. Model2 with ony the intecept as random term and model3 includes the cyclic terms as random effects.
@@ -260,7 +254,6 @@ print(model2)
 
 model3 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr",xvar2="daynr", id = "subjnr", 
                       ncycle = 1, random = "first")
-print(model3)
 print(model3)
 plot(model3)
 ```
