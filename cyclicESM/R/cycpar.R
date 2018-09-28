@@ -11,7 +11,7 @@
 #' @return The amplitude and phase of the cyclic process
 #' @export
 #' @examples
-#' cycpar(a1,a2,P)
+#' cycpar(a1=.5,a2=1.0,P=24)
 cycpar <- function(a1,a2, P) {
 
   b1 <- sqrt(a1**2 + a2**2)

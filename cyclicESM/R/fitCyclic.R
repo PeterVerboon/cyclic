@@ -18,7 +18,8 @@
 #' @import ggplot2
 #' @export
 #' @examples
-#' fitCyclic(dat, yvar = y = "dependentVar", xvar1 = "beepnr", xvar2 = "daynr")
+#' data("pdat")
+#' fitCyclic(dat=pdat, yvar = y = "dependentVar", xvar1 = "beepnr", xvar2 = "daynr")
 fitCyclic <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, cov = NULL , P = NULL,
                       ymin = -1.0, ymax = 1.0, step=0.25 ) {
 

@@ -62,6 +62,7 @@ dat4$Group.2 <- NULL
 ### plot raw data
 
 pdat <- dat4                                      # averaged over all subjects
+save(pdat, file= "pdat.rda")
 
 pdat <- subset(dat3, dat3$subjnr == 15)           # choose ppn 2, 15, 18 
                                                      

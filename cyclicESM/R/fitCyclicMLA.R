@@ -26,7 +26,8 @@
 #' @import ggplot2
 #' @export
 #' @examples
-#'   model <- fitCyclicMLA(dat=data,  yvar="intention", xvar1="beepnr", xvar2="daynr", id = "subjnr",
+#'  data("smokedat")
+#'   model <- fitCyclicMLA(dat=smokedat,  yvar="intention", xvar1="beepnr", xvar2="daynr", id = "subjnr",
 #'   random = "all",  ncycle = 1, cov = c("stress", "positiveAffect"),
 #'   ymin = -0.5, ymax = 0.5, step=0.10)
 fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL, cov = NULL,
@@ -207,7 +208,7 @@ print.fitCyclicMLA <- function(x,digits=2,...) {
   if (is.null(x$input$xvar1)) {
     cat("\n","The intercept-only model has been fitted", "\n\n")
     cat(" The R-square of the fitted model is: ", 1-var(residuals(x$fit))/(var(model.response(model.frame(x$fit)))), "\n")
-    ICC <- (as.data.frame(lme4::VarCorr(model1$fit))[1,"vcov"]) / sum(as.data.frame(lme4::VarCorr(model1$fit))[,"vcov"])          
+    ICC <- (as.data.frame(lme4::VarCorr(model1$fit))[1,"vcov"]) / sum(as.data.frame(lme4::VarCorr(model1$fit))[,"vcov"])
     cat(" The Intraclass correlation (ICC) is: ", ICC, "\n\n")
     print(x$fit)
     return()

@@ -17,6 +17,7 @@ devtools::document()
 
 devtools::build_vignettes(pkg = "cyclicESM") 
 devtools::use_data(smokedat, cyclicESM)
+devtools::use_data(pdat, cyclicESM)
 devtools::use_package("lme4") 
 
 setwd("..")
