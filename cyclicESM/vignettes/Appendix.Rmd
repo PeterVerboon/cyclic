@@ -28,9 +28,11 @@ require(cyclicESM)
 
 ```
 
-The function ` cycpar() ` is an auxiliary function, whch computes the cyclic parameters from the linear model parameters. <br>
+The package consists of three functions. 
 The function ` fitCyclic() ` fits a linear model with ` lm() ` to obtain cyclic parameters.  <br>
 The function ` fitCyclicMLA() ` fits a MLA model with ` lmer() ` from the lme4 package to obtain cyclic parameters.  <br>
+The function ` cycpar() ` is an auxiliary function, whch computes the cyclic parameters from the linear model parameters. <br>
+
 
 These functions should be helpful for applying a cyclic model to your data. The functions have methods for printing the results and plotting the fitted cyclic patterns.
 
