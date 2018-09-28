@@ -140,7 +140,9 @@ plot.fitCyclic <- function(x, type = c("raw","means","oneCycle")) {
   if("raw" %in% type) plot(x$rawDataPlot)
   if("means" %in% type) plot(x$meansPlot)
   if (is.null(x$input$cov) & ("oneCycle" %in% type)) plot( x$oneCyclePlot)
-  if (!is.null(x$input$cov) & ("oneCycle" %in% type)) print("The oneCycle figure is not plotted because there are covariates")
+  if (!is.null(x$input$cov) & ("oneCycle" %in% type)) {
+    print("The oneCycle figure is not plotted because covariates have been specified")
+  }
 
 }
 
