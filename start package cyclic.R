@@ -8,7 +8,7 @@ setwd("~/Documents/Open Universiteit/Onderzoek/Methodologie/Cyclic-models")
 setwd("D:/R Git projects/Cyclic-models")
 
 
-devtools::create("cyclic")
+create("cyclic")
 
 setwd("./cyclic")
 
@@ -24,4 +24,4 @@ devtools::install("cyclic")
 
 
 
-library(cyclicESM)
+library(cyclic)

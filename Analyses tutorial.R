@@ -148,9 +148,6 @@ print(model1)
 
 ## Intraclass correlation
 
-ICC <- (as.data.frame(lme4::VarCorr(model1$fit))[1,"vcov"]) / sum(as.data.frame(lme4::VarCorr(model1$fit))[,"vcov"])  
-cat("The Intraclass correlation (ICC) is: ", ICC)
-
 model2 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr",xvar2="daynr", id = "subjnr", 
                        ncycle = 1, random = "intercept" )
 print(model2)
@@ -179,8 +176,4 @@ print(model6)
 
 anova(model6$fit, model5$fit, model4$fit,model3$fit, model2$fit, model1$fit)  
 
-##EXTRA
-# ratio residuals and dependent variable
-
-sum( (dat3$intention - predict(model6$fit)) **2) / sum(dat3$intention ** 2)     
 
