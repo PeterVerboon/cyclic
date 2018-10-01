@@ -1,10 +1,11 @@
 Package: cyclic
-Title: What the Package Does (one line, title case)
+Title: Analysis of (ESM/EMA) models with cyclic terms
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Authors@R: person("Peter", "Verboon", email = "Peter.Verboon@ou.nl", role = c("aut", "cre"))
+Description: cyclic provides functions for fitting and analyzing cyclic models: for single level data (fitCyclic),
+and for multilevel data fitCyclicMLA.
 Depends: R (>= 3.5.1)
-License: What license is it under?
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.0.9000
