@@ -13,18 +13,18 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Preliminary Steps
 
-There are three functions used in this appendix which are in the R package ` cyclicESM `. This package can be installed from Github by running the following command in R: 
+There are three functions used in this appendix which are in the R package ` cyclic `. This package can be installed from Github by running the following command in R: 
 
-` devtools::install_github("PeterVerboon/Cyclic-models/cyclicESM") `
+` devtools::install_github("PeterVerboon/cyclic/cyclic") `
 
 The package is then activated by running: 
 
-` require(cyclicESM) `. 
+` require(cyclic) `. 
 
 ```{r tutorial-package, eval=TRUE, echo = FALSE, include = FALSE, warning = FALSE}
 
-devtools::install_github("PeterVerboon/Cyclic-models/cyclicESM")
-require(cyclicESM)
+devtools::install_github("PeterVerboon/cyclic/cyclic")
+require(cyclic)
 
 ```
 
