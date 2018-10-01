@@ -8,19 +8,19 @@ setwd("~/Documents/Open Universiteit/Onderzoek/Methodologie/Cyclic-models")
 setwd("D:/R Git projects/Cyclic-models")
 
 
-create("cyclicESM")
+devtools::create("cyclic")
 
-setwd("./cyclicESM")
+setwd("./cyclic")
 
 devtools::document()
 
-devtools::build_vignettes(pkg = "cyclicESM") 
-devtools::use_data(smokedat, cyclicESM)
-devtools::use_data(pdat, cyclicESM)
+devtools::build_vignettes(pkg = "cyclic") 
+devtools::use_data(smokedat, cyclic)
+devtools::use_data(pdat, cyclic)
 devtools::use_package("lme4") 
 
 setwd("..")
-devtools::install("cyclicESM")
+devtools::install("cyclic")
 
 
 
