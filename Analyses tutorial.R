@@ -1,5 +1,5 @@
 
-devtools::install_github("PeterVerboon/Cyclic-models/cyclicESM")
+devtools::install_github("PeterVerboon/Cyclic-models/cyclic")
 
 library(cyclicESM)
 
