@@ -15,8 +15,8 @@
 #' @return rawDataPlot =     plot of predicted values for all observations
 #' @return meansPlot =       plot with predictions averaged over subjects,
 #' @return oneCyclePlot =    plot with predictions for one cycle,
-#' @import ggplot2
 #' @export
+#' @import ggplot2
 #' @examples
 #' data("pdat")
 #' fitCyclic(dat=pdat, yvar = y = "dependentVar", xvar1 = "beepnr", xvar2 = "daynr")
@@ -74,7 +74,7 @@ fitCyclic <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, cov = NULL ,
 
     # raw data plot
 
-    g0 <- ggplot(dat) + geom_point(aes(x=xall, y=dat$y, colour=dat$day))
+    g0 <- ggplot(dat) + geom_point(aes(x=dat$xall, y=dat$y, colour=dat$day))
     g0 <- g0 + scale_x_discrete(name ="Time points (beeps within days)",  labels=dat$x, limits=c(1:npoints))
     g0 <- g0 + labs(y = yvar)
     g0 <- g0 + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
@@ -134,7 +134,6 @@ fitCyclic <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, cov = NULL ,
 #' Plots fitCyclic object
 #' @param type more elements of "raw","means","oneCycle"
 #' @method plot fitCyclic
-#' @import ggplot2
 #' @export
 plot.fitCyclic <- function(x, type = c("raw","means","oneCycle")) {
 

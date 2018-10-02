@@ -23,12 +23,12 @@
 #' @return fit =             object from lmer()
 #' @return formula =     specification of lmer model
 #' @return period =      specified periodicity of cyclic process
-#' @import ggplot2
 #' @export
 #' @examples
 #'  data("smokedat")
-#'   model <- fitCyclicMLA(dat=smokedat,  yvar="intention", xvar1="beepnr", xvar2="daynr", id = "subjnr",
-#'   random = "all",  ncycle = 1, cov = c("stress", "positiveAffect"),
+#'   model <- fitCyclicMLA(dat=smokedat,  yvar="intention", xvar1="beepnr",
+#'   xvar2="daynr", id = "subjnr", random = "all",
+#'   ncycle = 1, cov = c("stress", "positiveAffect"),
 #'   ymin = -0.5, ymax = 0.5, step=0.10)
 fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL, cov = NULL,
                          ncycle = 1, P = NULL, P2 = NULL, random = "intercept",
@@ -138,7 +138,6 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
 #' @param ... ymin, ymax, step can specified to control axes of the plot
 #' @return plots of the aggregated data with the predicted values from the model
 #' @method plot fitCyclicMLA
-#' @import ggplot2
 #' @export
 plot.fitCyclicMLA <- function(x,...) {
 
@@ -208,7 +207,7 @@ print.fitCyclicMLA <- function(x,digits=2,...) {
   if (is.null(x$input$xvar1)) {
     cat("\n","The intercept-only model has been fitted", "\n\n")
     cat(" The R-square of the fitted model is: ", 1-var(residuals(x$fit))/(var(model.response(model.frame(x$fit)))), "\n")
-    ICC <- (as.data.frame(lme4::VarCorr(model1$fit))[1,"vcov"]) / sum(as.data.frame(lme4::VarCorr(model1$fit))[,"vcov"])
+    ICC <- (as.data.frame(lme4::VarCorr(x$fit))[1,"vcov"]) / sum(as.data.frame(lme4::VarCorr(x$fit))[,"vcov"])
     cat(" The Intraclass correlation (ICC) is: ", ICC, "\n\n")
     print(x$fit)
     return()

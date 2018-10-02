@@ -15,7 +15,5 @@
 #'   \item{intention}{intention to quit smoking}
 #'   \item{stress}{perceived stress}
 #'   \item{positiveAffect}{perceived positiveAffect}
-#'   ...
-#' }
-#' @source \url
+#'   }
 "smokedat"
