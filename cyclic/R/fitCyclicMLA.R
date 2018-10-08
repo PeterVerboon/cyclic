@@ -205,9 +205,9 @@ print.fitCyclicMLA <- function(x,digits=2,...) {
 
   if (is.null(x$input$xvar1)) {
     cat("\n","The intercept-only model has been fitted", "\n\n")
-    cat(" The R-square of the fitted model is: ", 1-var(residuals(x$fit))/(var(model.response(model.frame(x$fit)))), "\n")
+    cat(" The R-square of the fitted model is: ", round(1-var(residuals(x$fit))/(var(model.response(model.frame(x$fit)))),3), "\n")
     ICC <- (as.data.frame(lme4::VarCorr(x$fit))[1,"vcov"]) / sum(as.data.frame(lme4::VarCorr(x$fit))[,"vcov"])
-    cat(" The Intraclass correlation (ICC) is: ", ICC, "\n\n")
+    cat(" The Intraclass correlation (ICC) is: ", round(ICC, 3), "\n\n")
     print(x$fit)
     return()
   }

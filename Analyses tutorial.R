@@ -62,7 +62,7 @@ dat4$Group.2 <- NULL
 ### plot raw data
 
 pdat <- dat4                                      # averaged over all subjects
-save(pdat, file= "pdat.rda")
+#save(pdat, file= "pdat.rda")
 
 pdat <- subset(dat3, dat3$subjnr == 15)           # choose ppn 2, 15, 18 
                                                      
@@ -89,7 +89,7 @@ g
 # Now we analyze the cyclic model and plot the result, again for the average and for subjects 2, 15, and 18. 
 # This is Figure 3 from the tutorial.
 
-model_a <- fitCyclic(pdat,yvar = "intention",  xvar1 ="beepnr", xvar2 = "daynr", 
+model_a <- fitCyclic(pdat,yvar = "intention",  xvar ="beepnr", grp = "daynr", 
                     ymin = -2.5, ymax = 1.5, step=.30)
 print(model_a)
 plot(model_a)
@@ -98,7 +98,7 @@ plot(model_a)
 
 #### STEP 3  fit extra model with day as covariate 
 
-model_b <- fitCyclic(dat4,  yvar = "intention", xvar1 ="beepnr",xvar2 = "daynr", 
+model_b <- fitCyclic(dat4,  yvar = "intention", xvar ="beepnr",grp = "daynr", 
                      cov = "daynr", ymin=-0.5, ymax=0.5)
 print(model_b)
 
@@ -110,13 +110,13 @@ print(model_b)
 
 pdat <- subset(dat3, dat3$subjnr == 15)   
 
-model_c <- fitCyclic(pdat,yvar = "intention", xvar1 ="beepnr", xvar2 = "daynr", 
+model_c <- fitCyclic(pdat,yvar = "intention", xvar ="beepnr", grp = "daynr", 
                      ymin = -1.0, ymax = 0.5, step= 0.25)
 plot(model_c, type = c("raw","means"))
-model_c <- fitCyclic(pdat,yvar = "stress", xvar1 ="beepnr", xvar2 = "daynr", 
+model_c <- fitCyclic(pdat,yvar = "stress", xvar ="beepnr", grp = "daynr", 
                      ymin = -1.0, ymax = 0.5, step= 0.25)
 plot(model_c, type = c("raw","means"))
-model_c <- fitCyclic(pdat,yvar = "positiveAffect", xvar1 ="beepnr", xvar2 = "daynr", 
+model_c <- fitCyclic(pdat,yvar = "positiveAffect", xvar ="beepnr", grp = "daynr", 
                      ymin = -1.0, ymax = 0.5, step= 0.25)
 plot(model_c,type = c("raw","means"))
 
@@ -128,13 +128,13 @@ plot(model_c,type = c("raw","means"))
 
 pdat <- subset(dat3, dat3$subjnr == 15)   
 
-model_d <- fitCyclic(pdat, yvar = "intention", xvar1 ="daynr", xvar2 = "daynr", 
+model_d <- fitCyclic(pdat, yvar = "intention", xvar ="daynr", grp = "daynr", 
                      ymin = -2.0, ymax = 1.0, step= 0.25)
 plot(model_d, type = c("raw","means"))
-model_d <- fitCyclic(pdat, yvar = "stress", xvar1 ="daynr", xvar2 = "daynr", 
+model_d <- fitCyclic(pdat, yvar = "stress", xvar ="daynr", grp = "daynr", 
                      ymin = -2.0, ymax = 1.0, step= 0.25)
 plot(model_d, type = c("raw","means"))
-model_d <- fitCyclic(pdat, yvar = "positiveAffect", xvar1 ="daynr", xvar2 = "daynr", 
+model_d <- fitCyclic(pdat, yvar = "positiveAffect", xvar ="daynr", grp = "daynr", 
                      ymin = -2.0, ymax = 1.0, step= 0.25)
 plot(model_d, type = c("raw","means"))
 

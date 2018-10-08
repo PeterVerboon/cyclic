@@ -7,7 +7,7 @@
 \method{plot}{fitCyclic}(x, type = c("raw", "means", "oneCycle"))
 }
 \arguments{
-\item{type}{more elements of "raw","means","oneCycle"}
+\item{type}{vector indicating plot type with elements "raw","means","oneCycle". Default is all.}
 }
 \description{
 Plots fitCyclic object
