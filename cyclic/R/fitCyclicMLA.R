@@ -62,7 +62,6 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
   if (!xvar1 %in% colnames(dat)) { stop(paste0("Variable '", xvar1, "' does not exist"))}
   if (!is.null(xvar2)) { if (!is.null(xvar2) & !xvar2 %in% colnames(dat)) { stop(paste0("Variable '", xvar2, "' does not exist"))}}
   if (!ncycle == 1 & is.null(xvar2)) {stop("Two cyclic patterns were requested, but parameter 'xvar2' has not been specified") }
-  ifelse (is.null(xvar2), dat$day <- 1  , dat$day <- as.factor(dat[,xvar2]))
   if (ncycle == 1 & random == "second") {cat("Number of cycles is set to 2");  ncycle <- 2 }
   if (is.null(cov) & random == "cov") {cat("No covariates are specified. Random term is set to 'intercept'");  random <- "intercept" }
 
@@ -181,11 +180,11 @@ plot.fitCyclicMLA <- function(x,...) {
     }
   }
 
-  datm$day <- as.factor(datm$xvar2)
+  datm$grp <- as.factor(datm$xvar2)
   npoints <- dim(datm)[1]
   datm$xall <- c(1:npoints)
 
-  p <- ggplot(datm) + geom_point(aes(x=datm$xall, y=datm$y, colour=datm$day))
+  p <- ggplot(datm) + geom_point(aes(x=datm$xall, y=datm$y, colour=datm$grp))
   p <- p + scale_x_discrete(name ="Time points (beeps within days)",  labels=datm$xvar1, limits=c(1:npoints))
   p <- p + labs(y = yvar)
   p <- p + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
