@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 There are three functions used in this appendix, which are in the R package ` cyclic `. This package can be installed from Github by running the following command in R: 
 
-` devtools::install_github("PeterVerboon/cyclic/cyclic") `
+` devtools::install_github("PeterVerboon/cyclicpkg/cyclic") `
 
 The package is then activated by running: 
 
@@ -23,7 +23,7 @@ The package is then activated by running:
 
 ```{r tutorial-package, eval=TRUE, echo = FALSE, include = FALSE, warning = FALSE}
 
-devtools::install_github("PeterVerboon/cyclic/cyclic")
+devtools::install_github("PeterVerboon/cyclicpkg/cyclic")
 require(cyclic)
 
 ```
@@ -37,7 +37,7 @@ The function ` cycpar() ` is an auxiliary function, whch computes the cyclic par
 These functions should be helpful for applying a cyclic model to your data. The functions have methods for printing the results and plotting the fitted cyclic patterns.
 
 &nbsp;
-As an illustration of a cyclic process we generate perfect cyclic data and construct Figure 1 with these data using the following code. The package ggplot2 is used for plotting. 
+As an illustration of a cyclic process we generate perfect cyclic data and construct Figure 1 with these data using the following code. The package ggplot2 (loaded with "cyclic") is used for plotting. 
 
 ```{r tutorial-0, eval=FALSE}
 
@@ -104,7 +104,8 @@ dat2$Group.1 <- NULL
 dat2 <- merge(dat3, dat2,  by.x = "subjnr")
 dat3 <- subset(dat2, dat2$V1 > .10)  
 rm(dat2)
-nsmall <- (nall - nfew) - length(unique(dat3$subjnr))
+nunique <- length(unique(dat3$subjnr))
+nsmall <- (nall - nfew) - nunique
 
 ```
 
@@ -114,7 +115,7 @@ The result of these steps are sumarized below.
 cat(" Number of subjects in data set:              ", nall," \n",
     "Number of subjects with less than 50 records: ", nfew ," \n" ,
     "Number of subjects with SD smaller than .10:  ", nsmall," \n" ,
-    "Number of subjects used in analysis:         ",length(unique(dat3$subjnr)))
+    "Number of subjects used in analysis:         ", nunique, "\n")
 
 ```
 

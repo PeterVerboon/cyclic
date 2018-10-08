@@ -1,5 +1,5 @@
 
-devtools::install_github("PeterVerboon/cyclic/cyclic")
+devtools::install_github("PeterVerboon/cyclicpkg/cyclic")
 
 library(cyclic)
 
@@ -41,13 +41,15 @@ dat2 <- merge(dat3, dat2,  by.x = "subjnr")
 # remove subjects with very small variation in DV
 
 dat3 <- subset(dat2, dat2$V1 > .10)  
+
 rm(dat2)
-nsmall <- (nall - nfew) - length(unique(dat3$subjnr))
+nunique <- length(unique(dat3$subjnr))
+nsmall <- (nall - nfew) - nunique
 
 cat(" Number of subjects in data set:              ", nall," \n",
     "Number of subjects with less than 50 records: ", nfew ," \n" ,
     "Number of subjects with SD smaller than .10:  ", nsmall," \n" ,
-    "Number of subjects used in analysis:         ",length(unique(dat3$subjnr)), "\n")
+    "Number of subjects used in analysis:         ", nunique, "\n")
 
 
 ## aggregate over subjects
@@ -76,7 +78,6 @@ pdat$day <- as.factor(pdat$daynr)
 # We have to repeat this step for the aggregated data in dat4, and for subjects 2, 15 and 18.
 # This makes Figure 2 from the tutorial.
 
-require(ggplot2)
 
 g <- ggplot(pdat,aes(x=x, y=pdat$intention, colour=pdat$day)) + geom_point() +
      scale_x_discrete(name ="Time points (beeps within days)",  labels=pdat$beepnr, limits=c(1:npoints)) +
