@@ -3,9 +3,9 @@
 #'
 #' This function fits the cyclic model, using a simple linear model (see Verboon & Leontjevas, 2018)
 #' @param yvar dependent variable
-#' @param xvar1 time variabele indicator, usually indicates the beeps
-#' @param xvar2 time variabele indicator, usually indicates the days, used in plot. If NULL only one day is assumed
-#' @param P the periodicity of the cycle. If NULL the maximum of xvar1 will be taken.
+#' @param xvar time variabele indicator, usually indicates the beeps
+#' @param grp group variabele indicator, usually indicates the days, used in "raw" plot. 
+#' @param P the periodicity of the cycle. If NULL the maximum of xvar will be taken.
 #' @param cov vector of names containing additional variabeles (e.g. cov = c("x1", "daynr"))
 #' @param ymin,ymax,step parameters that control axes of the plot
 #' @keywords cyclic model ESM
@@ -19,8 +19,8 @@
 #' @import ggplot2
 #' @examples
 #' data("pdat")
-#' fitCyclic(dat=pdat, yvar = y = "dependentVar", xvar1 = "beepnr", xvar2 = "daynr")
-fitCyclic <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, cov = NULL , P = NULL,
+#' fitCyclic(dat=pdat, yvar = y = "dependentVar", xvar = "beepnr", grp = "daynr")
+fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P = NULL,
                       ymin = -1.0, ymax = 1.0, step=0.25 ) {
 
     result <- list()
@@ -28,22 +28,39 @@ fitCyclic <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, cov = NULL ,
 
     # check basic input
     if (is.null(yvar)) { stop("parameter 'yvar' has not been specified")}
-    if (is.null(xvar1)) { stop("parameter 'xvar1' has not been specified")}
+    if (is.null(xvar)) { stop("parameter 'xvar' has not been specified")}
 
     if (!is.null(yvar))  { if (!yvar %in% colnames(dat)) { stop(paste0("Variable '", yvar, "' does not exist"))}}
-    if (!is.null(xvar1))  { if (!xvar1 %in% colnames(dat)) { stop(paste0("Variable '", xvar1, "' does not exist"))}}
+    if (!is.null(xvar))  { if (!xvar %in% colnames(dat)) { stop(paste0("Variable '", xvar, "' does not exist"))}}
 
     if (is.null(cov)) a.cov <- NULL
 
     ifelse (is.null(cov),form <- paste0("y ~ cvar + svar"), form <- paste0("y ~ cvar + svar + ", cov) )
 
-    if (is.null(P)) {P <- max(dat[,xvar1])}
+   
+    ### If the time variable is actually provided as time instead of as
+    ### indices/ranks, convert to numeric first.
+    if (!is.numeric(dat[,xvar])) { 
+      if (any(class(dat[,xvar]) %in% c('Date', 'POSIXct', 'POSIXt', 'POSIXt', 'hms'))) {
+        dat$h <- round((as.numeric(dat[,xvar])/3600), digits=0)
+        dat[,xvar] <- dat$h - min(dat$h) + as.numeric(format(min(dat[,xvar]), format="%H"))
+      } else { 
+        cat("The time variable does not have a class numeric or date.","\n",
+            "I am trying to create time variable. Check results carefully.")
+        dat$h <- round(as.POSIXct(dat[,xvar], format="%H:%M:%S", tz="UTC"), units="hours")
+        dat$h <- as.numeric(format(dat$h, format="%H"))
+        dat$h[dat$h == 0] <- max(dat$h) + 1
+        dat[,xvar] <- dat$h 
+      }
+    }
+    
+     if (is.null(P)) {P <- max(dat[,xvar])}
 
-    dat$cvar <- cos((2*pi/P)*dat[,xvar1])
-    dat$svar <- sin((2*pi/P)*dat[,xvar1])
+    dat$cvar <- cos((2*pi/P)*dat[,xvar])
+    dat$svar <- sin((2*pi/P)*dat[,xvar])
     dat$y <- dat[,yvar]
-    dat$x <- dat[,xvar1]
-    ifelse (is.null(xvar2), dat$day <- "single day"  , dat$day <- as.factor(dat[,xvar2]))
+    dat$x <- dat[,xvar]
+    ifelse (is.null(grp), dat$grp <- " "  , dat$grp <- as.factor(dat[,grp]))
 
 
     # fit cyclic model within days across beeps
@@ -74,7 +91,7 @@ fitCyclic <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, cov = NULL ,
 
     # raw data plot
 
-    g0 <- ggplot(dat) + geom_point(aes(x=dat$xall, y=dat$y, colour=dat$day))
+    g0 <- ggplot(dat) + geom_point(aes(x=dat$xall, y=dat$y, colour=dat$grp))
     g0 <- g0 + scale_x_discrete(name ="Time points (beeps within days)",  labels=dat$x, limits=c(1:npoints))
     g0 <- g0 + labs(y = yvar)
     g0 <- g0 + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
@@ -96,7 +113,7 @@ fitCyclic <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, cov = NULL ,
 
     # mean plot
 
-      pdat2 <- aggregate(dat[,c(yvar,cov)],by=list(dat[,xvar1]), FUN=mean, na.rm=F)
+      pdat2 <- aggregate(dat[,c(yvar,cov)],by=list(dat[,xvar]), FUN=mean, na.rm=F)
       pdat2$y <- pdat2[,2]
       pdat2$x <- pdat2[,1]
 
@@ -132,7 +149,7 @@ fitCyclic <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, cov = NULL ,
 
 #'
 #' Plots fitCyclic object
-#' @param type more elements of "raw","means","oneCycle"
+#' @param type vector indicating plot type with elements "raw","means","oneCycle". Default is all.
 #' @method plot fitCyclic
 #' @export
 plot.fitCyclic <- function(x, type = c("raw","means","oneCycle")) {
@@ -159,7 +176,7 @@ print.fitCyclic <- function(x,digits=2,...) {
   colnames(b) <- "estimates"
 
   cat("The dependent variable is:   ",x$input$yvar, "\n", sep="")
-  cat("The time variable is:        ",x$input$xvar1, "\n", sep="")
+  cat("The time variable is:        ",x$input$xvar, "\n", sep="")
   if (!is.null(x$input$cov)) cat("The covariates are:        ",x$input$cov, "\n", sep="  ")
   cat("\n")
   cat("The period of the cycle is: ", x$period ,"\n")
