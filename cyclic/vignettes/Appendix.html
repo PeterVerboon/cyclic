@@ -11,7 +11,7 @@
 
 <meta name="author" content="Peter Verboon and Roeslan Leontjevas" />
 
-<meta name="date" content="2018-10-01" />
+<meta name="date" content="2018-10-08" />
 
 <title>Appendix of tutorial analyzing cyclic models</title>
 
@@ -124,7 +124,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Appendix of tutorial analyzing cyclic models</h1>
 <h4 class="author"><em>Peter Verboon and Roeslan Leontjevas</em></h4>
-<h4 class="date"><em>2018-10-01</em></h4>
+<h4 class="date"><em>2018-10-08</em></h4>
 
 </div>
 
@@ -134,7 +134,7 @@ $(document).ready(function () {
 </div>
 <div id="preliminary-steps" class="section level3">
 <h3>Preliminary Steps</h3>
-<p>There are three functions used in this appendix which are in the R package <code>cyclic</code>. This package can be installed from Github by running the following command in R:</p>
+<p>There are three functions used in this appendix, which are in the R package <code>cyclic</code>. This package can be installed from Github by running the following command in R:</p>
 <p><code>devtools::install_github(&quot;PeterVerboon/cyclic/cyclic&quot;)</code></p>
 <p>The package is then activated by running:</p>
 <p><code>require(cyclic)</code>.</p>
@@ -225,7 +225,7 @@ g</code></pre>
 <div id="step-2" class="section level4">
 <h4>Step 2</h4>
 <p>Now we analyze the cyclic model and plot the result, again for the average and for subjects 2, 15, and 18. This is Figure 3 from the tutorial.</p>
-<pre class="r"><code>model_a &lt;- fitCyclic(pdat,yvar = &quot;intention&quot;,  xvar1 =&quot;beepnr&quot;, xvar2 = &quot;daynr&quot;, 
+<pre class="r"><code>model_a &lt;- fitCyclic(pdat,yvar = &quot;intention&quot;,  xvar =&quot;beepnr&quot;, grp = &quot;daynr&quot;, 
                      ymin = -2.5, ymax = 1.5, step=.30)
 print(model_a)
 plot(model_a, type = c(&quot;raw&quot;,&quot;means&quot;))</code></pre>
@@ -234,7 +234,7 @@ plot(model_a, type = c(&quot;raw&quot;,&quot;means&quot;))</code></pre>
 <div id="step-3" class="section level4">
 <h4>Step 3</h4>
 <p>Fit an extra term in the model with day as covariate in aggregated data. Show the parameters and the fit of the model.</p>
-<pre class="r"><code>model_b &lt;- fitCyclic(dat4,  yvar = &quot;intention&quot;, xvar1 =&quot;beepnr&quot;,xvar2 = &quot;daynr&quot;, 
+<pre class="r"><code>model_b &lt;- fitCyclic(dat4,  yvar = &quot;intention&quot;, xvar =&quot;beepnr&quot;,grp = &quot;daynr&quot;, 
                      cov = &quot;daynr&quot;, ymin=-0.5, ymax=0.5)
 
 print(model_b)</code></pre>
@@ -245,10 +245,10 @@ print(model_b)</code></pre>
 <p>Apply the cylic model with daily period for the variables stress and positive affect for subject 15 to obtain a plot of the raw data with the fitted cycles and a plot of the aggregated data. Together with intention (model_a) this makes Figure 4.</p>
 <pre class="r"><code>pdat &lt;- subset(dat3, dat3$subjnr == 15)   
 
-model_c &lt;- fitCyclic(pdat,yvar = &quot;stress&quot;, xvar1 =&quot;beepnr&quot;, xvar2 = &quot;daynr&quot;, 
+model_c &lt;- fitCyclic(pdat,yvar = &quot;stress&quot;, xvar =&quot;beepnr&quot;, grp = &quot;daynr&quot;, 
                      ymin = -1.0, ymax = 0.5, step= 0.25)
 plot(model_c, type = c(&quot;raw&quot;,&quot;means&quot;))
-model_c &lt;- fitCyclic(pdat,yvar = &quot;positiveAffect&quot;, xvar1 =&quot;beepnr&quot;, xvar2 = &quot;daynr&quot;, 
+model_c &lt;- fitCyclic(pdat,yvar = &quot;positiveAffect&quot;, xvar =&quot;beepnr&quot;, grp = &quot;daynr&quot;, 
                      ymin = -1.0, ymax = 0.5, step= 0.25)
 plot(model_c, type = c(&quot;raw&quot;,&quot;means&quot;))</code></pre>
 <p> </p>
@@ -258,15 +258,15 @@ plot(model_c, type = c(&quot;raw&quot;,&quot;means&quot;))</code></pre>
 <p>Apply, only for subject 15, the cylic model with a weekly period for intention, stress and positive affect, instead of a daily period. Below the code is given which produces the six separate plots of Figure 5.</p>
 <pre class="r"><code>pdat &lt;- subset(dat3, dat3$subjnr == 15)   
 
-model_d &lt;- fitCyclic(pdat, yvar = &quot;intention&quot;, xvar1 =&quot;daynr&quot;, xvar2 = &quot;daynr&quot;, 
+model_d &lt;- fitCyclic(pdat, yvar = &quot;intention&quot;, xvar =&quot;daynr&quot;, grp = &quot;daynr&quot;, 
                      ymin = -2.0, ymax = 1.0, step= 0.25)
 
 plot(model_d, type = c(&quot;raw&quot;,&quot;means&quot;)
-model_d &lt;- fitCyclic(pdat, yvar = &quot;stress&quot;, xvar1 =&quot;daynr&quot;, xvar2 = &quot;daynr&quot;, 
+model_d &lt;- fitCyclic(pdat, yvar = &quot;stress&quot;, xvar =&quot;daynr&quot;, grp = &quot;daynr&quot;, 
                      ymin = -2.0, ymax = 1.0, step= 0.25)
 
 plot(model_d, type = c(&quot;raw&quot;,&quot;means&quot;)
-model_d &lt;- fitCyclic(pdat, yvar = &quot;positiveAffect&quot;, xvar1 =&quot;daynr&quot;, xvar2 = &quot;daynr&quot;, 
+model_d &lt;- fitCyclic(pdat, yvar = &quot;positiveAffect&quot;, xvar =&quot;daynr&quot;, grp = &quot;daynr&quot;, 
                      ymin = -2.0, ymax = 1.0, step= 0.25)
 plot(model_d, type = c(&quot;raw&quot;,&quot;means&quot;)</code></pre>
 <p> </p>
