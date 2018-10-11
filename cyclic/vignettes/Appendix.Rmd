@@ -2,7 +2,12 @@
 title: "Appendix of tutorial analyzing cyclic models"
 author: "Peter Verboon and Roeslan Leontjevas"
 date: "`r format(Sys.time(), '%Y-%m-%d')`"
-output: html_document
+#output: pdf_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::knitr}
+  %\VignetteIndexEntry{Title of your vignette}
+  %\usepackage[UTF-8]{inputenc}
 ---
 
 ```{r setup, include=FALSE}

@@ -4,7 +4,10 @@
 \alias{print.fitCyclic}
 \title{Prints fitCyclic object}
 \usage{
-\method{print}{fitCyclic}(x, digits = 2, ...)
+\method{print}{fitCyclic}(x)
+}
+\arguments{
+\item{x}{fitCyclicMLA object}
 }
 \description{
 Prints fitCyclic object

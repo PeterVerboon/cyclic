@@ -9,6 +9,8 @@ fitCyclicMLA(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL,
   random = "intercept", ymin = -1, ymax = 1, step = 0.25)
 }
 \arguments{
+\item{dat}{data frame containing variables}
+
 \item{yvar}{dependent variable}
 
 \item{xvar1}{time variabele indicator of first or only cycle}

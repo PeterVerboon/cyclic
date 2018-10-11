@@ -8,6 +8,8 @@ fitCyclic(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL,
   P = NULL, ymin = -1, ymax = 1, step = 0.25)
 }
 \arguments{
+\item{dat}{data frame containing the variables}
+
 \item{yvar}{dependent variable}
 
 \item{xvar}{time variabele, usually indicates the beeps or other numerical variable. Time format is also possible.}
@@ -38,7 +40,7 @@ This function fits the cyclic model, using a simple linear model (see Verboon & 
 }
 \examples{
 data("pdat")
-fitCyclic(dat=pdat, yvar = y = "dependentVar", xvar = "beepnr", grp = "daynr")
+fitCyclic(dat=pdat, yvar = "stress", xvar = "beepnr", grp = "daynr")
 }
 \keyword{ESM}
 \keyword{cyclic}

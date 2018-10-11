@@ -2,6 +2,7 @@
 
 #'
 #' This function fits the cyclic model, using a simple linear model (see Verboon & Leontjevas, 2018)
+#' @param dat data frame containing the variables
 #' @param yvar dependent variable
 #' @param xvar time variabele, usually indicates the beeps or other numerical variable. Time format is also possible.
 #' @param grp group variabele indicator, usually indicates the days, used in "raw" plot. 
@@ -19,7 +20,7 @@
 #' @import ggplot2
 #' @examples
 #' data("pdat")
-#' fitCyclic(dat=pdat, yvar = y = "dependentVar", xvar = "beepnr", grp = "daynr")
+#' fitCyclic(dat=pdat, yvar = "stress", xvar = "beepnr", grp = "daynr")
 fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P = NULL,
                       ymin = -1.0, ymax = 1.0, step=0.25 ) {
 
@@ -47,7 +48,7 @@ fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P 
       } else { 
         cat("The time variable does not have a class numeric or date.","\n",
             "I am trying to create time variable. Check results carefully.")
-        dat$h <- round(as.POSIXct(dat[,xvar], format="%H:%M:%S", tz="UTC"), units="hours")
+        dat$h <- round(as.POSIXct(dat[,xvar], format="%H:%M:%S", tz="UTC"))
         dat$h <- as.numeric(format(dat$h, format="%H"))
         dat$h[dat$h == 0] <- max(dat$h) + 1
         dat[,xvar] <- dat$h 
@@ -149,6 +150,7 @@ fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P 
 
 #'
 #' Plots fitCyclic object
+#' @param x fitCyclic object
 #' @param type vector indicating plot type with elements "raw","means","oneCycle". Default is all.
 #' @method plot fitCyclic
 #' @export
@@ -168,9 +170,10 @@ plot.fitCyclic <- function(x, type = c("raw","means","oneCycle")) {
 
 #'
 #' Prints fitCyclic object
+#' @param x fitCyclicMLA object
 #' @method print fitCyclic
 #' @export
-print.fitCyclic <- function(x,digits=2,...) {
+print.fitCyclic <- function(x) {
 
   b <- data.frame(x$parameters)
   colnames(b) <- "estimates"
@@ -182,7 +185,7 @@ print.fitCyclic <- function(x,digits=2,...) {
   cat("The period of the cycle is: ", x$period ,"\n")
   cat("The formula used to fit the model is:   ",x$formula, "\n\n")
   cat("The cyclic parameters of the fitted model are: ", "\n\n")
-  print(b, digits = digits)
+  print(b, digits = 2)
   cat("\n")
   cat("The summary of the model fit is: ", "\n")
   print(summary(x$fit))

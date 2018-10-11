@@ -7,6 +7,8 @@
 \method{plot}{fitCyclicMLA}(x, ...)
 }
 \arguments{
+\item{x}{fitCyclicMLA object}
+
 \item{...}{ymin, ymax, step can specified to control axes of the plot}
 }
 \value{

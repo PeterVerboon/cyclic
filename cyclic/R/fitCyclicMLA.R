@@ -2,6 +2,7 @@
 #' Fits the cyclic model on ESM data.
 #'
 #' This function fits the cyclic model on ESM data, using a multilevel model (see Verboon & Leontjevas, 2018)
+#' @param dat data frame containing variables
 #' @param yvar dependent variable
 #' @param xvar1 time variabele indicator of first or only cycle
 #' @param xvar2 time variabele indicator of second (longer) cycle
@@ -134,6 +135,7 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
 
 #'
 #' Plots fitCyclicMLA object
+#' @param x fitCyclicMLA object
 #' @param ... ymin, ymax, step can specified to control axes of the plot
 #' @return plots of the aggregated data with the predicted values from the model
 #' @method plot fitCyclicMLA
@@ -199,9 +201,10 @@ plot.fitCyclicMLA <- function(x,...) {
 
 #'
 #' Prints fitCyclicMLA object
+#' @param x fitCyclicMLA object
 #' @method print fitCyclicMLA
 #' @export
-print.fitCyclicMLA <- function(x,digits=2,...) {
+print.fitCyclicMLA <- function(x) {
 
   if (is.null(x$input$xvar1)) {
     cat("\n","The intercept-only model has been fitted", "\n\n")
