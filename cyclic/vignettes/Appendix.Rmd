@@ -42,9 +42,10 @@ The function ` cycpar() ` is an auxiliary function, whch computes the cyclic par
 These functions should be helpful for applying a cyclic model to your data. The functions have methods for printing the results and plotting the fitted cyclic patterns.
 
 &nbsp;
-As an illustration of a cyclic process we generate perfect cyclic data and construct Figure 1 with these data using the following code. The package ggplot2 (loaded with "cyclic") is used for plotting. 
+As an illustration of a cyclic process we generate perfect cyclic data and construct Figure 1 with these data using the following code. The package ggplot2 is used for plotting. 
 
 ```{r tutorial-0, eval=FALSE}
+require(ggplot2)
 
 a0 <- 1;
 b1 <- 2;
@@ -70,7 +71,7 @@ g
 
 ###  The "smoking" data  
 
-The "smoking" data are in the object `smokingdat.rda`. This is a dataframe, which contains a selection of variables from a larger data file (for more information about the data, see Bolman et al., 2018). Check the names in the dataframe and then put the data in dat1, the first data set used in the analysis.
+The "smoking" data are in the object `smokingdat.rda`. This is a data frame, which contains a selection of variables from a larger data file (for more information about the data, see Bolman et al., 2018). Check the names in the data frame and then put the data in dat1, the first data set used in the analysis.
 
 ```{r tutorial-1, eval=TRUE}
 
@@ -82,7 +83,7 @@ nall <- length(unique(dat1$subjnr))
 
 ```
 
-Count the number of records per subject and remove subjects with less than 50 records. The resulting data.frame is called dat3.
+Count the number of records per subject and remove subjects with less than 50 records. The resulting data frame is called dat3.
 
 ```{r tutorial-3, eval=TRUE}
 dat1$count <- 1
@@ -114,7 +115,7 @@ nsmall <- (nall - nfew) - nunique
 
 ```
 
-The result of these steps are sumarized below.
+The result of these steps are summarized below.
 ```{r tutorial-printn, eval=TRUE, echo=FALSE}
 
 cat(" Number of subjects in data set:              ", nall," \n",
@@ -125,7 +126,7 @@ cat(" Number of subjects in data set:              ", nall," \n",
 ```
 
 
-The next step is to construct a dataset that is aggregated over subjects, which is called dat4. This dataframe will be used in subsequent analyses.
+The next step is to construct a dataset that is aggregated over subjects, which is called dat4. This data frame will be used in subsequent analyses.
 
 ```{r tutorial-5, eval=TRUE}
 dat4 <- aggregate(dat3[,c("positiveAffect","stress","intention")],
@@ -154,7 +155,7 @@ x <- c(1:npoints)
 pdat$day <- as.factor(pdat$daynr)
 
 g <- ggplot(pdat,aes(x=x, y=pdat$intention, colour=pdat$day)) + geom_point() +
-     scale_x_discrete(name ="Time points (beeps within days)",  labels=pdat$beepnr, limits=c(1:npoints)) +
+     scale_x_discrete(name ="Time points (beeps within days)",labels=pdat$beepnr,limits=c(1:npoints)) +
      theme(axis.text = element_text(size = 6, colour="black"),legend.position="none") 
 g
 
@@ -189,8 +190,8 @@ Fit an extra term in the model with day as covariate in aggregated data. Show th
 
 ```{r tutorial-8, eval=FALSE} 
 
-model_b <- fitCyclic(dat4,  yvar = "intention", xvar ="beepnr",grp = "daynr", 
-                     cov = "daynr", ymin=-0.5, ymax=0.5)
+model_b <- fitCyclic(dat4,  yvar = "intention", xvar ="beepnr", grp = "daynr", 
+                     cov = "daynr", ymin = -0.5, ymax = 0.5)
 
 print(model_b)
 ```
@@ -200,7 +201,7 @@ print(model_b)
 
 #### Step 4
 
-Apply the cylic model with daily period for the variables stress and positive affect for subject 15 to obtain a plot of the raw data with the fitted cycles and a plot of the aggregated data. Together with intention (model_a) this makes Figure 4.
+Apply the cyclic model with daily period for the variables stress and positive affect for subject 15 to obtain a plot of the raw data with the fitted cycles and a plot of the aggregated data. Together with intention (model_a) this makes Figure 4.
 
 ```{r tutorial-9, eval=FALSE} 
 
@@ -220,7 +221,7 @@ plot(model_c, type = c("raw","means"))
 
 #### Step 5
 
-Apply, only for subject 15, the cylic model with a weekly period for intention, stress and positive affect, instead of a daily period. Below the code is given which produces the six separate plots of Figure 5.
+Apply, only for subject 15, the cyclic model with a weekly period for intention, stress and positive affect, instead of a daily period. Below the code is given which produces the six separate plots of Figure 5.
 
 ```{r tutorial-10, eval=FALSE} 
 
@@ -254,35 +255,35 @@ print(model1)
 
 ```
 
-The next two models fit a daily cycle to the data. Model2 with ony the intecept as random term and model3 includes the cyclic terms as random effects.
+The next two models fit a daily cycle to the data. Model2 with only the intercept as random term and model3 includes the cyclic terms as random effects.
 ```{r tutorial-12, eval=FALSE}
-model2 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr",xvar2="daynr", id = "subjnr", 
-                       ncycle = 1, random = "intercept" )
+model2 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr",xvar2="daynr", 
+                       id = "subjnr",ncycle = 1, random = "intercept" )
 print(model2)
 
-model3 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr",xvar2="daynr", id = "subjnr", 
-                      ncycle = 1, random = "first")
+model3 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr",xvar2="daynr", 
+                      id = "subjnr", ncycle = 1, random = "first")
 print(model3)
 plot(model3)
 ```
 
 
-Model 4 and 5 are fitting two cyclic process: patterns within days and patterns within weeks. In model 5 every effect is assumed to be random, whereas in model 4 only the within days cyclic terms are assumed random. Plotting model 5 gives a plot as is shown in Figure 6.
+Model 4 and 5 are fitting two cyclic processes: patterns within days and patterns within weeks. In model 5 every effect is assumed to be random, whereas in model 4 only the within days cyclic terms are assumed random. Plotting model 5 gives a plot as is shown in Figure 6.
 ```{r tutorial-13, eval=FALSE}
-model4 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr", xvar2="daynr",id = "subjnr", 
-                        ncycle = 2, random = "first")
+model4 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr", xvar2="daynr",
+                       id = "subjnr", ncycle = 2, random = "first")
 print(model4)
 
-model5 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr", xvar2="daynr",id = "subjnr",
-                       ncycle = 2, random = "all", ymin = -0.5, ymax = 0.5, step=0.10 )
+model5 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr", xvar2="daynr",
+                       id = "subjnr", ncycle = 2, random = "all", ymin = -0.5, ymax = 0.5, step=0.10 )
 print(model5)
 plot(model5)      
 ```
 
-Model 6 also contains covariate. Finally all models are compared with each other, this is shown in table 1. 
+Model 6 also contains a covariate. Finally all models are compared with each other, this is shown in table 1. 
 ```{r tutorial-14, eval=FALSE}
-model6 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr", xvar2="daynr",id = "subjnr", 
-                      cov = "stress", ncycle = 2, random = "all" )
+model6 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr", xvar2="daynr",
+                       id = "subjnr", cov = "stress", ncycle = 2, random = "all" )
 print(model6)
 
 anova(model6$fit, model5$fit, model4$fit,model3$fit, model2$fit, model1$fit)  

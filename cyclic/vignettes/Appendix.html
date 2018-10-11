@@ -85,8 +85,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><code>require(cyclic)</code>.</p>
 <p>The package consists of three functions. The function <code>fitCyclic()</code> fits a linear model with <code>lm()</code> to obtain cyclic parameters. <br> The function <code>fitCyclicMLA()</code> fits a MLA model with <code>lmer()</code> from the lme4 package to obtain cyclic parameters. <br> The function <code>cycpar()</code> is an auxiliary function, whch computes the cyclic parameters from the linear model parameters. <br></p>
 <p>These functions should be helpful for applying a cyclic model to your data. The functions have methods for printing the results and plotting the fitted cyclic patterns.</p>
-<p>  As an illustration of a cyclic process we generate perfect cyclic data and construct Figure 1 with these data using the following code. The package ggplot2 (loaded with “cyclic”) is used for plotting.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a0 &lt;-<span class="st"> </span><span class="dv">1</span>;
+<p>  As an illustration of a cyclic process we generate perfect cyclic data and construct Figure 1 with these data using the following code. The package ggplot2 is used for plotting.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">require</span>(ggplot2)
+
+a0 &lt;-<span class="st"> </span><span class="dv">1</span>;
 b1 &lt;-<span class="st"> </span><span class="dv">2</span>;
 b2 &lt;-<span class="st"> </span><span class="dv">10</span>;
 P &lt;-<span class="st"> </span><span class="dv">24</span>;
@@ -108,14 +110,14 @@ g</code></pre></div>
 </div>
 <div id="the-smoking-data" class="section level3">
 <h3>The “smoking” data</h3>
-<p>The “smoking” data are in the object <code>smokingdat.rda</code>. This is a dataframe, which contains a selection of variables from a larger data file (for more information about the data, see Bolman et al., 2018). Check the names in the dataframe and then put the data in dat1, the first data set used in the analysis.</p>
+<p>The “smoking” data are in the object <code>smokingdat.rda</code>. This is a data frame, which contains a selection of variables from a larger data file (for more information about the data, see Bolman et al., 2018). Check the names in the data frame and then put the data in dat1, the first data set used in the analysis.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;smokedat&quot;</span>)
 <span class="kw">names</span>(smokedat)</code></pre></div>
 <pre><code>## [1] &quot;subjnr&quot;         &quot;beepnr&quot;         &quot;daynr&quot;          &quot;positiveAffect&quot;
 ## [5] &quot;intention&quot;      &quot;stress&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dat1 &lt;-<span class="st"> </span>smokedat
 nall &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(dat1<span class="op">$</span>subjnr))</code></pre></div>
-<p>Count the number of records per subject and remove subjects with less than 50 records. The resulting data.frame is called dat3.</p>
+<p>Count the number of records per subject and remove subjects with less than 50 records. The resulting data frame is called dat3.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dat1<span class="op">$</span>count &lt;-<span class="st"> </span><span class="dv">1</span>
 dat2 &lt;-<span class="st"> </span><span class="kw">aggregate</span>(dat1[,<span class="kw">c</span>(<span class="st">&quot;count&quot;</span>)],<span class="dt">by=</span><span class="kw">list</span>(dat1<span class="op">$</span>subjnr), <span class="dt">FUN=</span>sum, <span class="dt">na.rm=</span>T);
 dat2<span class="op">$</span>subjnr &lt;-<span class="st"> </span>dat2<span class="op">$</span>Group.<span class="dv">1</span>
@@ -136,12 +138,12 @@ dat3 &lt;-<span class="st"> </span><span class="kw">subset</span>(dat2, dat2<spa
 <span class="kw">rm</span>(dat2)
 nunique &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(dat3<span class="op">$</span>subjnr))
 nsmall &lt;-<span class="st"> </span>(nall <span class="op">-</span><span class="st"> </span>nfew) <span class="op">-</span><span class="st"> </span>nunique</code></pre></div>
-<p>The result of these steps are sumarized below.</p>
+<p>The result of these steps are summarized below.</p>
 <pre><code>##  Number of subjects in data set:               49  
 ##  Number of subjects with less than 50 records:  8  
 ##  Number of subjects with SD smaller than .10:   3  
 ##  Number of subjects used in analysis:          38</code></pre>
-<p>The next step is to construct a dataset that is aggregated over subjects, which is called dat4. This dataframe will be used in subsequent analyses.</p>
+<p>The next step is to construct a dataset that is aggregated over subjects, which is called dat4. This data frame will be used in subsequent analyses.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dat4 &lt;-<span class="st"> </span><span class="kw">aggregate</span>(dat3[,<span class="kw">c</span>(<span class="st">&quot;positiveAffect&quot;</span>,<span class="st">&quot;stress&quot;</span>,<span class="st">&quot;intention&quot;</span>)],
                   <span class="dt">by=</span><span class="kw">list</span>(dat3<span class="op">$</span>beepnr,dat3<span class="op">$</span>daynr), <span class="dt">FUN=</span>mean, <span class="dt">na.rm=</span>F);    
 dat4<span class="op">$</span>daynr &lt;-<span class="st"> </span>dat4<span class="op">$</span>Group.<span class="dv">2</span>
@@ -163,7 +165,7 @@ x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</sp
 pdat<span class="op">$</span>day &lt;-<span class="st"> </span><span class="kw">as.factor</span>(pdat<span class="op">$</span>daynr)
 
 g &lt;-<span class="st"> </span><span class="kw">ggplot</span>(pdat,<span class="kw">aes</span>(<span class="dt">x=</span>x, <span class="dt">y=</span>pdat<span class="op">$</span>intention, <span class="dt">colour=</span>pdat<span class="op">$</span>day)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>() <span class="op">+</span>
-<span class="st">     </span><span class="kw">scale_x_discrete</span>(<span class="dt">name =</span><span class="st">&quot;Time points (beeps within days)&quot;</span>,  <span class="dt">labels=</span>pdat<span class="op">$</span>beepnr, <span class="dt">limits=</span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span>npoints)) <span class="op">+</span>
+<span class="st">     </span><span class="kw">scale_x_discrete</span>(<span class="dt">name =</span><span class="st">&quot;Time points (beeps within days)&quot;</span>,<span class="dt">labels=</span>pdat<span class="op">$</span>beepnr,<span class="dt">limits=</span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span>npoints)) <span class="op">+</span>
 <span class="st">     </span><span class="kw">theme</span>(<span class="dt">axis.text =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">6</span>, <span class="dt">colour=</span><span class="st">&quot;black&quot;</span>),<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>) 
 g</code></pre></div>
 <p> </p>
@@ -180,15 +182,15 @@ g</code></pre></div>
 <div id="step-3" class="section level4">
 <h4>Step 3</h4>
 <p>Fit an extra term in the model with day as covariate in aggregated data. Show the parameters and the fit of the model.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model_b &lt;-<span class="st"> </span><span class="kw">fitCyclic</span>(dat4,  <span class="dt">yvar =</span> <span class="st">&quot;intention&quot;</span>, <span class="dt">xvar =</span><span class="st">&quot;beepnr&quot;</span>,<span class="dt">grp =</span> <span class="st">&quot;daynr&quot;</span>, 
-                     <span class="dt">cov =</span> <span class="st">&quot;daynr&quot;</span>, <span class="dt">ymin=</span><span class="op">-</span><span class="fl">0.5</span>, <span class="dt">ymax=</span><span class="fl">0.5</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model_b &lt;-<span class="st"> </span><span class="kw">fitCyclic</span>(dat4,  <span class="dt">yvar =</span> <span class="st">&quot;intention&quot;</span>, <span class="dt">xvar =</span><span class="st">&quot;beepnr&quot;</span>, <span class="dt">grp =</span> <span class="st">&quot;daynr&quot;</span>, 
+                     <span class="dt">cov =</span> <span class="st">&quot;daynr&quot;</span>, <span class="dt">ymin =</span> <span class="op">-</span><span class="fl">0.5</span>, <span class="dt">ymax =</span> <span class="fl">0.5</span>)
 
 <span class="kw">print</span>(model_b)</code></pre></div>
 <p> </p>
 </div>
 <div id="step-4" class="section level4">
 <h4>Step 4</h4>
-<p>Apply the cylic model with daily period for the variables stress and positive affect for subject 15 to obtain a plot of the raw data with the fitted cycles and a plot of the aggregated data. Together with intention (model_a) this makes Figure 4.</p>
+<p>Apply the cyclic model with daily period for the variables stress and positive affect for subject 15 to obtain a plot of the raw data with the fitted cycles and a plot of the aggregated data. Together with intention (model_a) this makes Figure 4.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pdat &lt;-<span class="st"> </span><span class="kw">subset</span>(dat3, dat3<span class="op">$</span>subjnr <span class="op">==</span><span class="st"> </span><span class="dv">15</span>)   
 
 model_c &lt;-<span class="st"> </span><span class="kw">fitCyclic</span>(pdat,<span class="dt">yvar =</span> <span class="st">&quot;stress&quot;</span>, <span class="dt">xvar =</span><span class="st">&quot;beepnr&quot;</span>, <span class="dt">grp =</span> <span class="st">&quot;daynr&quot;</span>, 
@@ -201,7 +203,7 @@ model_c &lt;-<span class="st"> </span><span class="kw">fitCyclic</span>(pdat,<sp
 </div>
 <div id="step-5" class="section level4">
 <h4>Step 5</h4>
-<p>Apply, only for subject 15, the cylic model with a weekly period for intention, stress and positive affect, instead of a daily period. Below the code is given which produces the six separate plots of Figure 5.</p>
+<p>Apply, only for subject 15, the cyclic model with a weekly period for intention, stress and positive affect, instead of a daily period. Below the code is given which produces the six separate plots of Figure 5.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pdat &lt;-<span class="st"> </span><span class="kw">subset</span>(dat3, dat3<span class="op">$</span>subjnr <span class="op">==</span><span class="st"> </span><span class="dv">15</span>)   
 
 model_d &lt;-<span class="st"> </span><span class="kw">fitCyclic</span>(pdat, <span class="dt">yvar =</span> <span class="st">&quot;intention&quot;</span>, <span class="dt">xvar =</span><span class="st">&quot;daynr&quot;</span>, <span class="dt">grp =</span> <span class="st">&quot;daynr&quot;</span>, 
@@ -225,27 +227,27 @@ model_d &lt;-<span class="st"> </span><span class="kw">fitCyclic</span>(pdat, <s
 <p>Analyze the data with the cyclic model using MLA and model comparison. Each consecutive model is more complex. The intraclass correlation is computed with the null model (model1). This is the first model that is fitted on the data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model1 &lt;-<span class="st"> </span><span class="kw">fitCyclicMLA</span>(<span class="dt">dat=</span>dat3, <span class="dt">yvar=</span><span class="st">&quot;intention&quot;</span>, <span class="dt">id =</span> <span class="st">&quot;subjnr&quot;</span>)
 <span class="kw">print</span>(model1)</code></pre></div>
-<p>The next two models fit a daily cycle to the data. Model2 with ony the intecept as random term and model3 includes the cyclic terms as random effects.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model2 &lt;-<span class="st"> </span><span class="kw">fitCyclicMLA</span>(<span class="dt">dat=</span>dat3, <span class="dt">yvar=</span><span class="st">&quot;intention&quot;</span>, <span class="dt">xvar1=</span><span class="st">&quot;beepnr&quot;</span>,<span class="dt">xvar2=</span><span class="st">&quot;daynr&quot;</span>, <span class="dt">id =</span> <span class="st">&quot;subjnr&quot;</span>, 
-                       <span class="dt">ncycle =</span> <span class="dv">1</span>, <span class="dt">random =</span> <span class="st">&quot;intercept&quot;</span> )
+<p>The next two models fit a daily cycle to the data. Model2 with only the intercept as random term and model3 includes the cyclic terms as random effects.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model2 &lt;-<span class="st"> </span><span class="kw">fitCyclicMLA</span>(<span class="dt">dat=</span>dat3, <span class="dt">yvar=</span><span class="st">&quot;intention&quot;</span>, <span class="dt">xvar1=</span><span class="st">&quot;beepnr&quot;</span>,<span class="dt">xvar2=</span><span class="st">&quot;daynr&quot;</span>, 
+                       <span class="dt">id =</span> <span class="st">&quot;subjnr&quot;</span>,<span class="dt">ncycle =</span> <span class="dv">1</span>, <span class="dt">random =</span> <span class="st">&quot;intercept&quot;</span> )
 <span class="kw">print</span>(model2)
 
-model3 &lt;-<span class="st"> </span><span class="kw">fitCyclicMLA</span>(<span class="dt">dat=</span>dat3, <span class="dt">yvar=</span><span class="st">&quot;intention&quot;</span>, <span class="dt">xvar1=</span><span class="st">&quot;beepnr&quot;</span>,<span class="dt">xvar2=</span><span class="st">&quot;daynr&quot;</span>, <span class="dt">id =</span> <span class="st">&quot;subjnr&quot;</span>, 
-                      <span class="dt">ncycle =</span> <span class="dv">1</span>, <span class="dt">random =</span> <span class="st">&quot;first&quot;</span>)
+model3 &lt;-<span class="st"> </span><span class="kw">fitCyclicMLA</span>(<span class="dt">dat=</span>dat3, <span class="dt">yvar=</span><span class="st">&quot;intention&quot;</span>, <span class="dt">xvar1=</span><span class="st">&quot;beepnr&quot;</span>,<span class="dt">xvar2=</span><span class="st">&quot;daynr&quot;</span>, 
+                      <span class="dt">id =</span> <span class="st">&quot;subjnr&quot;</span>, <span class="dt">ncycle =</span> <span class="dv">1</span>, <span class="dt">random =</span> <span class="st">&quot;first&quot;</span>)
 <span class="kw">print</span>(model3)
 <span class="kw">plot</span>(model3)</code></pre></div>
-<p>Model 4 and 5 are fitting two cyclic process: patterns within days and patterns within weeks. In model 5 every effect is assumed to be random, whereas in model 4 only the within days cyclic terms are assumed random. Plotting model 5 gives a plot as is shown in Figure 6.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model4 &lt;-<span class="st"> </span><span class="kw">fitCyclicMLA</span>(<span class="dt">dat=</span>dat3, <span class="dt">yvar=</span><span class="st">&quot;intention&quot;</span>, <span class="dt">xvar1=</span><span class="st">&quot;beepnr&quot;</span>, <span class="dt">xvar2=</span><span class="st">&quot;daynr&quot;</span>,<span class="dt">id =</span> <span class="st">&quot;subjnr&quot;</span>, 
-                        <span class="dt">ncycle =</span> <span class="dv">2</span>, <span class="dt">random =</span> <span class="st">&quot;first&quot;</span>)
+<p>Model 4 and 5 are fitting two cyclic processes: patterns within days and patterns within weeks. In model 5 every effect is assumed to be random, whereas in model 4 only the within days cyclic terms are assumed random. Plotting model 5 gives a plot as is shown in Figure 6.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model4 &lt;-<span class="st"> </span><span class="kw">fitCyclicMLA</span>(<span class="dt">dat=</span>dat3, <span class="dt">yvar=</span><span class="st">&quot;intention&quot;</span>, <span class="dt">xvar1=</span><span class="st">&quot;beepnr&quot;</span>, <span class="dt">xvar2=</span><span class="st">&quot;daynr&quot;</span>,
+                       <span class="dt">id =</span> <span class="st">&quot;subjnr&quot;</span>, <span class="dt">ncycle =</span> <span class="dv">2</span>, <span class="dt">random =</span> <span class="st">&quot;first&quot;</span>)
 <span class="kw">print</span>(model4)
 
-model5 &lt;-<span class="st"> </span><span class="kw">fitCyclicMLA</span>(<span class="dt">dat=</span>dat3, <span class="dt">yvar=</span><span class="st">&quot;intention&quot;</span>, <span class="dt">xvar1=</span><span class="st">&quot;beepnr&quot;</span>, <span class="dt">xvar2=</span><span class="st">&quot;daynr&quot;</span>,<span class="dt">id =</span> <span class="st">&quot;subjnr&quot;</span>,
-                       <span class="dt">ncycle =</span> <span class="dv">2</span>, <span class="dt">random =</span> <span class="st">&quot;all&quot;</span>, <span class="dt">ymin =</span> <span class="op">-</span><span class="fl">0.5</span>, <span class="dt">ymax =</span> <span class="fl">0.5</span>, <span class="dt">step=</span><span class="fl">0.10</span> )
+model5 &lt;-<span class="st"> </span><span class="kw">fitCyclicMLA</span>(<span class="dt">dat=</span>dat3, <span class="dt">yvar=</span><span class="st">&quot;intention&quot;</span>, <span class="dt">xvar1=</span><span class="st">&quot;beepnr&quot;</span>, <span class="dt">xvar2=</span><span class="st">&quot;daynr&quot;</span>,
+                       <span class="dt">id =</span> <span class="st">&quot;subjnr&quot;</span>, <span class="dt">ncycle =</span> <span class="dv">2</span>, <span class="dt">random =</span> <span class="st">&quot;all&quot;</span>, <span class="dt">ymin =</span> <span class="op">-</span><span class="fl">0.5</span>, <span class="dt">ymax =</span> <span class="fl">0.5</span>, <span class="dt">step=</span><span class="fl">0.10</span> )
 <span class="kw">print</span>(model5)
 <span class="kw">plot</span>(model5)      </code></pre></div>
-<p>Model 6 also contains covariate. Finally all models are compared with each other, this is shown in table 1.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model6 &lt;-<span class="st"> </span><span class="kw">fitCyclicMLA</span>(<span class="dt">dat=</span>dat3, <span class="dt">yvar=</span><span class="st">&quot;intention&quot;</span>, <span class="dt">xvar1=</span><span class="st">&quot;beepnr&quot;</span>, <span class="dt">xvar2=</span><span class="st">&quot;daynr&quot;</span>,<span class="dt">id =</span> <span class="st">&quot;subjnr&quot;</span>, 
-                      <span class="dt">cov =</span> <span class="st">&quot;stress&quot;</span>, <span class="dt">ncycle =</span> <span class="dv">2</span>, <span class="dt">random =</span> <span class="st">&quot;all&quot;</span> )
+<p>Model 6 also contains a covariate. Finally all models are compared with each other, this is shown in table 1.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model6 &lt;-<span class="st"> </span><span class="kw">fitCyclicMLA</span>(<span class="dt">dat=</span>dat3, <span class="dt">yvar=</span><span class="st">&quot;intention&quot;</span>, <span class="dt">xvar1=</span><span class="st">&quot;beepnr&quot;</span>, <span class="dt">xvar2=</span><span class="st">&quot;daynr&quot;</span>,
+                       <span class="dt">id =</span> <span class="st">&quot;subjnr&quot;</span>, <span class="dt">cov =</span> <span class="st">&quot;stress&quot;</span>, <span class="dt">ncycle =</span> <span class="dv">2</span>, <span class="dt">random =</span> <span class="st">&quot;all&quot;</span> )
 <span class="kw">print</span>(model6)
 
 <span class="kw">anova</span>(model6<span class="op">$</span>fit, model5<span class="op">$</span>fit, model4<span class="op">$</span>fit,model3<span class="op">$</span>fit, model2<span class="op">$</span>fit, model1<span class="op">$</span>fit)  </code></pre></div>

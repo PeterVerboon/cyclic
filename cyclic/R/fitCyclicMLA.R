@@ -228,12 +228,12 @@ print.fitCyclicMLA <- function(x) {
   if (!ncycle == 1) cat("The period of the second cycle is: ", x$period[2] ,"\n\n")
   cat("The formula used to fit the model is:   ",x$formule, "\n\n")
   cat("The parameters of the fitted model are: ", "\n\n")
-  print(b, digits = digits)
+  print(b, digits = 2)
   cat("\n\n")
   cat("The deviance of the fitted model is:   ",deviance(x$fit, REML = FALSE), "\n\n")
   cat("The R-square of the fitted model is:   ", 1-var(residuals(x$fit))/(var(model.response(model.frame(x$fit)))), "\n\n")
   cat("The standard deviation of and correlation between the random effects are: ", "\n\n")
-  print(lme4::VarCorr(x$fit, REML = FALSE), digits = digits)
+  print(lme4::VarCorr(x$fit, REML = FALSE), digits = 2)
 
 }
 
