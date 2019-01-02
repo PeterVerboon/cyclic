@@ -55,14 +55,16 @@ fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P 
       }
     }
     
-     if (is.null(P)) {P <- max(dat[,xvar])}
+     if (is.null(P)) {P <- max(dat[,xvar]) - min(dat[,xvar]) }
 
     dat$cvar <- cos((2*pi/P)*dat[,xvar])
     dat$svar <- sin((2*pi/P)*dat[,xvar])
     dat$y <- dat[,yvar]
     dat$x <- dat[,xvar]
     ifelse (is.null(grp), dat$grp <- " "  , dat$grp <- as.factor(dat[,grp]))
-
+    
+    xmin <- min(dat$x)
+    xmax <- max(dat$x)
 
     # fit cyclic model within days across beeps
 
@@ -77,7 +79,9 @@ fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P 
     par <- cycpar(a1,a2, P)
 
     b <- c(a0,par)
+    while (b[3] < xmin) b[3] <- b[3] + P    # let the maximum fall into the range of the data
 
+ 
     # Parameters b1 and b2 are obtained from cyclic model analysis
 
     b1 <- b[2]
@@ -107,7 +111,7 @@ fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P 
     g <- g + geom_vline(xintercept=b2, colour="red")
     g <- g + geom_line(aes(x=dat$x, y=ypred1))
     g <- g + labs(x = "Time points", y = yvar)
-    g <- g + scale_x_discrete(name ="Time points",  limits=c(1:P))
+    g <- g + scale_x_discrete(name ="Time points",  limits=c(xmin:xmax))
     g <- g + coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step))
     g <- g + theme(axis.text = element_text(size = 12, colour="black"))
 
@@ -127,7 +131,7 @@ fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P 
     g1 <- g1 + geom_vline(xintercept=b2, colour="red")
     g1 <- g1 + geom_line(aes(x=pdat2$x, y=ypred2))
     g1 <- g1 + labs(x = "Time points", y = yvar)
-    g1 <- g1 + scale_x_discrete(name ="Time points",  limits=c(1:P))
+    g1 <- g1 + scale_x_discrete(name ="Time points",  limits=c(xmin:xmax))
     g1 <- g1 + coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step))
     g1 <- g1 + theme(axis.text = element_text(size = 12, colour="black"))
 
