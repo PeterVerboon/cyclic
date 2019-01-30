@@ -5,7 +5,7 @@
 #' @param dat data frame containing the variables
 #' @param yvar dependent variable
 #' @param xvar time variabele, usually indicates the beeps or other numerical variable. Time format is also possible.
-#' @param grp group variabele indicator, usually indicates the days, used in "raw" plot. 
+#' @param grp group variabele indicator, usually indicates the days, used in "raw" plot.
 #' @param P the periodicity of the cycle. If NULL the maximum of xvar will be taken.
 #' @param cov vector of names containing additional variabeles (e.g. cov = c("x1", "daynr"))
 #' @param ymin,ymax,step parameters that control axes of the plot
@@ -38,31 +38,31 @@ fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P 
 
     ifelse (is.null(cov),form <- paste0("y ~ cvar + svar"), form <- paste0("y ~ cvar + svar + ", cov) )
 
-   
+
     ### If the time variable is actually provided as time instead of as
     ### indices/ranks, convert to numeric first.
-    if (!is.numeric(dat[,xvar])) { 
+    if (!is.numeric(dat[,xvar])) {
       if (any(class(dat[,xvar]) %in% c('Date', 'POSIXct', 'POSIXt', 'POSIXt', 'hms'))) {
         dat$h <- round((as.numeric(dat[,xvar])/3600), digits=0)
         dat[,xvar] <- dat$h - min(dat$h) + as.numeric(format(min(dat[,xvar]), format="%H"))
-      } else { 
+      } else {
         cat("The time variable does not have a class numeric or date.","\n",
             "I am trying to create time variable. Check results carefully.")
         dat$h <- round(as.POSIXct(dat[,xvar], format="%H:%M:%S", tz="UTC"))
         dat$h <- as.numeric(format(dat$h, format="%H"))
         dat$h[dat$h == 0] <- max(dat$h) + 1
-        dat[,xvar] <- dat$h 
+        dat[,xvar] <- dat$h
       }
     }
-    
-     if (is.null(P)) {P <- max(dat[,xvar]) - min(dat[,xvar]) }
+
+     if (is.null(P)) {P <- max(dat[,xvar]) - min(dat[,xvar]) + 1}
 
     dat$cvar <- cos((2*pi/P)*dat[,xvar])
     dat$svar <- sin((2*pi/P)*dat[,xvar])
     dat$y <- dat[,yvar]
     dat$x <- dat[,xvar]
     ifelse (is.null(grp), dat$grp <- " "  , dat$grp <- as.factor(dat[,grp]))
-    
+
     xmin <- min(dat$x)
     xmax <- max(dat$x)
 
@@ -81,7 +81,7 @@ fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P 
     b <- c(a0,par)
     while (b[3] < xmin) b[3] <- b[3] + P    # let the maximum fall into the range of the data
 
- 
+
     # Parameters b1 and b2 are obtained from cyclic model analysis
 
     b1 <- b[2]
