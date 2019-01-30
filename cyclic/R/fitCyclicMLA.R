@@ -113,24 +113,26 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
   a0 <- lme4::fixef(fit)[1]
   a1 <- lme4::fixef(fit)[2]
   a2 <- lme4::fixef(fit)[3]
-  while (a2 < xmin1) a2 <- a2 + range1    # let the maximum fall into the range of the data
-
   if (ncycle == 1 & !is.null(cov)) a.cov <- lme4::fixef(fit)[4:(3+length(cov))]
   if (!ncycle == 1) {
     a3 <- lme4::fixef(fit)[4] ;
     a4 <- lme4::fixef(fit)[5] ;
-    while (a4 < xmin2) a4 <- a4 + range2    # let the maximum fall into the range of the data
     if (!is.null(cov)) a.cov <- lme4::fixef(fit)[6:(5+length(cov))]
   }
 
   # convert to parameters from linear model
   if (ncycle == 1) {
     b <- c(a0,cycpar(a1,a2, P),a.cov)
+ # let the maximum fall into the range of the data
+    while (b[3] < xmin1) b[3] <- b[3] + range1
     names(b) <- c("intercept", "amplitude", "phase" ,  cov)
   }
 
   if (!ncycle == 1) {
     b <- c(a0,cycpar(a1,a2, P),cycpar(a3,a4, P2),a.cov)
+ # let the maximum fall into the range of the data
+    while (b[3] < xmin1) b[3] <- b[3] + range1
+    while (b[5] < xmin2) b[5] <- b[5] + range2
     names(b) <- c("intercept  ", "short_cycle_amplitude", "short_cycle_phase",  "long_cycle_amplitude" , "long_cycle_phase",cov)
   }
 
