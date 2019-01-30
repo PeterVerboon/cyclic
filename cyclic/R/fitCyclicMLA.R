@@ -87,12 +87,12 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
 
   # compute cyclic terms
 
-  if (is.null(P)) {P <- max(dat[,xvar1]) - min(dat[,xvar1]) + 1}
+  if (is.null(P)) {P <- max(dat[,xvar1], na.rm = TRUE) - min(dat[,xvar1], na.rm = TRUE) + 1}
   dat$cvar <- cos((2*pi/P)*dat[,xvar1])
   dat$svar <- sin((2*pi/P)*dat[,xvar1])
 
   if (!ncycle == 1) {
-    if (is.null(P2)) {P2 <- max(dat[,xvar2] - min(dat[,xvar2]) + 1)}
+    if (is.null(P2)) {P2 <- max(dat[,xvar2], na.rm = TRUE) - min(dat[,xvar2], na.rm = TRUE) + 1}
     dat$cvar2 <- cos((2*pi/P2)*dat[,xvar2])
     dat$svar2 <- sin((2*pi/P2)*dat[,xvar2])
   }
