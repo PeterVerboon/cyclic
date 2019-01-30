@@ -97,12 +97,12 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
     dat$svar2 <- sin((2*pi/P2)*dat[,xvar2])
   }
 
-  xmin1 <- min(dat[,xvar1])
-  xmax1 <- max(dat[,xvar1])
+  xmin1 <- min(dat[,xvar1], na.rm = TRUE)
+  xmax1 <- max(dat[,xvar1], na.rm = TRUE)
   range1 <- xmax1 - xmin1
   if (!ncycle == 1) {
-    xmin2 <- min(dat[,xvar2])
-    xmax2 <- max(dat[,xvar2])
+    xmin2 <- min(dat[,xvar2], na.rm = TRUE)
+    xmax2 <- max(dat[,xvar2], na.rm = TRUE)
     range2 <- xmax2 - xmin2
   }
 
