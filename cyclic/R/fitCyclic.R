@@ -55,7 +55,8 @@ fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P 
       }
     }
 
-     if (is.null(P)) {P <- max(dat[,xvar]) - min(dat[,xvar]) + 1}
+    if (is.null(P)) {P <- max(dat[,xvar]) - min(dat[,xvar]) + 1}
+    range <- max(dat[,xvar]) - min(dat[,xvar])
 
     dat$cvar <- cos((2*pi/P)*dat[,xvar])
     dat$svar <- sin((2*pi/P)*dat[,xvar])
@@ -79,7 +80,7 @@ fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P 
     par <- cycpar(a1,a2, P)
 
     b <- c(a0,par)
-    while (b[3] < xmin) b[3] <- b[3] + P    # let the maximum fall into the range of the data
+    while (b[3] < xmin) b[3] <- b[3] + range    # let the maximum fall into the range of the data
 
 
     # Parameters b1 and b2 are obtained from cyclic model analysis
