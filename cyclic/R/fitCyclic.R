@@ -6,7 +6,7 @@
 #' @param yvar dependent variable
 #' @param xvar time variabele, usually indicates the beeps or other numerical variable. Time format is also possible.
 #' @param grp group variabele indicator, usually indicates the days, used in "raw" plot.
-#' @param P the periodicity of the cycle. If NULL the maximum of xvar will be taken.
+#' @param P the periodicity of the cycle. If NULL P will be computed from the data.
 #' @param cov vector of names containing additional variabeles (e.g. cov = c("x1", "daynr"))
 #' @param ymin,ymax,step parameters that control axes of the plot
 #' @keywords cyclic model ESM
