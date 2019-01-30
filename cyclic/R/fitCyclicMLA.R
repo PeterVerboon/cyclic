@@ -153,6 +153,10 @@ plot.fitCyclicMLA <- function(x,...) {
   if (!ncycle == 1) P2 <- x$period[2]
 
   if (is.null(xvar1)) return("Plotting is not possible because xvar1 has not been specified")
+  if (is.null(xvar2)) {
+    xvar2 <- "dummy"
+    dat[,xvar2] <- 1
+  }
 
   args <- list(...)
   ifelse(!is.null(args[['ymin']]), ymin <- args[['ymin']], ymin <- x$input$ymin)
@@ -160,7 +164,7 @@ plot.fitCyclicMLA <- function(x,...) {
   ifelse(!is.null(args[['step']]), step <- args[['step']], step <- x$input$step)
 
 
-  datm <- aggregate(dat[,c(yvar,cov)],by=list(dat[,xvar1],dat[,xvar2]), FUN=mean, na.rm=F);
+  datm <- aggregate(dat[,c(yvar,cov)],by=list(dat[,xvar1],dat[,xvar2]), FUN=mean, na.rm=TRUE);
   datm$xvar2 <- as.numeric(datm$Group.2)
   datm$xvar1 <- as.numeric(datm$Group.1)
   datm$y <- datm[,3]
@@ -187,7 +191,7 @@ plot.fitCyclicMLA <- function(x,...) {
   datm$xall <- c(1:npoints)
 
   p <- ggplot(datm) + geom_point(aes(x=datm$xall, y=datm$y, colour=datm$grp))
-  p <- p + scale_x_discrete(name ="Time points (beeps within days)",  labels=datm$xvar1, limits=c(1:npoints))
+  p <- p + scale_x_discrete(name ="Time points ",  labels=datm$xvar1, limits=c(1:npoints))
   p <- p + labs(y = yvar)
   p <- p + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
   p <- p + geom_line(aes(x=datm$xall, y=datm$ypred))
