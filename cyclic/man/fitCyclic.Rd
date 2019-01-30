@@ -18,7 +18,7 @@ fitCyclic(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL,
 
 \item{cov}{vector of names containing additional variabeles (e.g. cov = c("x1", "daynr"))}
 
-\item{P}{the periodicity of the cycle. If NULL the maximum of xvar will be taken.}
+\item{P}{the periodicity of the cycle. If NULL P will be computed from the data.}
 
 \item{ymin, ymax, step}{parameters that control axes of the plot}
 }
