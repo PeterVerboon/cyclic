@@ -97,6 +97,15 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
     dat$svar2 <- sin((2*pi/P2)*dat[,xvar2])
   }
 
+  xmin1 <- min(dat[,xvar1])
+  xmax1 <- max(dat[,xvar1])
+  range1 <- xmax1 - xmin1
+  if (!ncycle == 1) {
+    xmin2 <- min(dat[,xvar2])
+    xmax2 <- max(dat[,xvar2])
+    range2 <- xmax2 - xmin2
+  }
+
   # fit cyclic model using MLA
 
   fit <- lme4::lmer(form,data = dat)
@@ -104,10 +113,13 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
   a0 <- lme4::fixef(fit)[1]
   a1 <- lme4::fixef(fit)[2]
   a2 <- lme4::fixef(fit)[3]
+  while (a2 < xmin1) a2 <- a2 + range1    # let the maximum fall into the range of the data
+
   if (ncycle == 1 & !is.null(cov)) a.cov <- lme4::fixef(fit)[4:(3+length(cov))]
   if (!ncycle == 1) {
     a3 <- lme4::fixef(fit)[4] ;
     a4 <- lme4::fixef(fit)[5] ;
+    while (a4 < xmin2) a4 <- a4 + range2    # let the maximum fall into the range of the data
     if (!is.null(cov)) a.cov <- lme4::fixef(fit)[6:(5+length(cov))]
   }
 
