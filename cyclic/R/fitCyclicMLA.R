@@ -240,8 +240,7 @@ plot.fitCyclicMLA <- function(x,...) {
   datm$xall <- c(1:npoints)
 
   p <- ggplot(datm) + geom_point(aes(x=datm$xall, y=datm$y, colour=datm$grp))
-  p <- p + scale_x_discrete(name ="Time points ",  labels=datm$xvar1, limits=c(1:npoints))
-  p <- p + labs(y = yvar)
+  p <- p + labs(y = yvar, x = "Time points ")
   p <- p + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
   p <- p + geom_line(aes(x=datm$xall, y=datm$ypred))
   p <- p + coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step))
