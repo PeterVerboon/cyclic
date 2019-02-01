@@ -39,6 +39,7 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
   result <- list()
   result$input <- as.list(environment())
   result$intermediate$dat <- dat
+  result$intermediate$ncycle <- ncycle
 
 
   # check basic input
@@ -56,15 +57,17 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
     cat("The intercept only model was requested, since parameter 'xvar1' is empty and no covariates are specified")
     form <- "y ~ 1 + (1 | id)"
     result$fit <- lme4::lmer(form,data = dat)
+    result$intermediate$ncycle <- NULL
     class(result)  <- "fitCyclicMLA"
     return(result)
   }
-  
+
   # Covariates only model
   if (is.null(xvar1) & !is.null(cov)) {
     cat("The covariates only model was requested, since parameter 'xvar1' is empty")
     form <-   paste0("y ~ 1 + ",cov,  " + (1 | id)")
     result$fit <- lme4::lmer(form,data = dat)
+    result$intermediate$ncycle <- NULL
     class(result)  <- "fitCyclicMLA"
     return(result)
   }
@@ -199,6 +202,8 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
 #' @method plot fitCyclicMLA
 #' @export
 plot.fitCyclicMLA <- function(x,...) {
+
+  if (is.null(x$intermediate$ncycle))  return("No plots available, because no cycles were requested")
 
   dat <- x$intermediate$dat
   yvar <- x$input$yvar
