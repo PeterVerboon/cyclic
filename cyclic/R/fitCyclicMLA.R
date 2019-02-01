@@ -237,7 +237,11 @@ plot.fitCyclicMLA <- function(x,...) {
 
   datm$grp <- as.factor(datm$xvar2)
   npoints <- dim(datm)[1]
-  datm$xall <- c(1:npoints)
+  if(xvar2 == "dummy") {
+    datm$xall <- datm$xvar1
+  } else {
+    datm$xall <- c(1:npoints)
+  }
 
   p <- ggplot(datm) + geom_point(aes(x=datm$xall, y=datm$y, colour=datm$grp))
   p <- p + labs(y = yvar, x = "Time points ")
