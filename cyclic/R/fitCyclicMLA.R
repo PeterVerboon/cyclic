@@ -52,9 +52,18 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
   dat$id <- dat[,id]
 
   # Null model
-  if (is.null(xvar1)) {
-    cat("The intercept only model was requested, since parameter 'xvar1' is empty")
+  if (is.null(xvar1) & is.null(cov)) {
+    cat("The intercept only model was requested, since parameter 'xvar1' is empty and no covariates are specified")
     form <- "y ~ 1 + (1 | id)"
+    result$fit <- lme4::lmer(form,data = dat)
+    class(result)  <- "fitCyclicMLA"
+    return(result)
+  }
+  
+  # Covariates only model
+  if (is.null(xvar1) & !is.null(cov)) {
+    cat("The covariates only model was requested, since parameter 'xvar1' is empty")
+    form <-   paste0("y ~ 1 + ",cov,  " + (1 | id)")
     result$fit <- lme4::lmer(form,data = dat)
     class(result)  <- "fitCyclicMLA"
     return(result)
