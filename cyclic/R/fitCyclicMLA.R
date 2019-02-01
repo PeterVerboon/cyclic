@@ -17,7 +17,6 @@
 #' "second" = cyclic parameters of second cyclic process;
 #' "cov" = covariates only, no cyclic terms; and finally
 #' "all" = all terms
-#' @param ymin,ymax,step parameters that control axes of the plot
 #' @keywords cyclic model ESM
 #' @return list containing the following elements:
 #' @return parameters =      intercept, amplitude and phase (and other terms in the model)
@@ -32,8 +31,8 @@
 #'   ncycle = 1, cov = c("stress", "positiveAffect"),
 #'   ymin = -0.5, ymax = 0.5, step=0.10)
 fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL, cov = NULL,
-                         ncycle = 1, P = NULL, P2 = NULL, random = "intercept",
-                         ymin = -1.0, ymax = 1.0, step=0.25 )
+                         ncycle = 1, P = NULL, P2 = NULL, random = "intercept")
+
 {
 
   result <- list()
@@ -221,16 +220,17 @@ plot.fitCyclicMLA <- function(x,...) {
     dat[,xvar2] <- 1
   }
 
-  args <- list(...)
-  ifelse(!is.null(args[['ymin']]), ymin <- args[['ymin']], ymin <- x$input$ymin)
-  ifelse(!is.null(args[['ymax']]), ymax <- args[['ymax']], ymax <- x$input$ymax)
-  ifelse(!is.null(args[['step']]), step <- args[['step']], step <- x$input$step)
-
 
   datm <- aggregate(dat[,c(yvar,cov)],by=list(dat[,xvar1],dat[,xvar2]), FUN=mean, na.rm=TRUE);
   datm$xvar2 <- as.numeric(datm$Group.2)
   datm$xvar1 <- as.numeric(datm$Group.1)
   datm$y <- datm[,3]
+
+  args <- list(...)
+  ifelse(!is.null(args[['ymin']]), ymin <- args[['ymin']], ymin <- round(min(datm$y, na.rm = TRUE),2))
+  ifelse(!is.null(args[['ymax']]), ymax <- args[['ymax']], ymax <- round(max(datm$y, na.rm = TRUE),2))
+  ifelse(!is.null(args[['step']]), step <- args[['step']], step <- (ymax - ymin)/10)
+
 
   # predict in aggregated data from fitted model
   if (ncycle == 1) {
