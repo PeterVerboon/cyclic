@@ -38,6 +38,7 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
 
   result <- list()
   result$input <- as.list(environment())
+  result$intermediate$dat <- dat
 
 
   # check basic input
@@ -65,6 +66,40 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
   if (!ncycle == 1 & is.null(xvar2)) {stop("Two cyclic patterns were requested, but parameter 'xvar2' has not been specified") }
   if (ncycle == 1 & random == "second") {cat("Number of cycles is set to 2");  ncycle <- 2 }
   if (is.null(cov) & random == "cov") {cat("No covariates are specified. Random term is set to 'intercept'");  random <- "intercept" }
+
+  ### If the time variable is actually provided as time instead of as
+  ### indices/ranks, convert to numeric first.
+  if (!is.numeric(dat[,xvar1])) {
+    if (any(class(dat[,xvar1]) %in% c('Date', 'POSIXct', 'POSIXt', 'POSIXt', 'hms'))) {
+      dat$h <- round((as.numeric(dat[,xvar1])/3600), digits=0)
+      dat[,xvar1] <- dat$h - min(dat$h) + as.numeric(format(min(dat[,xvar1]), format="%H"))
+    } else {
+      cat("The time variable does not have a class numeric or date.","\n",
+          "I am trying to create time variable. Check results carefully.")
+      dat$h <- round(as.POSIXct(dat[,xvar1], format="%H:%M:%S", tz="UTC"))
+      dat$h <- as.numeric(format(dat$h, format="%H"))
+      dat$h[dat$h == 0] <- max(dat$h) + 1
+      dat[,xvar1] <- dat$h
+    }
+    result$intermediate$dat[,xvar1] <- dat[,xvar1]
+  }
+
+  if (!is.null(xvar2) & !is.numeric(dat[,xvar2])) {
+    if (any(class(dat[,xvar2]) %in% c('Date', 'POSIXct', 'POSIXt', 'POSIXt', 'hms'))) {
+      dat$h <- round((as.numeric(dat[,xvar2])/3600), digits=0)
+      dat[,xvar2] <- dat$h - min(dat$h) + as.numeric(format(min(dat[,xvar2]), format="%H"))
+    } else {
+      cat("The time variable does not have a class numeric or date.","\n",
+          "I am trying to create time variable. Check results carefully.")
+      dat$h <- round(as.POSIXct(dat[,xvar2], format="%H:%M:%S", tz="UTC"))
+      dat$h <- as.numeric(format(dat$h, format="%H"))
+      dat$h[dat$h == 0] <- max(dat$h) + 1
+      dat[,xvar2] <- dat$h
+    }
+    result$intermediate$dat[,xvar2] <- dat[,xvar2]
+  }
+
+
 
   # construct formula
   ifelse (ncycle == 1, fixedPart <- paste0("y ~ cvar + svar"),
@@ -156,7 +191,7 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
 #' @export
 plot.fitCyclicMLA <- function(x,...) {
 
-  dat <- x$input$dat
+  dat <- x$intermediate$dat
   yvar <- x$input$yvar
   xvar1 <-  x$input$xvar1
   xvar2 <- x$input$xvar2
