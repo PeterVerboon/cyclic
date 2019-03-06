@@ -47,7 +47,7 @@ fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P 
         dat[,xvar] <- dat$h - min(dat$h) + as.numeric(format(min(dat[,xvar]), format="%H"))
       } else {
         cat("The time variable does not have a class numeric or date.","\n",
-            "I am trying to create time variable. Check results carefully.")
+            "I am trying to create time variable. Check results carefully.","\n")
         dat$h <- round(as.POSIXct(dat[,xvar], format="%H:%M:%S", tz="UTC"))
         dat$h <- as.numeric(format(dat$h, format="%H"))
         dat$h[dat$h == 0] <- max(dat$h) + 1

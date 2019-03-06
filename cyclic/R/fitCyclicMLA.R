@@ -86,7 +86,7 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
       dat[,xvar1] <- dat$h - min(dat$h) + as.numeric(format(min(dat[,xvar1]), format="%H"))
     } else {
       cat("The time variable does not have a class numeric or date.","\n",
-          "I am trying to create time variable. Check results carefully.")
+          "I am trying to create time variable. Check results carefully.","\n")
       dat$h <- round(as.POSIXct(dat[,xvar1], format="%H:%M:%S", tz="UTC"))
       dat$h <- as.numeric(format(dat$h, format="%H"))
       dat$h[dat$h == 0] <- max(dat$h) + 1
@@ -101,7 +101,7 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
       dat[,xvar2] <- dat$h - min(dat$h) + as.numeric(format(min(dat[,xvar2]), format="%H"))
     } else {
       cat("The time variable does not have a class numeric or date.","\n",
-          "I am trying to create time variable. Check results carefully.")
+          "I am trying to create time variable. Check results carefully.","\n")
       dat$h <- round(as.POSIXct(dat[,xvar2], format="%H:%M:%S", tz="UTC"))
       dat$h <- as.numeric(format(dat$h, format="%H"))
       dat$h[dat$h == 0] <- max(dat$h) + 1
