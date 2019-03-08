@@ -10,3 +10,4 @@ LazyData: true
 RoxygenNote: 6.1.1
 Imports: lme4,
     ggplot2
+    lmerTest
