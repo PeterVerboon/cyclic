@@ -156,14 +156,14 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
 
   fit <- lmerTest::lmer(form,data = dat)
 
-  a0 <- lmerTest::fixef(fit)[1]
-  a1 <- lmerTest::fixef(fit)[2]
-  a2 <- lmerTest::fixef(fit)[3]
-  if (ncycle == 1 & !is.null(cov)) a.cov <- lmerTest::fixef(fit)[4:(3+length(cov))]
+  a0 <- lme4::fixef(fit)[1]
+  a1 <- lme4::fixef(fit)[2]
+  a2 <- lme4::fixef(fit)[3]
+  if (ncycle == 1 & !is.null(cov)) a.cov <- lme4::fixef(fit)[4:(3+length(cov))]
   if (!ncycle == 1) {
-    a3 <- lmerTest::fixef(fit)[4] ;
-    a4 <- lmerTest::fixef(fit)[5] ;
-    if (!is.null(cov)) a.cov <- lmerTest::fixef(fit)[6:(5+length(cov))]
+    a3 <- lme4::fixef(fit)[4] ;
+    a4 <- lme4::fixef(fit)[5] ;
+    if (!is.null(cov)) a.cov <- lme4::fixef(fit)[6:(5+length(cov))]
   }
 
   # convert to parameters from linear model
