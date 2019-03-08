@@ -179,7 +179,7 @@ model4 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr", xvar2="daynr"
 print(model4)
 
 model5 <- fitCyclicMLA(dat=dat3, yvar="intention", xvar1="beepnr", xvar2="daynr",id = "subjnr",
-                       ncycle = 2, random = "all", ymin = -0.5, ymax = 0.5, step=0.10 )
+                       ncycle = 2, random = "all" )
 print(model5)
 plot(model5)      # This gives figure 6
 
