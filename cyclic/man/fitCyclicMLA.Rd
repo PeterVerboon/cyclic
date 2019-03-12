@@ -6,7 +6,7 @@
 \usage{
 fitCyclicMLA(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL,
   id = NULL, cov = NULL, ncycle = 1, P = NULL, P2 = NULL,
-  random = "intercept", ymin = -1, ymax = 1, step = 0.25)
+  random = "intercept")
 }
 \arguments{
 \item{dat}{data frame containing variables}
@@ -33,8 +33,6 @@ fitCyclicMLA(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL,
 "second" = cyclic parameters of second cyclic process;
 "cov" = covariates only, no cyclic terms; and finally
 "all" = all terms}
-
-\item{ymin, ymax, step}{parameters that control axes of the plot}
 }
 \value{
 list containing the following elements:

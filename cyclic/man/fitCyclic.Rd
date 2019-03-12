@@ -5,7 +5,8 @@
 \title{Fits the cyclic model, using a simple linear model.}
 \usage{
 fitCyclic(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL,
-  P = NULL, ymin = -1, ymax = 1, step = 0.25)
+  P = NULL, ymin = -1, ymax = 1, step = 0.25, xlabs = NULL,
+  ylabs = NULL)
 }
 \arguments{
 \item{dat}{data frame containing the variables}
@@ -21,6 +22,8 @@ fitCyclic(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL,
 \item{P}{the periodicity of the cycle. If NULL P will be computed from the data.}
 
 \item{ymin, ymax, step}{parameters that control axes of the plot}
+
+\item{xlabs, ylabs}{labels respectively for x-axis and y-axis of the plots}
 }
 \value{
 list containing the following elements:

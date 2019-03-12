@@ -4,12 +4,12 @@
 \alias{plot.fitCyclic}
 \title{Plots fitCyclic object}
 \usage{
-\method{plot}{fitCyclic}(x, type = c("raw", "means", "oneCycle"))
+\method{plot}{fitCyclic}(x, type = c("raw", "means", "combi"))
 }
 \arguments{
 \item{x}{fitCyclic object}
 
-\item{type}{vector indicating plot type with elements "raw","means","oneCycle". Default is all.}
+\item{type}{vector indicating plot type with elements "raw","means","combi". Default is all.}
 }
 \description{
 Plots fitCyclic object

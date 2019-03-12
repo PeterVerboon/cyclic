@@ -221,7 +221,7 @@ plot.fitCyclicMLA <- function(x,...) {
   }
 
 
-  datm <- aggregate(dat[,c(yvar,cov)],by=list(dat[,xvar1],dat[,xvar2]), FUN=mean, na.rm=TRUE);
+  datm <- stats::aggregate(dat[,c(yvar,cov)],by=list(dat[,xvar1],dat[,xvar2]), FUN=mean, na.rm=TRUE);
   datm$xvar2 <- as.numeric(datm$Group.2)
   datm$xvar1 <- as.numeric(datm$Group.1)
   datm$y <- datm[,3]
@@ -278,7 +278,8 @@ print.fitCyclicMLA <- function(x) {
 
   if (is.null(x$input$xvar1)) {
     cat("\n","The intercept-only model has been fitted", "\n\n")
-    cat(" The R-square of the fitted model is: ", round(1-var(residuals(x$fit))/(var(model.response(model.frame(x$fit)))),3), "\n")
+    cat(" The R-square of the fitted model is: ",
+        round(1-stats::var(stats::residuals(x$fit))/(stats::var(stats::model.response(stats::model.frame(x$fit)))),3), "\n")
     ICC <- (as.data.frame(lme4::VarCorr(x$fit))[1,"vcov"]) / sum(as.data.frame(lme4::VarCorr(x$fit))[,"vcov"])
     cat(" The Intraclass correlation (ICC) is: ", round(ICC, 3), "\n\n")
     print(x$fit)
@@ -300,8 +301,9 @@ print.fitCyclicMLA <- function(x) {
   cat("The parameters of the fitted model are: ", "\n\n")
   print(b, digits = 2)
   cat("\n\n")
-  cat("The deviance of the fitted model is:   ",deviance(x$fit, REML = FALSE), "\n\n")
-  cat("The R-square of the fitted model is:   ", 1-var(residuals(x$fit))/(var(model.response(model.frame(x$fit)))), "\n\n")
+  cat("The deviance of the fitted model is:   ",stats::deviance(x$fit, REML = FALSE), "\n\n")
+  cat("The R-square of the fitted model is:   ", 
+      1-stats::var(stats::residuals(x$fit))/(stats::var(stats::model.response(stats::model.frame(x$fit)))), "\n\n")
   cat("The standard deviation of and correlation between the random effects are: ", "\n\n")
   print(lme4::VarCorr(x$fit, REML = FALSE), digits = 2)
 

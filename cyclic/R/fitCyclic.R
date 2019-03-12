@@ -9,6 +9,7 @@
 #' @param P the periodicity of the cycle. If NULL P will be computed from the data.
 #' @param cov vector of names containing additional variabeles (e.g. cov = c("x1", "daynr"))
 #' @param ymin,ymax,step parameters that control axes of the plot
+#' @param xlabs,ylabs labels respectively for x-axis and y-axis of the plots
 #' @keywords cyclic model ESM
 #' @return list containing the following elements:
 #' @return parameters =      amplitude and phase
@@ -22,7 +23,7 @@
 #' data("pdat")
 #' fitCyclic(dat=pdat, yvar = "stress", xvar = "beepnr", grp = "daynr")
 fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P = NULL,
-                      ymin = -1.0, ymax = 1.0, step=0.25 ) {
+                      ymin = -1.0, ymax = 1.0, step=0.25, xlabs = NULL, ylabs = NULL ) {
 
     result <- list()
     result$input <- as.list(environment())
@@ -69,7 +70,7 @@ fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P 
 
     # fit cyclic model within days across beeps
 
-    fitp <- lm(form, data=dat)
+    fitp <- stats::lm(form, data=dat)
 
     a0 <- fitp$coefficients[1]
     a1 <- fitp$coefficients[2]
@@ -84,9 +85,11 @@ fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P 
 
 
     # Parameters b1 and b2 are obtained from cyclic model analysis
-
-    b1 <- b[2]
-    b2 <- b[3]
+   
+    a0 <- round(a0,3)
+    b1 <- round(b[2],3)
+    b2 <- round(b[3],3)
+   
 
     if (!is.null(cov))  {
        ypred1 <-  a0 + b1*cos(2*pi/P*(dat$x - b2)) +  as.matrix(dat[,cov]) %*% a.cov
@@ -95,31 +98,21 @@ fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P 
     npoints <- dim(dat)[1]
     dat$xall <- c(1:npoints)
 
+    if (is.null(xlabs)) xlabs <- "Time points within days"
+    if (is.null(ylabs)) ylabs <- yvar
+    
     # raw data plot
 
-    g0 <- ggplot(dat) + geom_point(aes(x=dat$xall, y=dat$y, colour=dat$grp))
-    g0 <- g0 + scale_x_discrete(name ="Time points (beeps within days)",  labels=dat$x, limits=c(1:npoints))
-    g0 <- g0 + labs(y = yvar)
-    g0 <- g0 + theme(axis.text = element_text(size = 6, colour="black"),legend.position="none")
-    g0 <- g0 + geom_line(aes(x=dat$xall, y=ypred1))
-    g0 <- g0 + coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step))
-
-
-    # one Cycle plot
-
-    g <- ggplot(dat)  + geom_point(aes(x=dat$x,y=dat$y))
-    g <- g + geom_hline(yintercept=a0, colour="blue")
-    g <- g + geom_vline(xintercept=b2, colour="red")
-    g <- g + geom_line(aes(x=dat$x, y=ypred1))
-    g <- g + labs(x = "Time points", y = yvar)
-    g <- g + scale_x_discrete(name ="Time points",  limits=c(xmin:xmax))
-    g <- g + coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step))
-    g <- g + theme(axis.text = element_text(size = 12, colour="black"))
-
+    g0 <- ggplot(dat) + geom_point(aes(x=dat$xall, y=dat$y, colour=dat$grp)) +
+        geom_line(aes(x=dat$xall, y=ypred1)) +
+        scale_x_discrete(name =xlabs,  labels=dat$x, limits=c(1:npoints)) +
+        labs(y = ylabs) +
+        theme(axis.text = element_text(size = 6, colour="black"),legend.position="none") +
+        coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step))
 
     # mean plot
 
-      pdat2 <- aggregate(dat[,c(yvar,cov)],by=list(dat[,xvar]), FUN=mean, na.rm=F)
+      pdat2 <- stats::aggregate(dat[,c(yvar,cov)],by=list(dat[,xvar]), FUN=mean, na.rm=F)
       pdat2$y <- pdat2[,2]
       pdat2$x <- pdat2[,1]
 
@@ -127,19 +120,31 @@ fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P 
        ypred2 <-  a0 + b1*cos(2*pi/P*(pdat2$x - b2)) +  as.matrix(pdat2[,cov]) %*% a.cov
        } else { ypred2 <-  a0 + b1*cos(2*pi/P*(pdat2$x - b2)) }
 
-    g1 <- ggplot(pdat2) + geom_point(aes(x=pdat2$x,y=pdat2$y))
-    g1 <- g1 + geom_hline(yintercept=a0, colour="blue")
-    g1 <- g1 + geom_vline(xintercept=b2, colour="red")
-    g1 <- g1 + geom_line(aes(x=pdat2$x, y=ypred2))
-    g1 <- g1 + labs(x = "Time points", y = yvar)
-    g1 <- g1 + scale_x_discrete(name ="Time points",  limits=c(xmin:xmax))
-    g1 <- g1 + coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step))
-    g1 <- g1 + theme(axis.text = element_text(size = 12, colour="black"))
+      captxt <- paste0("Note: ", "Intercept = ", a0, ";  ","Amplitude = ",  b1, ";  ","Phase = ",  b2)
+      
+    g1 <- ggplot(pdat2) + geom_point(aes(x=pdat2$x,y=pdat2$y)) +
+       labs(caption = (captxt)) +
+       geom_line(aes(x=pdat2$x, y=ypred2)) +
+       geom_hline(yintercept = a0, colour = "grey30", size=0.8, linetype = "solid") +
+       geom_vline(xintercept = b2, colour = "grey30", size=1.0, linetype = "dashed") +
+       labs(x = xlabs, y = ylabs) +
+       scale_x_discrete(name = xlabs,  limits=c(xmin:xmax)) +
+       coord_cartesian(ylim=c(ymin, ymax)) + scale_y_continuous(breaks=seq(ymin, ymax, step)) +
+       theme(plot.caption = element_text(hjust = 0)) +
+       theme(axis.text = element_text(colour = "black", size = 11, 
+                                     family="serif", hjust = 0.9, vjust = 0.9), 
+            axis.title=element_text(size=11,face="bold",  family="serif"), 
+            plot.title = element_text(size = 12, face = "bold",  family="serif")) 
+    
 
-
+    g2 <- g1 + geom_point(data=dat, aes(x=dat$x,y=dat$y),
+                          position = position_jitter(width = 0.1), 
+                          colour="azure4", size=0.8) 
+   
+    
     result$meansPlot <- g1
     result$rawDataPlot <- g0
-    result$oneCyclePlot <- g
+    result$combiPlot <- g2
     result$fit  <- fitp
     result$parameters <- b
     result$formula <- form
@@ -156,17 +161,14 @@ fitCyclic <- function(dat, yvar = NULL, xvar = NULL, grp = NULL, cov = NULL , P 
 #'
 #' Plots fitCyclic object
 #' @param x fitCyclic object
-#' @param type vector indicating plot type with elements "raw","means","oneCycle". Default is all.
+#' @param type vector indicating plot type with elements "raw","means","combi". Default is all.
 #' @method plot fitCyclic
 #' @export
-plot.fitCyclic <- function(x, type = c("raw","means","oneCycle")) {
+plot.fitCyclic <- function(x, type = c("raw","means","combi")) {
 
-  if("raw" %in% type) plot(x$rawDataPlot)
-  if("means" %in% type) plot(x$meansPlot)
-  if (is.null(x$input$cov) & ("oneCycle" %in% type)) plot( x$oneCyclePlot)
-  if (!is.null(x$input$cov) & ("oneCycle" %in% type)) {
-    print("The oneCycle figure is not plotted because covariates have been specified")
-  }
+  if("raw" %in% type) graphics::plot(x$rawDataPlot)
+  if("means" %in% type) graphics::plot(x$meansPlot)
+  if("combi" %in% type) graphics::plot(x$combi)
 
 }
 
