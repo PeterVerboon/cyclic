@@ -168,7 +168,7 @@ plot.fitCyclic <- function(x, type = c("raw","means","combi")) {
 
   if("raw" %in% type) graphics::plot(x$rawDataPlot)
   if("means" %in% type) graphics::plot(x$meansPlot)
-  if("combi" %in% type) graphics::plot(x$combi)
+  if("combi" %in% type) graphics::plot(x$combiPlot)
 
 }
 
