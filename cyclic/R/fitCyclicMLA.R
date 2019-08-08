@@ -28,8 +28,7 @@
 #'  data("smokedat")
 #'   model <- fitCyclicMLA(dat=smokedat,  yvar="intention", xvar1="beepnr",
 #'   xvar2="daynr", id = "subjnr", random = "all",
-#'   ncycle = 1, cov = c("stress", "positiveAffect"),
-#'   ymin = -0.5, ymax = 0.5, step=0.10)
+#'   ncycle = 1, cov = c("stress", "positiveAffect"))
 fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL, cov = NULL,
                          ncycle = 1, P = NULL, P2 = NULL, random = "intercept")
 
