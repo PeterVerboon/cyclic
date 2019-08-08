@@ -64,7 +64,7 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
   # Covariates only model
   if (is.null(xvar1) & !is.null(cov)) {
     cat("The covariates only model was requested, since parameter 'xvar1' is empty")
-    form <-   paste0("y ~ 1 + ",cov,  " + (1 | id)")
+    form <-   paste0("y ~ 1 + ",paste0(cov, collapse  = " + "),  " + (1 | id)")
     result$fit <- lmerTest::lmer(form,data = dat)
     result$intermediate$ncycle <- NULL
     class(result)  <- "fitCyclicMLA"
