@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 There are three functions used in this appendix, which are in the R package ` cyclic `. This package can be installed from Github by running the following command in R: 
 
-` devtools::install_github("PeterVerboon/cyclicpkg/cyclic") `
+` devtools::install_github("PeterVerboon/cyclicpkg") `
 
 The package is then activated by running: 
 
