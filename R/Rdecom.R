@@ -1,6 +1,8 @@
-
-#' Function that computes the ANOVA decomposition measure (Edoardo Costantini, 2018)
-#' The explained variance for level-1 (within subjects), for the level-2 (between subjects) and the total explained variance.
+#' R-squared based on ANOVA decomposition in multilevel model
+#'
+#' Function that computes the R-squared measure based on  ANOVA decomposition measure (Edoardo Costantini, 2018).
+#' The explained variance is split into the explained variance for level-1 (within subjects), for the level-2 (between subjects)
+#' and the total explained variance.
 #'
 #' @param dat data set
 #' @param y dependent variable of the multilevel model
@@ -12,7 +14,7 @@
 #' @references
 #' Constantini, E. (2018). R-squared measures in Multilevel Modelling:
 #' The undesirable property of negative R-squared values
-#' \emph{download from http://arno.uvt.nl/show.cgi?fid=146739}
+#' \emph{downloaded from http://arno.uvt.nl/show.cgi?fid=146739}, August 21, 2019.
 #'
 Rdecom <- function(dat, y, grpid, predicted) {
   y <- dat[,y]
