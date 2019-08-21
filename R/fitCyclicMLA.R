@@ -55,6 +55,7 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
     form <- "y ~ 1 + (1 | id)"
     result$fit <- lmerTest::lmer(form,data = dat)
     result$intermediate$ncycle <- NULL
+    result$intermediate$dat <- dat
     class(result)  <- "fitCyclicMLA"
     return(result)
   }
@@ -65,6 +66,7 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
     form <-   paste0("y ~ 1 + ",paste0(cov, collapse  = " + "),  " + (1 | id)")
     result$fit <- lmerTest::lmer(form,data = dat)
     result$intermediate$ncycle <- NULL
+    result$intermediate$dat <- dat
     class(result)  <- "fitCyclicMLA"
     return(result)
   }
