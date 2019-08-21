@@ -36,7 +36,6 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
 
   result <- list()
   result$input <- as.list(environment())
-  result$intermediate$dat <- dat
   result$intermediate$ncycle <- ncycle
 
 
@@ -91,7 +90,6 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
       dat$h[dat$h == 0] <- max(dat$h) + 1
       dat[,xvar1] <- dat$h
     }
-    result$intermediate$dat[,xvar1] <- dat[,xvar1]
   }
 
   if (!is.null(xvar2) & !is.numeric(dat[,xvar2])) {
@@ -106,7 +104,6 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
       dat$h[dat$h == 0] <- max(dat$h) + 1
       dat[,xvar2] <- dat$h
     }
-    result$intermediate$dat[,xvar2] <- dat[,xvar2]
   }
 
 
@@ -150,6 +147,8 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
     xmax2 <- max(dat[,xvar2], na.rm = TRUE)
     range2 <- xmax2 - xmin2
   }
+
+  result$intermediate$dat <- dat
 
   # fit cyclic model using MLA
 
@@ -273,14 +272,31 @@ plot.fitCyclicMLA <- function(x,...) {
 #' @param x fitCyclicMLA object
 #' @method print fitCyclicMLA
 #' @export
+#' @details The input parameters are echoed. Next the estimates of the parameters of the fitted model are printed.
+#'   The deviance, and two R-squared values (Rx and Rd) are then given.
+#'   The R squared denoted as Rx is described by Xu (2003) and the Rd is the ANOVA decomposition (see Constantini, 2018)
+#'
+#' @references
+#' Xu, R. (2003). Measuring explained variation in linear mixed effects models.
+#'  \emph{Statistics in medicine, 22}(22), 3527-3541.
+#'
+#' Constantini, E. (2018). R-squared measures in Multilevel Modelling:
+#' The undesirable property of negative R-squared values
+#' \emph{download from http://arno.uvt.nl/show.cgi?fid=146739}
+
 print.fitCyclicMLA <- function(x) {
 
   if (is.null(x$input$xvar1)) {
     cat("\n","The intercept-only model has been fitted", "\n\n")
-    cat(" The R-square of the fitted model is: ",
+    cat(" The Rx-square of the fitted model is: ",
         round(1-stats::var(stats::residuals(x$fit))/(stats::var(stats::model.response(stats::model.frame(x$fit)))),3), "\n")
+    cat(" The Rd-square of the fitted model is: ",
+    (Rdecom(dat=x$intermediate$dat,
+            y=x$input$yvar,
+            grpid = x$input$id,
+            predicted = stats::predict(x$fit, newdata=x$intermediate$dat)))[3] , "\n")
     ICC <- (as.data.frame(lme4::VarCorr(x$fit))[1,"vcov"]) / sum(as.data.frame(lme4::VarCorr(x$fit))[,"vcov"])
-    cat(" The Intraclass correlation (ICC) is: ", round(ICC, 3), "\n\n")
+    cat(" The Intraclass correlation (ICC) is:  ", round(ICC, 3), "\n\n")
     print(x$fit)
     return()
   }
@@ -300,9 +316,14 @@ print.fitCyclicMLA <- function(x) {
   cat("The parameters of the fitted model are: ", "\n\n")
   print(b, digits = 2)
   cat("\n\n")
-  cat("The deviance of the fitted model is:   ",stats::deviance(x$fit, REML = FALSE), "\n\n")
-  cat("The R-square of the fitted model is:   ", 
-      1-stats::var(stats::residuals(x$fit))/(stats::var(stats::model.response(stats::model.frame(x$fit)))), "\n\n")
+  cat("The deviance of the fitted model is:   ",stats::deviance(x$fit, REML = FALSE), "\n")
+  cat("The Rx-square of the fitted model is: ",
+      1-stats::var(stats::residuals(x$fit))/(stats::var(stats::model.response(stats::model.frame(x$fit)))), "\n")
+  cat("The Rd-square of the fitted model is: ",
+      (Rdecom(dat=x$intermediate$dat,
+              y=x$input$yvar,
+              grpid = x$input$id,
+              predicted = stats::predict(x$fit, newdata=x$intermediate$dat)))[3] , "\n\n")
   cat("The standard deviation of and correlation between the random effects are: ", "\n\n")
   print(lme4::VarCorr(x$fit, REML = FALSE), digits = 2)
 

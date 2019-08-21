@@ -52,8 +52,7 @@ This function fits the cyclic model on ESM data, using a multilevel model (see V
  data("smokedat")
   model <- fitCyclicMLA(dat=smokedat,  yvar="intention", xvar1="beepnr",
   xvar2="daynr", id = "subjnr", random = "all",
-  ncycle = 1, cov = c("stress", "positiveAffect"),
-  ymin = -0.5, ymax = 0.5, step=0.10)
+  ncycle = 1, cov = c("stress", "positiveAffect"))
 }
 \keyword{ESM}
 \keyword{cyclic}
