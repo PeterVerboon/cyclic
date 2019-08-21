@@ -2,8 +2,7 @@
 % Please edit documentation in R/Rdecom.R
 \name{Rdecom}
 \alias{Rdecom}
-\title{Function that computes the ANOVA decomposition measure (Edoardo Costantini, 2018)
-The explained variance for level-1 (within subjects), for the level-2 (between subjects) and the total explained variance.}
+\title{R-squared based on ANOVA decomposition in multilevel model}
 \usage{
 Rdecom(dat, y, grpid, predicted)
 }
@@ -20,11 +19,12 @@ Rdecom(dat, y, grpid, predicted)
 vector containing three values, named: "level_1_R2","level_2_R2", "total_R2"
 }
 \description{
-Function that computes the ANOVA decomposition measure (Edoardo Costantini, 2018)
-The explained variance for level-1 (within subjects), for the level-2 (between subjects) and the total explained variance.
+Function that computes the R-squared measure based on  ANOVA decomposition measure (Edoardo Costantini, 2018).
+The explained variance is split into the explained variance for level-1 (within subjects), for the level-2 (between subjects)
+and the total explained variance.
 }
 \references{
 Constantini, E. (2018). R-squared measures in Multilevel Modelling:
 The undesirable property of negative R-squared values
-\emph{download from http://arno.uvt.nl/show.cgi?fid=146739}
+\emph{downloaded from http://arno.uvt.nl/show.cgi?fid=146739}, August 21, 2019.
 }
