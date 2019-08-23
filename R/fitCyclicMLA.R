@@ -296,7 +296,10 @@ print.fitCyclicMLA <- function(x) {
     (Rdecom(dat=x$intermediate$dat,
             y=x$input$yvar,
             grpid = x$input$id,
-            predicted = stats::predict(x$fit, newdata=x$intermediate$dat)))[3] , "\n")
+            xvar1 = x$input$xvar1,
+            xvar2 = x$input$xvar2,
+            cov = x$input$cov,
+            fit = x$fit))[3] , "\n")
     ICC <- (as.data.frame(lme4::VarCorr(x$fit))[1,"vcov"]) / sum(as.data.frame(lme4::VarCorr(x$fit))[,"vcov"])
     cat(" The Intraclass correlation (ICC) is:  ", round(ICC, 3), "\n\n")
     print(x$fit)
@@ -325,7 +328,10 @@ print.fitCyclicMLA <- function(x) {
       (Rdecom(dat=x$intermediate$dat,
               y=x$input$yvar,
               grpid = x$input$id,
-              predicted = stats::predict(x$fit, newdata=x$intermediate$dat)))[3] , "\n\n")
+              xvar1 = x$input$xvar1,
+              xvar2 = x$input$xvar2,
+              cov = x$input$cov,
+              fit = x$fit))[3] , "\n\n")
   cat("The standard deviation of and correlation between the random effects are: ", "\n\n")
   print(lme4::VarCorr(x$fit, REML = FALSE), digits = 2)
 

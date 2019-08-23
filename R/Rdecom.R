@@ -7,7 +7,10 @@
 #' @param dat data set
 #' @param y dependent variable of the multilevel model
 #' @param grpid group identity (cluster variable)
-#' @param predicted predicted values from multilevel model
+#' @param cov covariates in the MLA model
+#' @param xvar1 name of first time variable from the cyclic process
+#' @param xvar2 name of optional second time variable from the cyclic process
+#' @param fit lmer or lmerTest object (fit multilevel model)
 #' @return vector containing three values, named: "level_1_R2","level_2_R2", "total_R2"
 #' @export
 #'
@@ -16,7 +19,12 @@
 #' The undesirable property of negative R-squared values
 #' \emph{downloaded from http://arno.uvt.nl/show.cgi?fid=146739}, August 21, 2019.
 #'
-Rdecom <- function(dat, y, grpid, predicted) {
+Rdecom <- function(dat, y, grpid,cov,xvar1,xvar2 = NULL, fit) {
+
+  # remove missings from the data, otherwise lengths differ
+  vars <- c(y, grpid,cov,xvar1,xvar2)
+  dat <- dat[stats::complete.cases(dat[,vars]),]
+  predicted = stats::predict(fit, newdata=dat)
   y <- dat[,y]
   grpid <- dat[,grpid]
    yj <- NA
