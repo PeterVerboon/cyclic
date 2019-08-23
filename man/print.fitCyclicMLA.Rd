@@ -13,15 +13,15 @@
 Prints fitCyclicMLA object
 }
 \details{
-n the printed output first the input parameters are echoed. Next, the estimates of the parameters of the fitted model are printed.
-  The model deviance, and two R-squared values (Rx and Rd) are then given.
-  The R squared value denoted as Rx has been described by Xu (2003) and the Rd is based on the ANOVA decomposition (see Constantini, 2018).
+The input parameters are echoed. Next the estimates of the parameters of the fitted model are printed.
+  The deviance, and two R-squared values (Rx and Rd) are then given.
+  The R squared denoted as Rx is described by Xu (2003) and the Rd is the ANOVA decomposition (see Constantini, 2018)
 }
 \references{
 Xu, R. (2003). Measuring explained variation in linear mixed effects models.
- \emph{Statistics in medicine, 22 }(22), 3527-3541.
+ \emph{Statistics in medicine, 22}(22), 3527-3541.
 
-Constantini, E. (2018). R-squared measures in Multilevel Modeling:
-The undesirable property of negative R-squared values.
-Downloaded from \emph{http://arno.uvt.nl/show.cgi?fid=146739}
+Constantini, E. (2018). R-squared measures in Multilevel Modelling:
+The undesirable property of negative R-squared values
+\emph{download from http://arno.uvt.nl/show.cgi?fid=146739}
 }

@@ -4,7 +4,7 @@
 \alias{Rdecom}
 \title{R-squared based on ANOVA decomposition in multilevel model}
 \usage{
-Rdecom(dat, y, grpid, predicted)
+Rdecom(dat, y, grpid, cov, xvar1, xvar2 = NULL, fit)
 }
 \arguments{
 \item{dat}{data set}
@@ -13,7 +13,13 @@ Rdecom(dat, y, grpid, predicted)
 
 \item{grpid}{group identity (cluster variable)}
 
-\item{predicted}{predicted values from multilevel model}
+\item{cov}{covariates in the MLA model}
+
+\item{xvar1}{name of first time variable from the cyclic process}
+
+\item{xvar2}{name of optional second time variable from the cyclic process}
+
+\item{fit}{lmer or lmerTest object (fit multilevel model)}
 }
 \value{
 vector containing three values, named: "level_1_R2","level_2_R2", "total_R2"
@@ -24,7 +30,7 @@ The explained variance is split into the explained variance for level-1 (within 
 and the total explained variance.
 }
 \references{
-Constantini, E. (2018). R-squared measures in Multilevel Modelling:
-The undesirable property of negative R-squared values
-\emph{downloaded from http://arno.uvt.nl/show.cgi?fid=146739}, August 21, 2019.
+Constantini, E. (2018). R-squared measures in Multilevel Modeling:
+The undesirable property of negative R-squared values.
+Downloaded from \emph{http://arno.uvt.nl/show.cgi?fid=146739}, August 21, 2019.
 }
