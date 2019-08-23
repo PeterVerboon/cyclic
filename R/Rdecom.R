@@ -15,9 +15,9 @@
 #' @export
 #'
 #' @references
-#' Constantini, E. (2018). R-squared measures in Multilevel Modelling:
-#' The undesirable property of negative R-squared values
-#' \emph{downloaded from http://arno.uvt.nl/show.cgi?fid=146739}, August 21, 2019.
+#' Constantini, E. (2018). R-squared measures in Multilevel Modeling:
+#' The undesirable property of negative R-squared values.
+#' Downloaded from \emph{http://arno.uvt.nl/show.cgi?fid=146739}, August 21, 2019.
 #'
 Rdecom <- function(dat, y, grpid,cov,xvar1,xvar2 = NULL, fit) {
 
