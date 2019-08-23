@@ -1,6 +1,6 @@
 Package: cyclic
 Title: Analysis of (ESM/EMA) models with cyclic terms
-Version: 1.2.0
+Version: 1.2.1
 Authors@R: person("Peter", "Verboon", email = "Peter.Verboon@ou.nl", role = c("aut", "cre"))
 Description: cyclic provides functions for fitting and analyzing cyclic models: for single level data (fitCyclic),and for multilevel data fitCyclicMLA.
 Depends: R (>= 3.5.0)
