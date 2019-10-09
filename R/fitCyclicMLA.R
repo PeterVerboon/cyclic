@@ -45,6 +45,7 @@ fitCyclicMLA <- function(dat, yvar = NULL, xvar1 = NULL, xvar2 = NULL, id = NULL
   if (!is.null(id))  { if (!id %in% colnames(dat)) { stop(paste0("Variable '", id, "' does not exist"))}}
   if (!is.null(yvar))  { if (!yvar %in% colnames(dat)) { stop(paste0("Variable '", yvar, "' does not exist"))}}
   if (is.null(cov)) a.cov <- NULL
+  if (is.null(random)) { stop("If no random terms are requested, use different function")}
 
   dat$y <- dat[,yvar]
   dat$id <- dat[,id]
